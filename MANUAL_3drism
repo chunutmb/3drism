@@ -1,0 +1,166 @@
+/************************************************************************************************/
+/*												*/
+/*				Date: 09-16-2009						*/
+/*												*/
+/************************************************************************************************/
+
+
+Notes:
+Currently the code can do spherical species, H2O, and H2O with spherical species (NaCl solutions) .
+It can't do other types of molecular species besides water.
+Repulsive bridge function only works for h2o and h2o+spherical species type-1 or 2.
+
+
+Added features
+
+1) 
+2) 
+
+To compile source:
+	make pot
+	make potmp
+	make 3drism
+	make analyze
+	make plot		
+
+
+Input files:
+
+	1st arg - .kdis2 or dis2 file
+	2nd arg - .env file
+	3rd arg - .par or .par2 file
+
+how to execute:
+	pot_x    <dis> <.env> <.par?>
+
+	mpirun -np # potmp_x   <dis> <.env> <.par?>
+
+	3drism_x  <dis> <.env> <.par?>
+
+	analyze_x <dis> <.env> <.par?>
+
+	plot_x	 <.jh3d.dat> 
+
+
+
+
+/****************************************************************/
+/*								*/
+/*			File formats 				*/
+/*								*/
+/****************************************************************/
+
+These types of files are obtained from 1d-drism code.
+
+DIS2____
+	#DIS2
+	##This contains all the information needed
+	##TYPES		0-spherical	1-h2o	2-h2o+n spherical  3-molecular species (doesn't work yet)
+	#TYPE		1
+	#NSITES 	3
+	#NRSITES	2
+	#NAMES		O1		H1
+	#REDUN		1		2
+	#TEMP		298.15
+	#PND		0.03334		0.03334
+	#EP12		78.2000226	10.064379	
+	#EP6		78.2000226	10.064379	
+	#SIG		3.16555		0.4000
+	#CHARGE		-0.8476		0.4238
+	#BOND_MAT	1.00000		1.633081624
+	#N_PTS		16384
+	#RADIUS		32.766
+	#DIS_NUM	3
+	#DIS_NAMES	O1-O1		O1-H1		H1-H1
+	#DIS
+	0	-1.00000000000000000000	-1.00000000000000000000	-1.00000000000000000000
+	1	-1.00000000000000000000	-1.00000000000000000000	-1.00000000000000000000
+	2	-1.00000000000000000000	-1.00000000000000000000	-1.00000000000000000000
+
+------------------------------------------------------------------------------------------------------------
+
+ENV_____
+
+	##  These are required TAGS in the .env file
+
+	#LX		20.0		-double (length of x axis)
+	#LY		20.0			-double (length of y axis)
+	#LZ		20.0			-double (length of z axis)
+	#NX		64			-int ( # grid points in x axis)
+	#NY		64			-int ( # grid points in y axis)
+	#NZ		64			-int ( # grid points in z axis)
+
+	#T_ERR		1.00e-6			-double total error in c1(r)-c0(r)
+	#CLOSURE 	hnc, py, kh		-closure to use, chose one
+	#SOLVER		picard, mdiis, newton	-type of numerical method choose one
+	#PIC_MP		0.25			-double, Picard mixing parameter, amount of mixing of new solution into old
+
+	#DIIS_SIZE	5			-int ( # of diis vectors ) 
+	#DIIS_MP	0.75			-double, DIIS mixing parameter, amount of mixing of new solution into old
+
+
+	## These are OPTIONAL and have default values if not set, the defaults are in {}
+
+	#########  Optional - default {} ############## 
+	#CX		32, {NX/2}		-int, specifies the center of the box on the x-axis
+	#CY		32, {NY/2}		-int, specifies the center of the box on the y-axis
+	#CZ		32, {NZ/2}		-int, specifies the center of the box on the z-axis
+
+	#CONTINUE 	yes, {no}		-continue from an older solution, the cr vectors must exist in the working directory
+	#MAX_ITER	1000, {INT_MAX}		-int, max number of iterations allowed before prematurely exiting
+	#N_DUMP		1001, {INT_MAX}		-int, # of iterations before the solution vector c(r) are dumped, saves the data
+	#FILE_TYPE	{jh3d}, sit		-file format to be used, sit is slightly smaller and is importable into vmd
+	#INIT_PIC_ITER	{1}			-int, number of initial picard iterations before starting diis solver
+	#A_ERF		{1.08}			-double, (0.9->1.18) specifies the decay of the short ranged functions
+	#CHRG_PCT	0.0->{1.0}		-double, (0.0->1.0) specifies the percentage by which to scale the interaction site charges for the system
+	#TEMP_FACTOR	( {1.0} -> oo)		-double, factor by which to multiply the solution temperature by 
+
+	#BRIDGE_FUNC0	{no}, yes0-u(rbc) ,	-calculate approx. b(r) from perkyns et al using f-bonds where the potential  
+			yes1-ulj, yes2-u(r)s	 is the (0) rbc part, (1) LJ part, (2) LJ 12 part
+
+	#BRIDGE_FUNC1	{no}, yes->never,	-calculate approximate bridge function using h(r) bonds from perkyns et al. 
+			yes00->begining, 	-yes, only read b(r) in beginning, yes00:calculate only at beginning, 
+			yesxx			 yesxx: update every xx iterations
+
+	#RBC_FUNC	{no}, yes		-include repulsive bridge function from hirata et al
+	#EWALD_SUMS	{no}, yes		-use ewald sum method instead of resummation
+
+	##wall conditions start at CZ
+
+	#CONFIG_TYPE	{none}, wall, 		-introduce solvent boundary
+			wall1(h->-1), 		-set h(z)=-1 for z<CZ
+			wall2(hw=-1) )		-set h(z)=-1 such that the wall interactes with the LJ particles for z<CZ
+			( all need padding)
+
+	#GAUSS_SMEAR	(0.5 -{0.65} - 0.8)	-needed for ewald method, gaussian smearing
+	#RT_CHANGES	{0},1->#		-total number of runtime temperature changes
+	#RT_TEMP_FACTOR	{1 ... #}		-list of temperature factors, number of elements must equal RT_CHANGES
+	#RT_ERR		1e-2			-residual error at which a runtime change is implemented
+	#END
+
+	##.env file must end with an END tag
+
+--------------------------------------------------------------------------------------------------------------------
+
+par - set the element char string to "wall" will create an lj wall
+	units:	ep	Kelvin
+		sig	angstroms
+		charge	electrons
+		x	angstroms	
+		y	angstroms	
+		z	angstroms	
+		
+
+PAR_____
+
+	<# sites>
+	<site num>  <element>  <ep>  <sig>  <charge>  <x>  <y>  <z>
+
+
+
+
+PAR2____
+
+
+	<# sites>
+	<site num>  <element> <mol>  <ep12> <ep6>  <sig>  <charge>  <x>  <y>  <z>

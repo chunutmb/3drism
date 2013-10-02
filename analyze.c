@@ -1,19 +1,19 @@
-/****************************************************************************************/ 
+/****************************************************************************************/
 /*											*/
 /*			Version 0.1 by Jesse Howard					*/
 /*			Date: 	10-28-2008						*/
 /*											*/
-/****************************************************************************************/ 
+/****************************************************************************************/
 
 /*This code calculates the thermodynamics of the input 3d gr file
  *
  *
 */
 
-#include <fftw3.h>  
-#include <stdio.h> 
-#include <stdlib.h> 
-#include <stddef.h> 
+#include <fftw3.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
 #include <math.h>
 #include <string.h>
 #include "jh_get.h"
@@ -32,7 +32,7 @@
 double DX, DY, DZ;
 
 /*par properties*/
-ENV_PAR SYS;		
+ENV_PAR SYS;
 U_PAR2 	*U, *U2;
 U_PAR *U1;
 int NU_SITES, PAR_TYPE;
@@ -95,23 +95,21 @@ double kx( int, int, int, double, double, double );
 
 char *ARGV1, *ARGV2, *ARGV3;
 
-/****************************************************************************************/ 
-/*											*/ 
-/*					Main						*/ 
-/*											*/ 
+/****************************************************************************************/
+/*											*/
+/*					Main						*/
+/*											*/
 /****************************************************************************************/
 
 int main(int argc, char *argv[])
 {
 
-	int i, j, k, l, x, y, z, cnt=0;
 	int choice;
-	char sol_par_file[50];
-	
+
 	ARGV1 = *(argv +1);
 	ARGV2 = *(argv +2);
 	ARGV3 = *(argv +3);
-			
+
 
 	/*****************************GET SOLUTE PARAMETERS*****************************************/
 					printf("\nReading in solute parameters...\n");fflush(stdout);
@@ -158,10 +156,10 @@ int main(int argc, char *argv[])
 		printf("...DONE!!!\n\n"); fflush(stdout);
 
 
-	return 0; 
+	return 0;
 }
 
-/****************************************************************************************/ 
+/****************************************************************************************/
 /****************************************************************************************/
 /**************************************END OF MAIN***************************************/
 /****************************************************************************************/
@@ -169,11 +167,11 @@ int main(int argc, char *argv[])
 
 
 
-/****************************************************************************************/ 
+/****************************************************************************************/
 /*					I/O						*/
 /*				GET Parameter and solvent				*/
 /*											*/
-/****************************************************************************************/ 
+/****************************************************************************************/
 
 void set_env( char infile[] )
 {
@@ -201,7 +199,7 @@ void set_env( char infile[] )
 	if( get_tag( infile, "A_ERF" ) == 1 )
 		A_ERF = (double) get_dval( infile, "A_ERF");
 	   else	A_ERF = 1.08;
-	
+
 	if( get_tag( infile, "EWALD_SUMS" ) == 1 )
 		EWALD_SUMS = (char *) get_sval( infile, "EWALD_SUMS");
 	   else EWALD_SUMS = "no";
@@ -262,12 +260,10 @@ void set_par( char infile[] )
 
 	int *nu_s = (int *) malloc(sizeof(int));
 	int i, idx=0, len;
-	char end[5], vs;
-		
+	char vs;
+
 	while( infile[idx] != '.' )  idx++;
 	idx++;
-	for( i=0; i<=4; i++)
-	    end[i] = infile[ idx+i ];
 
 	len = strlen( infile );
 	vs = infile[ len -1];
@@ -286,29 +282,29 @@ void set_par( char infile[] )
 	  }
 
 	NU_SITES = *nu_s;
-		
-	if( PAR_TYPE == 1 ){	
-		
+
+	if( PAR_TYPE == 1 ){
+
 			U = (U_PAR2 *) malloc( (NU_SITES+1) * sizeof(U_PAR2));
-			
+
 			for( i=1; i<=NU_SITES; i++){
-				U[i].num     = U1[i].num ; 
-			   	sprintf( U[i].element, "%s", U1[i].element ) ; 
-			   	U[i].mol     = 0 ;  
-				U[i].ep12    = U1[i].ep ;  
-			   	U[i].ep6     = U1[i].ep ;  
-			   	U[i].sig     = U1[i].sig ;  
-			   	U[i].charge  = U1[i].charge ;  
-		   		U[i].x 	     = U1[i].x ;  
-			   	U[i].y 	     = U1[i].y ;  
-			   	U[i].z 	     = U1[i].z ;  
-			} 
+				U[i].num     = U1[i].num ;
+			   	sprintf( U[i].element, "%s", U1[i].element ) ;
+			   	U[i].mol     = 0 ;
+				U[i].ep12    = U1[i].ep ;
+			   	U[i].ep6     = U1[i].ep ;
+			   	U[i].sig     = U1[i].sig ;
+			   	U[i].charge  = U1[i].charge ;
+		   		U[i].x 	     = U1[i].x ;
+			   	U[i].y 	     = U1[i].y ;
+			   	U[i].z 	     = U1[i].z ;
+			}
 		} else
  		 if( PAR_TYPE == 2)
 			U = (U_PAR2 *) U2;
 
 }
-	
+
 void set_sys( void )
 {
 		SYS.nx = NX;	SYS.ny = NY; 	SYS.nz = NZ;
@@ -324,12 +320,12 @@ void set_sys( void )
 void set_fnames( void )
 {
 
-	int i, j;
+	int j;
 	int fnlen=100;
 
 	   cr_s_fnames = (char **) malloc( NRSITES *2 *sizeof( char ));
 	     gr_fnames = (char **) malloc( NRSITES *2 *sizeof( char ));
-	  ur_lj_fnames = (char **) malloc( NRSITES *2 *sizeof( char )); 
+	  ur_lj_fnames = (char **) malloc( NRSITES *2 *sizeof( char ));
 	ur_clmb_fnames = (char **) malloc( NRSITES *2 *sizeof( char ));
 	   ur_l_fnames = (char **) malloc( NRSITES *2 *sizeof( char ));
 	     ur_fnames = (char **) malloc( NRSITES *2 *sizeof( char ));
@@ -393,28 +389,27 @@ void set_fnames( void )
 				fprintf( stdout, "%s\n",    *(uk_l_fnames + i) );
 				fprintf( stdout, "%s\n",    *(br_fnames + i) );
 				fprintf( stdout, "%s\n",    *(b1r_fnames + i) );
-				 printf("\n" ); 
+				 printf("\n" );
 			}
 		#endif
 }
 
 
 
-/****************************************************************************************/ 
+/****************************************************************************************/
 /*											*/
 /*				1: calc internal energy					*/
 /*											*/
-/****************************************************************************************/ 
+/****************************************************************************************/
 
 void calc_internal_energy( void )
 {
 	int def, i, j, x, y, z;
 	double jkm = CONST_JKM;
 	double lj_energy = 0.00, clmb_energy = 0.00, tot_energy ;
-	double *e_cor;
 	double dr3d = DX*DY*DZ;
 	char sdir[150], s1[150];
-	
+
 	double    **gr = (double **) malloc( NRSITES *sizeof( double ));
 	double **ur_lj = (double **) malloc( NRSITES *sizeof( double ));
 	double **ur_clmb = (double **) malloc( NRSITES *sizeof( double ));
@@ -434,25 +429,25 @@ void calc_internal_energy( void )
 
 										printf("\nReading gr files" ); fflush( stdout);
 		for( i=0; i<=NRSITES-1; i++ )
-			*(gr + i) = (double *) get_3d( *(gr_fnames + i)); 
+			*(gr + i) = (double *) get_3d( *(gr_fnames + i));
 										printf("\nReading ur_lj files" ); fflush( stdout);
 		for( i=0; i<=NRSITES-1; i++ )
-			*(ur_lj + i) = (double *) get_3d( *(ur_lj_fnames + i)); 
+			*(ur_lj + i) = (double *) get_3d( *(ur_lj_fnames + i));
 										printf("\nReading ur_clmb files\n" ); fflush( stdout);
 		for( i=0; i<=NRSITES-1; i++ )
-			*(ur_clmb + i) = (double *) get_3d( *(ur_clmb_fnames + i)); 
-		
+			*(ur_clmb + i) = (double *) get_3d( *(ur_clmb_fnames + i));
+
 			if( strncmp( "yes", EWALD_SUMS, 3) == 0){
-				printf("\nUse ewald potential-0 or use real potential-1: ");	
+				printf("\nUse ewald potential-0 or use real potential-1: ");
 				scanf("%d", &def );
 				printf("\nEnter directory to retrieve non-ewald potential: ");
-				scanf("%s", &sdir);
+				scanf("%s", sdir);
 				printf("Reading new ur_clmb files"); fflush(stdout);
 				for( i=0; i<=NRSITES-1; i++ ){
 					sprintf(s1,"%s/%s", sdir, *(ur_clmb_fnames +i));
 					*(ur_clmb2 + i) = (double *) get_3d( s1 );
-				} 
-				
+				}
+
 				for( j=0; j<=NRSITES-1; j++)
 				 for( i=0; i<=NNN-1; i++)
 					ur_clmb[j][i] = ur_clmb2[j][i];
@@ -462,18 +457,18 @@ void calc_internal_energy( void )
 		for( j=0; j<=NRSITES-1; j++){
 
 			/*Filter gr_uo arrays in core region?????????*/
-			for( i=0; i<=NNN-1; i++)  
+			for( i=0; i<=NNN-1; i++)
 				if( gr[j][i] < 0.000001 )  gr[j][i] = 0.00;
-	
+
 			/*calculate integrand ur is in (KTs) */
-			for( i=0; i<=NNN-1; i++){ 
+			for( i=0; i<=NNN-1; i++){
 				int_lj[i]   =  ur_lj[j][i]   * gr[j][i];
 				int_clmb[i] =  CHRG_PCT *ur_clmb[j][i] * gr[j][i];
 			}
-	
+
 			  sum_lj[j] = 0.00;
 			sum_clmb[j] = 0.00;
-	
+
 			if( strncmp( "wall1", CONFIG_TYPE, 5)==0 ){
 			for( x=0; x<=NX-1; x++)
 			 for( y=0; y<=NY-1; y++)
@@ -481,7 +476,7 @@ void calc_internal_energy( void )
 			  		sum_lj[j] += int_lj[ ii(x,y,z) ];
 					sum_clmb[j] += int_clmb[ ii(x,y,z) ];
 				  }
-			} else 
+			} else
 			  if( strncmp("wall", CONFIG_TYPE, 4)==0){
 				for( x=0; x<=NX-1; x++)
 				 for( y=0; y<=NY-1; y++)
@@ -494,39 +489,39 @@ void calc_internal_energy( void )
 			  		sum_lj[j] += int_lj[i];
 					sum_clmb[j] += int_clmb[i];
 				}
-			  }	  
-	
+			  }
+
 			sum_lj[j]   *= PND[j] *dr3d;
 			sum_clmb[j] *= PND[j] *dr3d;
-	
+
 			  gt_lj[j] =   sum_lj[j] *jkm *TEMP *TEMP_FACTOR / 1000;
 			gt_clmb[j] = sum_clmb[j] *jkm *TEMP *TEMP_FACTOR / 1000;
-	
+
 			  lj_energy += REDUN[j] *gt_lj[j];
 			clmb_energy += REDUN[j] *gt_clmb[j];
-	
+
 		}
-	
+
 		tot_energy = lj_energy + clmb_energy;
-				
-		
+
+
 		printf("\nPrinting to internal_energy.dat\n" ); fflush( stdout);
 		fprintf( out, "*************************************************\n");
 		fprintf( out, "*   	     				       *\n" );
 		fprintf( out, "*   	      Internal Energy 		       *\n" );
 		fprintf( out, "*   	     				       *\n" );
 		fprintf( out, "*************************************************\n\n" );
-		
+
 		fprintf( out, "Temperature (K) -> %f\n\n", TEMP *TEMP_FACTOR );
 
-		fprintf( out, "____Lennard-Jones Energies____\n\n" ); 
-	
+		fprintf( out, "____Lennard-Jones Energies____\n\n" );
+
 		for( i=0; i<=NRSITES-1; i++)
 				fprintf( out, "%s(%lf)  =  %lf (kJ/mol)\n", NAMES[i], REDUN[i], gt_lj[i] );
-	
-		fprintf( out, "\n\tTotal LJ energy  =  %lf (kJ/mol)", lj_energy );  
-		fprintf( out, "\n\t                 =  %lf (kCal/mol)", lj_energy/4.184 );  
-		fprintf( out, "\n\t                 =  %lf (K)", lj_energy/0.008315 );  
+
+		fprintf( out, "\n\tTotal LJ energy  =  %lf (kJ/mol)", lj_energy );
+		fprintf( out, "\n\t                 =  %lf (kCal/mol)", lj_energy/4.184 );
+		fprintf( out, "\n\t                 =  %lf (K)", lj_energy/0.008315 );
 
 
 		fprintf( out, "\n\n____Coulomb Energies____\n\n" );
@@ -564,11 +559,11 @@ void calc_internal_energy( void )
 
 
 
-/****************************************************************************************/ 
+/****************************************************************************************/
 /*											*/
 /*				2: calc chemical potential				*/
 /*											*/
-/****************************************************************************************/ 
+/****************************************************************************************/
 
 void calc_chem_potential( void )
 {
@@ -576,12 +571,11 @@ void calc_chem_potential( void )
 
 	int nnn=NX*NY*NZ;
 	double jkm = CONST_JKM;
-	double hfe=0.00, chem_pot= 0.00, b_chem_pot = 0.00;
+	double chem_pot= 0.00, b_chem_pot = 0.00;
 	double dr3d = (LX/(NX-1))*(LY/(NY-1))*(LZ/(NZ-1));
 
 
 	/************************Read in g(r), c(r)_s, and u(r)_l terms**********************/
-	char ans;
 	char s1[150], sdir[150];
 
 	double   **gr = (double **) malloc( NRSITES *sizeof( double ));
@@ -596,26 +590,26 @@ void calc_chem_potential( void )
 
 										printf("\nReading gr files" ); fflush( stdout);
 		for( i=0; i<=NRSITES-1; i++ )
-			*(gr + i) = (double *) get_3d( *(gr_fnames + i)); 
+			*(gr + i) = (double *) get_3d( *(gr_fnames + i));
 										printf("\nReading cr_s  files" ); fflush( stdout);
 		for( i=0; i<=NRSITES-1; i++ )
-			*(cr_s  + i) = (double *) get_3d( *(cr_s_fnames + i)); 
+			*(cr_s  + i) = (double *) get_3d( *(cr_s_fnames + i));
 										printf("\nReading ur_l files" ); fflush( stdout);
 		if( strncmp( "no", EWALD_SUMS, 2)==0)
 		   for( i=0; i<=NRSITES-1; i++ )
-			*(ur_l + i) = (double *) get_3d( *(ur_l_fnames + i)); 
-		
+			*(ur_l + i) = (double *) get_3d( *(ur_l_fnames + i));
+
 		if( strncmp( "yes", RBC_FUNC, 3 )==0 ){			printf("\nReading rbc files");	fflush( stdout );
 			for( i=0; i<=NRSITES-1; i++ )
-				*(br + i) = (double *) get_3d( *(br_fnames + i)); 
+				*(br + i) = (double *) get_3d( *(br_fnames + i));
 		}
-		
+
 		if( (strncmp( "yes", BRIDGE_FUNC1, 3 )==0) || (strncmp( "yes", BRIDGE_FUNC0, 3 )==0) ){
 										printf("\nReading br1 files");	fflush( stdout );
 			for( i=0; i<=NRSITES-1; i++ )
-				*(b1r + i) = (double *) get_3d( *(b1r_fnames + i)); 
+				*(b1r + i) = (double *) get_3d( *(b1r_fnames + i));
 		}
-		
+
 										printf("\n...Done!!!\n");	fflush( stdout );
 
 		if( strncmp( "no", EWALD_SUMS, 2) == 0 )
@@ -627,21 +621,21 @@ void calc_chem_potential( void )
 		if( strncmp( "yes", EWALD_SUMS, 3) == 0){
 
 			for( i=0; i<=NRSITES-1; i++ )
-				*(ur_clmb1 + i) = (double *) get_3d( *(ur_clmb_fnames + i)); 
-	
+				*(ur_clmb1 + i) = (double *) get_3d( *(ur_clmb_fnames + i));
+
 			printf("\nEnter directory to retrieve non-ewald (real) potentials: ");
-			scanf("%s", &sdir);
+			scanf("%s", sdir);
 			printf("Reading new ur_clmb files"); fflush(stdout);
 			for( i=0; i<=NRSITES-1; i++ ){
 				sprintf(s1,"%s/%s", sdir, *(ur_clmb_fnames +i));
 				*(ur_clmb2 + i) = (double *) get_3d( s1 );
-			} 
-				
+			}
+
 			for( j=0; j<=NRSITES-1; j++)
 			 for( i=0; i<=NNN-1; i++)
 				cr_s[j][i] = cr_s[j][i] + CHRG_PCT *( ur_clmb1[j][i] - ur_clmb2[j][i]);
 
-		} 
+		}
 
 	/***************************************************************************************/
 
@@ -662,25 +656,25 @@ void calc_chem_potential( void )
 	for( j=0; j<=NRSITES-1; j++){
 
 		if( (strncmp( "hnc", CLOSURE, 3)==0) && (strlen(CLOSURE)==3) ){
-			for( i=0; i<=nnn-1; i++){ 	
+			for( i=0; i<=nnn-1; i++){
 					ux_int[j][i] =  ( 0.5) * (gr[j][i]-1.0) * (gr[j][i]-1.0);			/* h*h*/
 					ux_int[j][i] += (-0.5) * (cr_s[j][i]) * (gr[j][i]-1.0);	/* c(r) * h(r) */
 					ux_int[j][i] += (-1.0) * (cr_s[j][i]);
 			}
 			if( strncmp( "yes", BRIDGE_FUNC1, 3 )==0 || strncmp( "yes", BRIDGE_FUNC0,3)==0 ){
-				for( i=0; i<=nnn-1; i++){ 	
+				for( i=0; i<=nnn-1; i++){
 					ux_int[j][i] += (2.0/3.0) * (b1r[j][i]) * (gr[j][i]-1.0);	/* c(r) * h(r) */
 					ux_int[j][i] += (1.0) * (b1r[j][i]);
 			   	}
-			} 
-	 
+			}
+
 			if( (strncmp( "yes", RBC_FUNC, 3)==0) )
-				for( i=0; i<=nnn-1; i++) 	
+				for( i=0; i<=nnn-1; i++)
 					ux_int[j][i] +=  gr[j][i] * (br[j][i]-1.0);			/* h*h*/
-			
-		}else 
+
+		}else
 		if( (strncmp( "kh", CLOSURE, 2)==0) && (strlen(CLOSURE)==2) ){
-			for( i=0; i<=nnn-1; i++){ 	
+			for( i=0; i<=nnn-1; i++){
 				if( (-1.0*(gr[j][i]-1.0) >= 0))
 					ux_int[j][i] =  ( 0.5) * (gr[j][i]-1.0) * (gr[j][i]-1.0);			/* h*h*/
 				else
@@ -691,13 +685,13 @@ void calc_chem_potential( void )
 			}
 		}else
 		if( (strncmp( "py", CLOSURE, 3)==0) && (strlen(CLOSURE)==2) ){
-			for( i=0; i<=nnn-1; i++){ 	
+			for( i=0; i<=nnn-1; i++){
 					ux_int[j][i] = (cr_s[j][i]) / ( (gr[j][i]-1.0) - (cr_s[j][i]) ); /* c(r) / (h(r)-c(r)) */
 					ux_int[j][i] *= (-1.0) *log( gr[j][i] - (cr_s[j][i]) ); /* -ln( 1+h(r)-c(r) )  */
 			}
-		}else 
-			printf( "\nNO closure specified\n"); fflush(stdout); 
-		
+		}else
+			printf( "\nNO closure specified\n"); fflush(stdout);
+
 
 	}
 	/*calc integrals */
@@ -708,21 +702,21 @@ void calc_chem_potential( void )
 			for( x=0; x<=NX-1; x++)
 			 for( y=0; y<=NY-1; y++)
 			  for( z=CZ; z<=(CZ+NZ/3)-1; z++){
-				ux_gt[j] += ux_int[j][ ii(x,y,z) ];	
+				ux_gt[j] += ux_int[j][ ii(x,y,z) ];
 			  }
-		} else 
+		} else
 		  if( strncmp("wall", CONFIG_TYPE, 4)==0){
 			for( x=0; x<=NX-1; x++)
 			 for( y=0; y<=NY-1; y++)
 			  for( z=CZ; z<=NZ-1; z++){
-				ux_gt[j] += ux_int[j][ ii(x,y,z) ];	
+				ux_gt[j] += ux_int[j][ ii(x,y,z) ];
 			  }
 		} else {
 			for( i=0; i<=nnn-1; i++)
-				ux_gt[j] += ux_int[j][i];	
+				ux_gt[j] += ux_int[j][i];
 			}
 
-		  }	  
+		  }
 
 	/*calc chemical potential as beta chem_pot*/
 	for( j=0; j<=NRSITES-1; j++)
@@ -761,7 +755,7 @@ void calc_chem_potential( void )
 
 	for( i=0; i<=NRSITES-1; i++){
 		free( *(gr +i) );
-		free( *(cr_s +i) ); 
+		free( *(cr_s +i) );
 		free( *(ur_l +i) );
 		free( *(ux_int +i) );
 	}
@@ -778,15 +772,15 @@ void calc_chem_potential( void )
 /*											*/
 /*				3: calculate coordination numbers			*/
 /*											*/
-/****************************************************************************************/	
+/****************************************************************************************/
 
 void calc_coordination_number( void )
 {
-	
-	int il=0, i, int_meth, j, sid, x, y, z;
+
+	int il=0, i, int_meth, sid, x = 0, y = 0, z = 0;
 	double rad, r_xyz;
-	double xmin, ymin, zmin, xmax, ymax, zmax; 
-	double xorg, yorg, zorg; 
+	double xmin, ymin, zmin, xmax, ymax, zmax;
+	double xorg, yorg, zorg;
 	double r_x, r_y, r_z;
 	double coor_num=0.0;
 	int tmp_num = 0;
@@ -797,7 +791,7 @@ void calc_coordination_number( void )
 			printf("%d: %s\n", i+1, *(NAMES +i) );
 
 		printf("\nENTER CHOICE: ");
-		scanf("%d", &sid ); printf("\n"); 
+		scanf("%d", &sid ); printf("\n");
 		sid--;
 					   		     			printf("Reading file \"%s\" ...", *(gr_fnames + sid) ); 	fflush( stdout );
 		double *gr  = (double *) get_3d(  *(gr_fnames + sid) );  	printf("...Done!!!\n");
@@ -808,9 +802,9 @@ void calc_coordination_number( void )
 		{
 
 			printf("\nUse \"%s\" for integral limits (1: yes) or (2: no) : ", ARGV2); fflush(stdout);
-			scanf("%d", &il ); 
+			scanf("%d", &il );
 			printf( "\n");
-			
+
 			if( il == 1 )
 			{
 				xmin = -1.0*CX*DX;	xmax = (NX-1-CX)*DX;
@@ -821,11 +815,11 @@ void calc_coordination_number( void )
 				  	coor_num += gr[ ii(x,y,z)];
 					tmp_num++;
 				}
-			} else 
+			} else
 			 if( il == 2 )
 			 {
-				printf("\n"); 
-				printf("\nEnter units in Angstroms: \n"); 
+				printf("\n");
+				printf("\nEnter units in Angstroms: \n");
 				printf("Enter x min -> "); scanf( "%lf", &xmin );
 				printf("Enter x max -> "); scanf( "%lf", &xmax );
 				printf("Enter y min -> "); scanf( "%lf", &ymin );
@@ -835,23 +829,23 @@ void calc_coordination_number( void )
 
 				for( x=0; x<=NX-1; x++)
 				{
-					r_x = r0(x,CY,CZ); 
+					r_x = r0(x,CY,CZ);
 					if( x < CX ) r_x = -r_x;
-		
+
 				    if( r_x >= xmin && r_x <= xmax )
  				       for( y=0; y<=NY-1; y++)
-				       {	
+				       {
 					       r_y = r0(CX, y, CZ);
 					       if( y < CY ) r_y = -r_y;
-		
+
 					   if( r_y >= ymin && r_y <= ymax )
 					      for( z=0; z<=NZ-1; z++)
 					      {
 						      r_z = r0(CX, CY, z);
 					              if( z < CZ ) r_z = -r_z;
-		
+
 						  if( r_z >= zmin && r_z <= zmax )
-						  {		
+						  {
 							  	coor_num += gr[ ii(x,y,z)];
 								tmp_num++;
 						  }
@@ -860,14 +854,14 @@ void calc_coordination_number( void )
 				}
 		 	 } else{ printf("\nERROR with integration limits\n\n");}
 
-		} else 
+		} else
 		 if( int_meth == 2)
 		  {
 			printf("\nEnter x origin: ");		scanf("%lf", &xorg );
 			printf("Enter y origin: ");		scanf("%lf", &yorg );
 			printf("Enter z origin: ");		scanf("%lf", &zorg );
 			printf("Enter radius in Angstroms: ");	scanf("%lf", &rad);
-	
+
 			for( x=0; x<=NX-1; x++)
 			for( y=0; y<=NY-1; y++)
 			for( z=0; z<=NZ-1; z++)
@@ -878,13 +872,13 @@ void calc_coordination_number( void )
 					tmp_num++;
 				}
 			}
-	
-		  } else {  
+
+		  } else {
 			printf("No integration method specified, exiting\n"); fflush( stdout );
-		         }	
+		         }
 
 		coor_num *= ( REDUN[sid] * PND[sid] * dr3d );
-	
+
 		FILE *out;
 		char f_name[100];
 			sprintf( f_name,"coordinated_%s_sites.dat", NAMES[sid] );
@@ -892,17 +886,17 @@ void calc_coordination_number( void )
 				printf("\nError opening file %s", f_name );
 
 		printf("\nNumber of points -> %d \n", tmp_num );
-		printf("\nprinting to \"%s\"\n", f_name );  		
-	
+		printf("\nprinting to \"%s\"\n", f_name );
+
 		fprintf( out, "*************************************************\n");
 		fprintf( out, "*   	     				       *\n" );
 		fprintf( out, "*   	      Coordination number	       *\n" );
 		fprintf( out, "*   	     				       *\n" );
 		fprintf( out, "*************************************************\n\n" );
-		
-		fprintf( out, "Integral limits (Angstroms) : \n\n" ); 
+
+		fprintf( out, "Integral limits (Angstroms) : \n\n" );
 		if( int_meth == 1){
-			fprintf( out, "\tBox with the following limits:\n" ); 
+			fprintf( out, "\tBox with the following limits:\n" );
 			fprintf( out, "\t\tx-min -> %f \t x-max -> %f \n", xmin, xmax ); 			fflush(stdout);
 			fprintf( out, "\t\ty-min -> %f \t y-max -> %f \n", ymin, ymax ); 			fflush(stdout);
 			fprintf( out, "\t\tz-min -> %f \t z-max -> %f \n\n", zmin, zmax ); 		fflush(stdout);
@@ -919,18 +913,18 @@ void calc_coordination_number( void )
 		fprintf( out, "Number density -> %f\n\n", PND[sid] );					fflush(stdout);
 		fprintf( out, "Coordinated Number of \"%s\" sites -> %f\n", *(NAMES + sid ), coor_num );	fflush(stdout);
 		fprintf( out, "\n*************************************************\n\n" );
-	
+
 		printf( "\n\nCoordinated Number of \"%s\" sites -> %f\n\n", *(NAMES + sid ), coor_num );	fflush(stdout);
-	
+
 }
-	
 
 
-/****************************************************************************************/ 
+
+/****************************************************************************************/
 /*											*/
 /*			4: calc regional internal energy				*/
 /*											*/
-/****************************************************************************************/ 
+/****************************************************************************************/
 
 
  void calc_regional_internal_energy( void )
@@ -939,14 +933,13 @@ void calc_coordination_number( void )
 	int def, i, il, int_meth, j, tmp_num=0, x, y, z;
 	double jkm = CONST_JKM;
 	double rad, r_xyz;
-	double xmin, ymin, zmin, xmax, ymax, zmax; 
-	double xorg, yorg, zorg; 
+	double xmin, ymin, zmin, xmax, ymax, zmax;
+	double xorg, yorg, zorg;
 	double r_x, r_y, r_z;
 	double lj_energy = 0.00, clmb_energy = 0.00, tot_energy ;
-	double *e_cor;
 	double dr3d = DX*DY*DZ;
 	char sdir[150], s1[150];
-	
+
 	double    **gr = (double **) malloc( NRSITES *sizeof( double ));
 	double **ur_lj = (double **) malloc( NRSITES *sizeof( double ));
 	double **ur_clmb = (double **) malloc( NRSITES *sizeof( double ));
@@ -964,25 +957,25 @@ void calc_coordination_number( void )
 
 										printf("\nReading gr files" ); fflush( stdout);
 		for( i=0; i<=NRSITES-1; i++ )
-			*(gr + i) = (double *) get_3d( *(gr_fnames + i)); 
+			*(gr + i) = (double *) get_3d( *(gr_fnames + i));
 										printf("\nReading ur_lj files" ); fflush( stdout);
 		for( i=0; i<=NRSITES-1; i++ )
-			*(ur_lj + i) = (double *) get_3d( *(ur_lj_fnames + i)); 
+			*(ur_lj + i) = (double *) get_3d( *(ur_lj_fnames + i));
 										printf("\nReading ur_clmb files\n" ); fflush( stdout);
 		for( i=0; i<=NRSITES-1; i++ )
-			*(ur_clmb + i) = (double *) get_3d( *(ur_clmb_fnames + i)); 
-		
+			*(ur_clmb + i) = (double *) get_3d( *(ur_clmb_fnames + i));
+
 			if( strncmp( "yes", EWALD_SUMS, 3) == 0){
-				printf("\nUse ewald potential-0 or use real potential-1: ");	
+				printf("\nUse ewald potential-0 or use real potential-1: ");
 				scanf("%d", &def );
 				printf("\nEnter directory to retrieve non-ewald potential: ");
-				scanf("%s", &sdir);
+				scanf("%s", sdir);
 				printf("Reading new ur_clmb files"); fflush(stdout);
 				for( i=0; i<=NRSITES-1; i++ ){
 					sprintf(s1,"%s/%s", sdir, *(ur_clmb_fnames +i));
 					*(ur_clmb2 + i) = (double *) get_3d( s1 );
-				} 
-				
+				}
+
 				for( j=0; j<=NRSITES-1; j++)
 				 for( i=0; i<=NNN-1; i++)
 					ur_clmb[j][i] = ur_clmb2[j][i];
@@ -996,9 +989,9 @@ void calc_coordination_number( void )
 		{
 
 			printf("\nUse \"%s\" for integral limits (1: yes) or (2: no) : ", ARGV2); fflush(stdout);
-			scanf("%d", &il ); 
+			scanf("%d", &il );
 			printf( "\n");
-			
+
 			if( il == 1 )
 			{
 				xmin = -1.0*CX*DX;	xmax = (NX-1-CX)*DX;
@@ -1009,11 +1002,11 @@ void calc_coordination_number( void )
 					yorn[i] = 1.0;
 					tmp_num++;
 				}
-			} else 
+			} else
 			 if( il == 2 )
 			 {
-				printf("\n"); 
-				printf("\nEnter units in Angstroms: \n"); 
+				printf("\n");
+				printf("\nEnter units in Angstroms: \n");
 				printf("Enter x min -> "); scanf( "%lf", &xmin );
 				printf("Enter x max -> "); scanf( "%lf", &xmax );
 				printf("Enter y min -> "); scanf( "%lf", &ymin );
@@ -1023,38 +1016,38 @@ void calc_coordination_number( void )
 
 				for( x=0; x<=NX-1; x++)
 				{
-					r_x = r0(x,CY,CZ); 
+					r_x = r0(x,CY,CZ);
 					if( x < CX ) r_x = -r_x;
-		
+
 				    if( r_x >= xmin && r_x <= xmax )
  				       for( y=0; y<=NY-1; y++)
-				       {	
+				       {
 					       r_y = r0(CX, y, CZ);
 					       if( y < CY ) r_y = -r_y;
-	
+
 					   if( r_y >= ymin && r_y <= ymax )
 					      for( z=0; z<=NZ-1; z++)
 					      {
 						      r_z = r0(CX, CY, z);
 					              if( z < CZ ) r_z = -r_z;
-		
+
 						  if( r_z >= zmin && r_z <= zmax )
-						  {		
+						  {
 							  	yorn[ ii(x,y,z)] = 1.0;
 								tmp_num++;
 						  }
 					      }
 				       }
 				}
-		 	 } 
-		} else 
+		 	 }
+		} else
 		 if( int_meth == 2)
 		  {
 			printf("\nEnter x origin: ");		scanf("%lf", &xorg );
 			printf("Enter y origin: ");		scanf("%lf", &yorg );
 			printf("Enter z origin: ");		scanf("%lf", &zorg );
 			printf("Enter radius in Angstroms: ");	scanf("%lf", &rad);
-	
+
 			for( x=0; x<=NX-1; x++)
 			for( y=0; y<=NY-1; y++)
 			for( z=0; z<=NZ-1; z++)
@@ -1065,27 +1058,27 @@ void calc_coordination_number( void )
 					tmp_num++;
 				}
 			}
-	
-		  } else {  
+
+		  } else {
 			printf("No integration method specified, exiting\n"); fflush( stdout );
-		         }	
+		         }
 
 
 		for( j=0; j<=NRSITES-1; j++){
 
 			/*Filter gr_uo arrays in core region?????????*/
-			for( i=0; i<=NNN-1; i++)  
+			for( i=0; i<=NNN-1; i++)
 				if( gr[j][i] < 0.000001 )  gr[j][i] = 0.00;
-	
+
 			/*calculate integrand ur is in (KTs) */
-			for( i=0; i<=NNN-1; i++){ 
+			for( i=0; i<=NNN-1; i++){
 				int_lj[i]   =             ur_lj[j][i]   * gr[j][i] * yorn[i];
 				int_clmb[i] =  CHRG_PCT * ur_clmb[j][i] * gr[j][i] * yorn[i];
 			}
-	
+
 			  sum_lj[j] = 0.00;
 			sum_clmb[j] = 0.00;
-	
+
 			if( strncmp( "wall1", CONFIG_TYPE, 5)==0 ){
 			for( x=0; x<=NX-1; x++)
 			 for( y=0; y<=NY-1; y++)
@@ -1093,7 +1086,7 @@ void calc_coordination_number( void )
 			  		sum_lj[j] += int_lj[ ii(x,y,z) ];
 					sum_clmb[j] += int_clmb[ ii(x,y,z) ];
 				  }
-			} else 
+			} else
 			  if( strncmp("wall", CONFIG_TYPE, 4)==0){
 				for( x=0; x<=NX-1; x++)
 				 for( y=0; y<=NY-1; y++)
@@ -1106,28 +1099,28 @@ void calc_coordination_number( void )
 			  		sum_lj[j] += int_lj[i];
 					sum_clmb[j] += int_clmb[i];
 				}
-			  }	  
-	
+			  }
+
 			sum_lj[j]   *= PND[j] *dr3d;
 			sum_clmb[j] *= PND[j] *dr3d;
-	
+
 			  gt_lj[j] =   sum_lj[j] *jkm *TEMP *TEMP_FACTOR / 1000;
 			gt_clmb[j] = sum_clmb[j] *jkm *TEMP *TEMP_FACTOR / 1000;
-	
+
 			  lj_energy += REDUN[j] *gt_lj[j];
 			clmb_energy += REDUN[j] *gt_clmb[j];
-	
+
 		}
-	
+
 		tot_energy = lj_energy + clmb_energy;
-				
+
 		FILE *out;
 		char f_name[100];
 			sprintf( f_name,"regional_internal_energy.dat" );
 			if( ( out = fopen(f_name, "w")) == NULL)
 				printf("\nError opening file %s", f_name );
 
-		
+
 		printf("\nNumber of points -> %d \n", tmp_num );
 		printf("\nPrinting to regional_internal_energy.dat\n" ); fflush( stdout);
 		fprintf( out, "*************************************************\n");
@@ -1135,12 +1128,12 @@ void calc_coordination_number( void )
 		fprintf( out, "*   	     Regional Internal Energy	       *\n" );
 		fprintf( out, "*   	     				       *\n" );
 		fprintf( out, "*************************************************\n\n" );
-		
+
 		fprintf( out, "Temperature (K) -> %f\n\n", TEMP *TEMP_FACTOR );
-		
-		fprintf( out, "Integral limits (Angstroms) : \n\n" ); 
+
+		fprintf( out, "Integral limits (Angstroms) : \n\n" );
 		if( int_meth == 1){
-			fprintf( out, "\tBox with the following limits:\n" ); 
+			fprintf( out, "\tBox with the following limits:\n" );
 			fprintf( out, "\t\tx-min -> %f \t x-max -> %f \n", xmin, xmax ); 			fflush(stdout);
 			fprintf( out, "\t\ty-min -> %f \t y-max -> %f \n", ymin, ymax ); 			fflush(stdout);
 			fprintf( out, "\t\tz-min -> %f \t z-max -> %f \n\n", zmin, zmax ); 		fflush(stdout);
@@ -1155,14 +1148,14 @@ void calc_coordination_number( void )
 		 }
 		fprintf( out, "\tNumber of points -> %d \n\n\n", tmp_num );
 
-		fprintf( out, "____Lennard-Jones Energies____\n\n" ); 
-	
+		fprintf( out, "____Lennard-Jones Energies____\n\n" );
+
 		for( i=0; i<=NRSITES-1; i++)
 				fprintf( out, "%s(%lf)  =  %lf (kJ/mol)\n", NAMES[i], REDUN[i], gt_lj[i] );
-	
-		fprintf( out, "\n\tTotal LJ energy  =  %lf (kJ/mol)", lj_energy );  
-		fprintf( out, "\n\t                 =  %lf (kCal/mol)", lj_energy/4.184 );  
-		fprintf( out, "\n\t                 =  %lf (K)", lj_energy/0.008315 );  
+
+		fprintf( out, "\n\tTotal LJ energy  =  %lf (kJ/mol)", lj_energy );
+		fprintf( out, "\n\t                 =  %lf (kCal/mol)", lj_energy/4.184 );
+		fprintf( out, "\n\t                 =  %lf (K)", lj_energy/0.008315 );
 
 
 		fprintf( out, "\n\n____Coulomb Energies____\n\n" );
@@ -1199,21 +1192,21 @@ void calc_coordination_number( void )
 
 }
 
-/****************************************************************************************/ 
+/****************************************************************************************/
 /*											*/
 /*			5: excluded volume						*/
 /*											*/
-/****************************************************************************************/ 
+/****************************************************************************************/
 
 
 void calc_excluded_volume( void )
 {
 
-	int i, j, n;
+	int i, j;
 	double crit;
 	double dr3d = (LX/(NX-1))*(LY/(NY-1))*(LZ/(NZ-1));
-	double *sum = (double *) malloc( NRSITES *sizeof(double) );	
-	double *ex_vol = (double *) malloc( NRSITES *sizeof(double) );	
+	double *sum = (double *) malloc( NRSITES *sizeof(double) );
+	double *ex_vol = (double *) malloc( NRSITES *sizeof(double) );
 	double **gr = (double **) malloc( NRSITES *sizeof(double) );
 
 	FILE *out;
@@ -1222,16 +1215,16 @@ void calc_excluded_volume( void )
 
 										printf("\nReading gr files..." ); fflush( stdout);
 		for( i=0; i<=NRSITES-1; i++ )
-			*(gr + i) = (double *) get_3d( *(gr_fnames + i)); 
-										printf("DONE!\n"); 
+			*(gr + i) = (double *) get_3d( *(gr_fnames + i));
+										printf("DONE!\n");
 
-		printf("\nEnter g(r) max value to count as excluded volume (<=~0.001): "); scanf( "%lf", &crit ); 
-	
+		printf("\nEnter g(r) max value to count as excluded volume (<=~0.001): "); scanf( "%lf", &crit );
+
 		for( i=0; i<=NRSITES-1; i++ )
 		{
 			sum[i] = 0.0;
 			ex_vol[i] = 0.0;
-			for( j=0; j<=NNN-1; j++)	
+			for( j=0; j<=NNN-1; j++)
 				if( gr[i][j] < crit )
 					sum[i]+=1.0;
 
@@ -1239,72 +1232,73 @@ void calc_excluded_volume( void )
 		}
 
 
-		fprintf( out, "*********************************\n"); 
-		fprintf( out, "*                               *\n"); 
-		fprintf( out, "*      Excluded volume (A^3)    *\n"); 
-		fprintf( out, "*                               *\n"); 
 		fprintf( out, "*********************************\n");
- 
-		fprintf(out, "\nvoxel volume : %lf", dr3d ); 
-		fprintf(out, "\ncritical g(r) value: %e\n\n", crit );  
+		fprintf( out, "*                               *\n");
+		fprintf( out, "*      Excluded volume (A^3)    *\n");
+		fprintf( out, "*                               *\n");
+		fprintf( out, "*********************************\n");
+
+		fprintf(out, "\nvoxel volume : %lf", dr3d );
+		fprintf(out, "\ncritical g(r) value: %e\n\n", crit );
 
 		for( i=0; i<=NRSITES-1; i++ )
-			fprintf( out, "Sum of empty %s voxels = %lf\n", NAMES[i], sum[i] ); 
-		fprintf( out, "\n" ); 
+			fprintf( out, "Sum of empty %s voxels = %lf\n", NAMES[i], sum[i] );
+		fprintf( out, "\n" );
 
 		for( i=0; i<=NRSITES-1; i++ )
 			fprintf( out, "Excluded volume of %s sites (A^3) -> %lf\n", NAMES[i], ex_vol[i] ); fflush( stdout );
 		fprintf( out, "\n" );
 
-		printf("\ncritical g(r) value: %e\n\n", crit );  
+		printf("\ncritical g(r) value: %e\n\n", crit );
 		for( i=0; i<=NRSITES-1; i++ )
 		printf( "Excluded volume of %s sites (A^3) -> %lf\n", NAMES[i], ex_vol[i] ); fflush( stdout );
 		printf("\n" );
-			
+
 
 }
 
 
 
-/****************************************************************************************/ 
+/****************************************************************************************/
 /*											*/
 /*			6: Molar volume							*/
 /*											*/
-/****************************************************************************************/ 
+/****************************************************************************************/
 
 void calc_molar_volume( void )
 {
 
-	int i, j;
+	int i;
 	double *gr_3d;
 	char gr_3d_name[50];
-	
+
 	FILE *out;
 		if ( (out = fopen("molar_volume.dat", "w" )) == NULL )
 			printf( "\nUnable to open molar volume file\n"); fflush( stdout );
 
 	printf("\nEnter gr.jh3d file name: "); 	scanf("%s", gr_3d_name); printf("\n");
 
-								printf("\n\nReading in %s", gr_3d_name );	
+								printf("\n\nReading in %s", gr_3d_name );
 	gr_3d  = (double *) get_3d( gr_3d_name );  	printf("...DONE!!!\n" );		fflush( stdout );
 
-	double pnd, lx=LX, ly=LY, lz=LZ;	/*global*/
+	double pnd = 1; /* TODO: determine the pnd, missing from the original code */
+        double lx=LX, ly=LY, lz=LZ;
 	double nv=0, nt, m_v;
 	double vol=LX*LY*LZ;
 	double	dr3d = DX*DY*DZ;
 
-	
+
 	for( i=0; i<=NNN-1; i++)
 		nv += gr_3d[i] *dr3d;
-	
-	nv  = nv *pnd;
-	nt  = pnd *vol;
-	
+
+	nv  = nv * pnd;
+	nt  = pnd * vol;
+
 	m_v = (nt - nv) /pnd;
 
-	fprintf( out, "*********************************\n"); 
-	fprintf( out, "*	molar volume (L/mol)   *\n"); 
-	fprintf( out, "*********************************\n"); 
+	fprintf( out, "*********************************\n");
+	fprintf( out, "*	molar volume (L/mol)   *\n");
+	fprintf( out, "*********************************\n");
 	fprintf( out, "\nparameters -> (%lf, %lf, %lf, %lf)\n", pnd, lx, ly, lz ); fflush( stdout );
 	fprintf( out, "\nbox volume (A^3)           -> %lf\n", vol ); fflush( stdout );
 	fprintf( out, "\n# bulk water in volume     -> %lf", nt ); fflush( stdout );
@@ -1313,24 +1307,24 @@ void calc_molar_volume( void )
 
 	m_v = m_v *1e-30 *6.02e23 *1000;
 
-	fprintf( out,    "\nPartial molar Volume (L/mol) -> %lf\n", m_v ); fflush( stdout );
+	fprintf( out,    "\nPartial molar Volume (L/mol) -> %lf\n", m_v ); fflush( out );
 	fprintf( stdout, "\nPartial molar Volume (L/mol) -> %lf\n", m_v ); fflush( stdout );
-		
+
 
 }
 
 
-/****************************************************************************************/ 
+/****************************************************************************************/
 /*											*/
 /*			7: Solute Energy						*/
 /*											*/
-/****************************************************************************************/ 
+/****************************************************************************************/
 
 
 void calc_solute_energy( void )
 {
 
-	int i, j, im, jm, is, js;
+	int im, jm, is, js;
 	int nmols=0;
 	double ep12, ep6, sig;
 	double rx, ry, rz, r;
@@ -1338,7 +1332,7 @@ void calc_solute_energy( void )
 	double jkm = CONST_JKM;
 	double lj=0.00, clmb=0.00, tot=0.00;
 	FILE *out;
-		
+
 		if( (out = fopen("solute_energy.dat", "w")) == NULL )
 			printf("\nError opening solute_energy.dat\n"); fflush(stdout);
 
@@ -1354,9 +1348,9 @@ void calc_solute_energy( void )
 		for( is=1; is<=NU_SITES; is++)
 		 for( js=1; js<=NU_SITES; js++){
 
-		    if( (U[is].mol == im) && (U[js].mol == jm) ){	
-	
-			ep12 = sqrt( U[is].ep12 * U[js].ep12 );	
+		    if( (U[is].mol == im) && (U[js].mol == jm) ){
+
+			ep12 = sqrt( U[is].ep12 * U[js].ep12 );
 			ep6  = sqrt( U[is].ep6  * U[js].ep6 );
 			sig = (U[is].sig + U[js].sig) /2.0;
 			 rx = fabs( U[is].x - U[js].x);
@@ -1370,26 +1364,26 @@ void calc_solute_energy( void )
 			lj   += 4.0 /t *( (ep12 *pow( (sig/r) ,12) )- (ep6 *pow( (sig/r) ,6)));
 			clmb += K /t *( U[is].charge * U[js].charge ) /r;
 		    }
-		 }	
+		 }
 
 	 }
-	
+
 		  lj =   lj *jkm *TEMP *TEMP_FACTOR /1000;
 		clmb = (clmb/diel) *jkm *TEMP *TEMP_FACTOR /1000;
 		 tot = lj + clmb;
 
-		printf("\nprinting to \"solute_energy.dat\"\n"); 
+		printf("\nprinting to \"solute_energy.dat\"\n");
 
 		fprintf( out, "*************************************************\n");
 		fprintf( out, "*   	     				       *\n" );
 		fprintf( out, "*   	Solute interaction Energy (kJ/mol)     *\n" );
 		fprintf( out, "*   	     				       *\n" );
 		fprintf( out, "*************************************************\n\n" );
-	
-		fprintf( out, "____Lennard-Jones Energies____\n" ); 
-		fprintf( out, "\n\tTotal LJ energy  =  %lf (kJ/mol)", lj );  
-		fprintf( out, "\n\t                 =  %lf (kCal/mol)", lj/4.184 );  
-		fprintf( out, "\n\t                 =  %lf (K)", lj/0.008315 );  
+
+		fprintf( out, "____Lennard-Jones Energies____\n" );
+		fprintf( out, "\n\tTotal LJ energy  =  %lf (kJ/mol)", lj );
+		fprintf( out, "\n\t                 =  %lf (kCal/mol)", lj/4.184 );
+		fprintf( out, "\n\t                 =  %lf (K)", lj/0.008315 );
 
 
 		fprintf( out, "\n\n____Coulomb Energies____\n" );
@@ -1406,15 +1400,15 @@ void calc_solute_energy( void )
 		printf( "\n             = %lf (kCal/mol)", tot/4.184 );
 		printf( "\n             = %lf (K)\n\n", tot/0.008315 );
 
-	
+
 
 }
 
-/****************************************************************************************/ 
+/****************************************************************************************/
 /*											*/
 /*			8: Regional Chemical Potential					*/
 /*											*/
-/****************************************************************************************/ 
+/****************************************************************************************/
 
 
 void calc_regional_chem_potential( void )
@@ -1423,10 +1417,10 @@ void calc_regional_chem_potential( void )
 
 	int nnn=NX*NY*NZ;
 	double jkm = CONST_JKM;
-	double hfe=0.00, chem_pot= 0.00, b_chem_pot = 0.00;
+	double chem_pot= 0.00, b_chem_pot = 0.00;
 	double rad, r_xyz;
-	double xmin, ymin, zmin, xmax, ymax, zmax; 
-	double xorg, yorg, zorg; 
+	double xmin, ymin, zmin, xmax, ymax, zmax;
+	double xorg, yorg, zorg;
 	double r_x, r_y, r_z;
 	double dr3d = DX*DY*DZ;
 	double *yorn = (double *) malloc( NNN *sizeof( double ));
@@ -1435,7 +1429,6 @@ void calc_regional_chem_potential( void )
 
 
 	/************************Read in g(r), c(r)_s, and u(r)_l terms**********************/
-	char ans;
 	char s1[150], sdir[150];
 
 	double   **gr = (double **) malloc( NRSITES *sizeof( double ));
@@ -1455,9 +1448,9 @@ void calc_regional_chem_potential( void )
 		{
 
 			printf("\nUse \"%s\" for integral limits (1: yes) or (2: no) : ", ARGV2); fflush(stdout);
-			scanf("%d", &il ); 
+			scanf("%d", &il );
 			printf( "\n");
-			
+
 			if( il == 1 )
 			{
 				xmin = -1.0*CX*DX;	xmax = (NX-1-CX)*DX;
@@ -1468,11 +1461,11 @@ void calc_regional_chem_potential( void )
 					yorn[i] = 1.0;
 					tmp_num++;
 				}
-			} else 
+			} else
 			 if( il == 2 )
 			 {
-				printf("\n"); 
-				printf("\nEnter units in Angstroms: \n"); 
+				printf("\n");
+				printf("\nEnter units in Angstroms: \n");
 				printf("Enter x min -> "); scanf( "%lf", &xmin );
 				printf("Enter x max -> "); scanf( "%lf", &xmax );
 				printf("Enter y min -> "); scanf( "%lf", &ymin );
@@ -1482,38 +1475,38 @@ void calc_regional_chem_potential( void )
 
 				for( x=0; x<=NX-1; x++)
 				{
-					r_x = r0(x,CY,CZ); 
+					r_x = r0(x,CY,CZ);
 					if( x < CX ) r_x = -r_x;
-		
+
 				    if( r_x >= xmin && r_x <= xmax )
  				       for( y=0; y<=NY-1; y++)
-				       {	
+				       {
 					       r_y = r0(CX, y, CZ);
 					       if( y < CY ) r_y = -r_y;
-	
+
 					   if( r_y >= ymin && r_y <= ymax )
 					      for( z=0; z<=NZ-1; z++)
 					      {
 						      r_z = r0(CX, CY, z);
 					              if( z < CZ ) r_z = -r_z;
-		
+
 						  if( r_z >= zmin && r_z <= zmax )
-						  {		
+						  {
 							  	yorn[ ii(x,y,z)] = 1.0;
 								tmp_num++;
 						  }
 					      }
 				       }
 				}
-		 	 } 
-		} else 
+		 	 }
+		} else
 		 if( int_meth == 2)
 		  {
 			printf("\nEnter x origin: ");		scanf("%lf", &xorg );
 			printf("Enter y origin: ");		scanf("%lf", &yorg );
 			printf("Enter z origin: ");		scanf("%lf", &zorg );
 			printf("Enter radius in Angstroms: ");	scanf("%lf", &rad);
-	
+
 			for( x=0; x<=NX-1; x++)
 			for( y=0; y<=NY-1; y++)
 			for( z=0; z<=NZ-1; z++)
@@ -1524,34 +1517,34 @@ void calc_regional_chem_potential( void )
 					tmp_num++;
 				}
 			}
-	
-		  } else {  
+
+		  } else {
 			printf("No integration method specified, exiting\n"); fflush( stdout );
-		         }	
+		         }
 
 
 										printf("\nReading gr files" ); fflush( stdout);
 		for( i=0; i<=NRSITES-1; i++ )
-			*(gr + i) = (double *) get_3d( *(gr_fnames + i)); 
+			*(gr + i) = (double *) get_3d( *(gr_fnames + i));
 										printf("\nReading cr_s  files" ); fflush( stdout);
 		for( i=0; i<=NRSITES-1; i++ )
-			*(cr_s  + i) = (double *) get_3d( *(cr_s_fnames + i)); 
+			*(cr_s  + i) = (double *) get_3d( *(cr_s_fnames + i));
 										printf("\nReading ur_l files" ); fflush( stdout);
 		if( strncmp( "no", EWALD_SUMS, 2)==0)
 		   for( i=0; i<=NRSITES-1; i++ )
-			*(ur_l + i) = (double *) get_3d( *(ur_l_fnames + i)); 
-		
+			*(ur_l + i) = (double *) get_3d( *(ur_l_fnames + i));
+
 		if( strncmp( "yes", RBC_FUNC, 3 )==0 ){			printf("\nReading rbc files");	fflush( stdout );
 			for( i=0; i<=NRSITES-1; i++ )
-				*(br + i) = (double *) get_3d( *(br_fnames + i)); 
+				*(br + i) = (double *) get_3d( *(br_fnames + i));
 		}
-		
+
 		if( (strncmp( "yes", BRIDGE_FUNC1, 3 )==0) || (strncmp( "yes", BRIDGE_FUNC0, 3 )==0) ){
 										printf("\nReading br1 files");	fflush( stdout );
 			for( i=0; i<=NRSITES-1; i++ )
-				*(b1r + i) = (double *) get_3d( *(b1r_fnames + i)); 
+				*(b1r + i) = (double *) get_3d( *(b1r_fnames + i));
 		}
-		
+
 										printf("\n...Done!!!\n");	fflush( stdout );
 
 		if( strncmp( "no", EWALD_SUMS, 2) == 0 )
@@ -1563,21 +1556,21 @@ void calc_regional_chem_potential( void )
 		if( strncmp( "yes", EWALD_SUMS, 3) == 0){
 
 			for( i=0; i<=NRSITES-1; i++ )
-				*(ur_clmb1 + i) = (double *) get_3d( *(ur_clmb_fnames + i)); 
-	
+				*(ur_clmb1 + i) = (double *) get_3d( *(ur_clmb_fnames + i));
+
 			printf("\nEnter directory to retrieve non-ewald (real) potentials: ");
-			scanf("%s", &sdir);
+			scanf("%s", sdir);
 			printf("Reading new ur_clmb files"); fflush(stdout);
 			for( i=0; i<=NRSITES-1; i++ ){
 				sprintf(s1,"%s/%s", sdir, *(ur_clmb_fnames +i));
 				*(ur_clmb2 + i) = (double *) get_3d( s1 );
-			} 
-				
+			}
+
 			for( j=0; j<=NRSITES-1; j++)
 			 for( i=0; i<=NNN-1; i++)
 				cr_s[j][i] = cr_s[j][i] + CHRG_PCT *( ur_clmb1[j][i] - ur_clmb2[j][i]);
 
-		} 
+		}
 
 	/***************************************************************************************/
 
@@ -1598,25 +1591,25 @@ void calc_regional_chem_potential( void )
 	for( j=0; j<=NRSITES-1; j++){
 
 		if( (strncmp( "hnc", CLOSURE, 3)==0) && (strlen(CLOSURE)==3) ){
-			for( i=0; i<=nnn-1; i++){ 	
+			for( i=0; i<=nnn-1; i++){
 					ux_int[j][i] =  ( 0.5) * (gr[j][i]-1.0) * (gr[j][i]-1.0);			/* h*h*/
 					ux_int[j][i] += (-0.5) * (cr_s[j][i]) * (gr[j][i]-1.0);	/* c(r) * h(r) */
 					ux_int[j][i] += (-1.0) * (cr_s[j][i]);
 			}
 			if( strncmp( "yes", BRIDGE_FUNC1, 3 )==0 || strncmp( "yes", BRIDGE_FUNC0,3)==0 ){
-				for( i=0; i<=nnn-1; i++){ 	
+				for( i=0; i<=nnn-1; i++){
 					ux_int[j][i] += (2.0/3.0) * (b1r[j][i]) * (gr[j][i]-1.0);	/* c(r) * h(r) */
 					ux_int[j][i] += (1.0) * (b1r[j][i]);
 			   	}
-			} 
-	 
+			}
+
 			if( (strncmp( "yes", RBC_FUNC, 3)==0) )
-				for( i=0; i<=nnn-1; i++) 	
+				for( i=0; i<=nnn-1; i++)
 					ux_int[j][i] +=  gr[j][i] * (br[j][i]-1.0);			/* h*h*/
-			
-		}else 
+
+		}else
 		if( (strncmp( "kh", CLOSURE, 2)==0) && (strlen(CLOSURE)==2) ){
-			for( i=0; i<=nnn-1; i++){ 	
+			for( i=0; i<=nnn-1; i++){
 				if( (-1.0*(gr[j][i]-1.0) >= 0))
 					ux_int[j][i] =  ( 0.5) * (gr[j][i]-1.0) * (gr[j][i]-1.0);			/* h*h*/
 				else
@@ -1627,13 +1620,13 @@ void calc_regional_chem_potential( void )
 			}
 		}else
 		if( (strncmp( "py", CLOSURE, 3)==0) && (strlen(CLOSURE)==2) ){
-			for( i=0; i<=nnn-1; i++){ 	
+			for( i=0; i<=nnn-1; i++){
 					ux_int[j][i] = (cr_s[j][i]) / ( (gr[j][i]-1.0) - (cr_s[j][i]) ); /* c(r) / (h(r)-c(r)) */
 					ux_int[j][i] *= (-1.0) *log( gr[j][i] - (cr_s[j][i]) ); /* -ln( 1+h(r)-c(r) )  */
 			}
-		}else 
-			printf( "\nNO closure specified\n"); fflush(stdout); 
-		
+		}else
+			printf( "\nNO closure specified\n"); fflush(stdout);
+
 
 	}
 	/*calc integrals */
@@ -1645,21 +1638,21 @@ void calc_regional_chem_potential( void )
 			for( x=0; x<=NX-1; x++)
 			 for( y=0; y<=NY-1; y++)
 			  for( z=CZ; z<=(CZ+NZ/3)-1; z++){
-				ux_gt[j] += ux_int[j][ii(x,y,z)] * yorn[ii(x,y,z)];	
+				ux_gt[j] += ux_int[j][ii(x,y,z)] * yorn[ii(x,y,z)];
 			  }
-		} else 
+		} else
 		  if( strncmp("wall", CONFIG_TYPE, 4)==0){
 			for( x=0; x<=NX-1; x++)
 			 for( y=0; y<=NY-1; y++)
 			  for( z=CZ; z<=NZ-1; z++){
-				ux_gt[j] += ux_int[j][ii(x,y,z)] * yorn[ii(x,y,z)];	
+				ux_gt[j] += ux_int[j][ii(x,y,z)] * yorn[ii(x,y,z)];
 			  }
 		} else {
 			for( i=0; i<=nnn-1; i++)
-				ux_gt[j] += ux_int[j][i] * yorn[i];	
+				ux_gt[j] += ux_int[j][i] * yorn[i];
 			}
 
-	}	  
+	}
 
 	/*calc chemical potential as beta chem_pot*/
 	for( j=0; j<=NRSITES-1; j++)
@@ -1678,13 +1671,13 @@ void calc_regional_chem_potential( void )
 		fprintf( out, "*   	   Regional Chemical Potential	       *\n" );
 		fprintf( out, "*   	     				       *\n" );
 		fprintf( out, "*************************************************\n\n" );
-	
+
 
 		fprintf(out, "Temperature (K) -> %f\n\n", TEMP );
-		
-		fprintf( out, "Integral limits (Angstroms) : \n\n" ); 
+
+		fprintf( out, "Integral limits (Angstroms) : \n\n" );
 		if( int_meth == 1){
-			fprintf( out, "\tBox with the following limits:\n" ); 
+			fprintf( out, "\tBox with the following limits:\n" );
 			fprintf( out, "\t\tx-min -> %f \t x-max -> %f \n", xmin, xmax ); 			fflush(stdout);
 			fprintf( out, "\t\ty-min -> %f \t y-max -> %f \n", ymin, ymax ); 			fflush(stdout);
 			fprintf( out, "\t\tz-min -> %f \t z-max -> %f \n\n", zmin, zmax ); 		fflush(stdout);
@@ -1706,16 +1699,16 @@ void calc_regional_chem_potential( void )
 		fprintf(out, "chemical potential = %.6f (kJ/mol)\n", chem_pot );
 		fprintf(out, "                   = %.6f (kCal/mol)\n", chem_pot/4.184 );
 		fprintf(out, "                   = %.6f (k)\n\n", chem_pot/0.008315 );
-	
+
 		fprintf( out, "*************************************************\n\n" );
-	
+
 		printf("chemical potential = %.6f (kJ/mol)\n", chem_pot );
 		printf("                   = %.6f (kCal/mol)\n", chem_pot/4.184 );
 		printf("                   = %.6f (k)\n\n", chem_pot/0.008315 );
-	
+
 	for( i=0; i<=NRSITES-1; i++){
 		free( *(gr +i) );
-		free( *(cr_s +i) ); 
+		free( *(cr_s +i) );
 		free( *(ur_l +i) );
 		free( *(ux_int +i) );
 	}
@@ -1731,24 +1724,23 @@ void calc_regional_chem_potential( void )
 
 
 
-/****************************************************************************************/ 
+/****************************************************************************************/
 /*											*/
 /*				9: calc electrostatic field				*/
 /*											*/
-/****************************************************************************************/ 
+/****************************************************************************************/
 
 void calc_electrostatic_field( void )
 {
-	int def, i, j, x, y, z, x1, y1, z1;
+	int def, i, x, y, z, x1, y1, z1;
 	int idx, idx1;
-	double *e_cor, r_ii, die;
-	double dr3d = DX*DY*DZ;
+	double r_ii, die;
 	double fx = -1.0*CX*DX;
 	double fy = -1.0*CY*DY;
 	double fz = -1.0*CZ*DZ;
 
 	char sdir[150], s1[150];
-	
+
 	double    **gr = (double **) malloc( NRSITES *sizeof( double ));
 
 	double *ur_clmb_u;
@@ -1756,27 +1748,27 @@ void calc_electrostatic_field( void )
 	double *ur_clmb_v = (double *) malloc( NNN *sizeof( double ));
 			for( i=0; i<=NNN-1; i++ )
 				ur_clmb_v[i] = 0.00;
-		
-		printf("Enter dielectric constant of system: " ); 
+
+		printf("Enter dielectric constant of system: " );
 		scanf("%lf", &die );
-		printf("Enter units of ouput: (1) KT"); 
+		printf("Enter units of ouput: (1) KT");
 		printf("\nYou have chosen option-1 since it is the only choice\n");
 
 		/* only need one */						printf("\nReading ur_clmb files\n" ); fflush( stdout);
-			ur_clmb_u = (double *) get_3d( *(ur_clmb_fnames + 0)); 
+			ur_clmb_u = (double *) get_3d( *(ur_clmb_fnames + 0));
 										printf("\nReading gr files" ); fflush( stdout);
 		for( i=0; i<=NRSITES-1; i++ )
-			*(gr + i) = (double *) get_3d( *(gr_fnames + i)); 
-		
+			*(gr + i) = (double *) get_3d( *(gr_fnames + i));
+
 			if( strncmp( "yes", EWALD_SUMS, 3) == 0){
-				printf("\nUse ewald potential-0 or use real potential-1: ");	
+				printf("\nUse ewald potential-0 or use real potential-1: ");
 				scanf("%d", &def );
 				printf("\nEnter directory to retrieve non-ewald potential: ");
-				scanf("%s", &sdir);
+				scanf("%s", sdir);
 				printf("Reading new ur_clmb files"); fflush(stdout);
 					sprintf(s1,"%s/%s", sdir, *(ur_clmb_fnames +0));
 					ur_clmb2_u = (double *) get_3d( s1 );
-				
+
 				 for( i=0; i<=NNN-1; i++)
 					ur_clmb_u[i] = ur_clmb2_u[i];
 			}
@@ -1785,7 +1777,7 @@ void calc_electrostatic_field( void )
 		for( i=0; i<=NNN-1; i++ )
 			ur_clmb_u[i] /= (die*CHARGE[0]*TEMP_FACTOR);
 
-		printf("\nCalculating electric field"); fflush(stdout); 
+		printf("\nCalculating electric field"); fflush(stdout);
 		for( x=0; x<=NX-1; x++)
 		{	printf("."); fflush(stdout);
 		 for( y=0; y<=NY-1; y++)
@@ -1808,12 +1800,12 @@ void calc_electrostatic_field( void )
 		  }
 		}
 		printf("Done!\n"); fflush(stdout);
-		
-		for( i=0; i<=NNN-1; i++ )
-			ur_clmb_v[i] *= CONST_CLMB/(die*TEMP*TEMP_FACTOR); 		/*This make it units of KT */		
 
-		
-		FILE *ufile, *vfile, *uvfile;	
+		for( i=0; i<=NNN-1; i++ )
+			ur_clmb_v[i] *= CONST_CLMB/(die*TEMP*TEMP_FACTOR); 		/*This make it units of KT */
+
+
+		FILE *ufile, *vfile, *uvfile;
 		if ( (ufile = fopen("solute_electric_field.sit", "w" )) == NULL )
 			printf( "\nUnable to open internal energy file\n"); fflush( stdout );
 		if ( (vfile = fopen("solvent_electric_field.sit", "w" )) == NULL )
@@ -1821,7 +1813,7 @@ void calc_electrostatic_field( void )
 		if ( (uvfile = fopen("total_electric_field.sit", "w" )) == NULL )
 			printf( "\nUnable to open internal energy file\n"); fflush( stdout );
 
-			printf("\nPrinting solute electric field (KT) to \"solute_electric_field.sit\"\n" ); 				
+			printf("\nPrinting solute electric field (KT) to \"solute_electric_field.sit\"\n" );
 			fprintf( ufile ,"%f\n", DX );
 			fprintf( ufile ,"%f  %f  %f\n", fx, fy, fz );
 			fprintf( ufile,"%d  %d  %d\n", NX, NY, NZ );
@@ -1830,7 +1822,7 @@ void calc_electrostatic_field( void )
 			  for( x=0; x<=NX-1; x++)
 				fprintf( ufile, "%e\n", ur_clmb_u[ii(x,y,z)] );
 
-			printf("\nPrinting solvent electric field (KT) to \"solvent_electric_field.sit\"\n" ); 				
+			printf("\nPrinting solvent electric field (KT) to \"solvent_electric_field.sit\"\n" );
 			fprintf( vfile ,"%f\n", DX );
 			fprintf( vfile ,"%f  %f  %f\n", fx, fy, fz );
 			fprintf( vfile,"%d  %d  %d\n", NX, NY, NZ );
@@ -1839,7 +1831,7 @@ void calc_electrostatic_field( void )
 			  for( x=0; x<=NX-1; x++)
 				fprintf( vfile, "%e\n", ur_clmb_v[ii(x,y,z)] );
 
-			printf("\nPrinting total electric field (KT) to \"solvent_electric_field.sit\"\n" ); 				
+			printf("\nPrinting total electric field (KT) to \"solvent_electric_field.sit\"\n" );
 			fprintf( uvfile ,"%f\n", DX );
 			fprintf( uvfile ,"%f  %f  %f\n", fx, fy, fz );
 			fprintf( uvfile,"%d  %d  %d\n", NX, NY, NZ );
@@ -1854,23 +1846,23 @@ void calc_electrostatic_field( void )
 
 
 
-/****************************************************************************************/ 
-/****************************************************************************************/ 
-/****************************************************************************************/ 
-/****************************************************************************************/ 
-/****************************************************************************************/ 
-/****************************************************************************************/ 
-/****************************************************************************************/ 
-/****************************************************************************************/ 
-/****************************************************************************************/ 
-/****************************************************************************************/ 
+/****************************************************************************************/
+/****************************************************************************************/
+/****************************************************************************************/
+/****************************************************************************************/
+/****************************************************************************************/
+/****************************************************************************************/
+/****************************************************************************************/
+/****************************************************************************************/
+/****************************************************************************************/
+/****************************************************************************************/
 
 
-/****************************************************************************************/ 
+/****************************************************************************************/
 /*											*/
 /*			Calculate EWALD Correction Constant				*/
 /*											*/
-/****************************************************************************************/ 
+/****************************************************************************************/
 
 
 double * get_ewald_bgc( void )
@@ -1899,7 +1891,7 @@ void check_parameters( void )
 
 	for( i=1; i<=nu_sites; i++)
 	{
-		fprintf( out, "\n%d:%s\n", u[i].num, u[i].element); fflush(out); 
+		fprintf( out, "\n%d:%s\n", u[i].num, u[i].element); fflush(out);
 		fprintf( out, "ep12:%f\tep6:%f\tsig:%f\n", u[i].ep12, u[i].ep6, u[i].sig); fflush(out);
 		fprintf( out, "Coulomb Charge:%f\n", u[i].charge ); fflush( out );
 		fprintf( out, "Cartesian Coordinates:\n"); fflush(out);
@@ -1912,13 +1904,13 @@ void check_parameters( void )
 double * get_3d( char fname[] )
 {
 
-	double *v3d;
+	double *v3d = NULL;
 
 	if ( strncmp( "sit", FILE_TYPE, 3 ) == 0 )
 	{
 		v3d = get_sit( fname, SYS );
-		
-	} else 
+
+	} else
 	 if( strncmp( "jh3d", FILE_TYPE, 4 ) == 0 )
 	 {
 		v3d = get_jh3d( fname, TEMP, 0.0, SYS);
@@ -1943,10 +1935,10 @@ double * get_3d( char fname[] )
 double rx( int x, int y, int z, double ux, double uy, double uz)
 {
 	double tmp;
-	
+
 	tmp  = pow(fabs( x*DX - (CX*DX + ux) ), 2) ;
 	tmp += pow(fabs( y*DY - (CY*DY + uy) ), 2) ;
-	tmp += pow(fabs( z*DZ - (CZ*DZ + uz) ), 2) ; 
+	tmp += pow(fabs( z*DZ - (CZ*DZ + uz) ), 2) ;
 	tmp = sqrt( tmp );
 
 	return tmp;
@@ -1957,10 +1949,10 @@ double r0( int x, int y, int z)
 {
 
 	double tmp;
-	
+
 	tmp  = pow(fabs(x - CX),2) * pow(DX,2);
 	tmp += pow(fabs(y - CY),2) * pow(DY,2);
-	tmp += pow(fabs(z - CZ),2) * pow(DZ,2); 
+	tmp += pow(fabs(z - CZ),2) * pow(DZ,2);
 	tmp = sqrt( tmp );
 
 	return tmp;
@@ -1971,7 +1963,7 @@ double rii( int x, int y, int z, int x1, int y1, int z1 )
 	double tmp;
 	tmp  = pow(fabs(x - x1),2) * pow(DX,2);
 	tmp += pow(fabs(y - y1),2) * pow(DY,2);
-	tmp += pow(fabs(z - z1),2) * pow(DZ,2); 
+	tmp += pow(fabs(z - z1),2) * pow(DZ,2);
 	tmp = sqrt( tmp );
 
 	return tmp;
@@ -1989,7 +1981,7 @@ double kx( int x, int y, int z, double ux, double uy, double uz)
 
 	tmp  = pow(fabs( x - (CX + (ux/DX)) ),2) *pow(dkx,2);
 	tmp += pow(fabs( y - (CY + (uy/DY)) ),2) *pow(dky,2);
-	tmp += pow(fabs( z - (CZ + (uz/DZ)) ),2) *pow(dkz,2); 
+	tmp += pow(fabs( z - (CZ + (uz/DZ)) ),2) *pow(dkz,2);
 	tmp = sqrt( tmp );
 	return tmp;
 }
@@ -2004,7 +1996,7 @@ double k0( int x, int y, int z )
 
 	tmp  = pow(fabs(x - CX),2) * pow(dkx,2);
 	tmp += pow(fabs(y - CY),2) * pow(dky,2);
-	tmp += pow(fabs(z - CZ),2) * pow(dkz,2); 
+	tmp += pow(fabs(z - CZ),2) * pow(dkz,2);
 	tmp = sqrt( tmp );
 
 	return tmp;

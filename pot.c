@@ -7,7 +7,7 @@
 /*			Author:	Jesse Howard                                    */
 /*			Date:	Jan 29, 2007					*/
 /*										*/
-/********************************************************************************/ 
+/********************************************************************************/
 /* This routine calculates the potential fields for the model input (U_par) in
  * the solvent model specified below
  *
@@ -19,9 +19,9 @@
 */
 
 #include <fftw3.h>
-#include <stdio.h> 
-#include <stdlib.h> 
-#include <stddef.h> 
+#include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
 #include <math.h>
 #include <string.h>
 #include "jh_get.h"
@@ -41,13 +41,13 @@
 /*env - Box parameters*/
 double LX, LY, LZ;
 int NX, NY, NZ;
-int CX, CY, CZ; 
+int CX, CY, CZ;
 char *EWALD_SUMS, *CLOSURE, *CONFIG_TYPE, *FILE_TYPE;
 char *BRIDGE_FUNC0, *RBC_FUNC;
 double GAUSS_SMEAR;
-ENV_PAR SYS;	
+ENV_PAR SYS;
 
-	
+
 /*dis - solvent properties*/
 int NSITES, NRSITES, TYPE, DIS_NUM;
 double TEMP, A_ERF=1.08, *PND, *REDUN;
@@ -83,12 +83,12 @@ void print_3d( char [], double *, int, int, int, double );
 void print_cmplx_3d( char [], fftw_complex *, int, int, int, double); /*file_name, array, nx, ny, nz, pnd*/
 
 /*_____________U(r) and U(k) subroutines_______________*/
-void calc_and_print_ur_lj( U_PAR2 * , int, double , double, double, char [], int );	 /*solute parameters, n_u_sites, ep, sig*/	
-void calc_and_print_ur_lj12( U_PAR2 * , int, double , double, double, char [], int );	 /*solute parameters, n_u_sites, ep, sig*/	
+void calc_and_print_ur_lj( U_PAR2 * , int, double , double, double, char [], int );	 /*solute parameters, n_u_sites, ep, sig*/
+void calc_and_print_ur_lj12( U_PAR2 * , int, double , double, double, char [], int );	 /*solute parameters, n_u_sites, ep, sig*/
 void calc_and_print_ur_clmb( U_PAR2 * , int, double, char [] , int );  	/* u parameters, nu_sites, z*/
 void calc_and_print_ur_erf( U_PAR2 * , int, double, char [] , int );   			/* ur_clmb*/
 void calc_and_print_uk_erf( U_PAR2 * , int, double, char [] , int );
-void calc_and_print_ur_wca( U_PAR2 * , int, double , double, double, char [], int  );	 /*solute parameters, n_u_sites, ep, sig*/	
+void calc_and_print_ur_wca( U_PAR2 * , int, double , double, double, char [], int  );	 /*solute parameters, n_u_sites, ep, sig*/
 void calc_and_print_ur_clmb_ewald( U_PAR2 * , int, double, char [] , int );  	/* u parameters, nu_sites, z*/
 void calc_and_print_ur_clmb_ewald_rad( U_PAR2 * , int, double, char [] , int );  	/* u parameters, nu_sites, z*/
 void calc_and_print_ewald_corrections( void );
@@ -127,16 +127,16 @@ int main( int argc, char *argv[] )
 		ARGV3 = *(argv +3);
 
 
-		int i, n;
+		int i;
 		char s1[100];
 		int my_rank=0, n_procs=1;
 
 #ifdef MPI
 		MPI_Init( &argc, &argv );
-		MPI_Comm_rank( MPI_COMM_WORLD, &my_rank );		
+		MPI_Comm_rank( MPI_COMM_WORLD, &my_rank );
 		MPI_Comm_size( MPI_COMM_WORLD, &n_procs );
  #endif
-		RANK = my_rank; 
+		RANK = my_rank;
 		NP = n_procs;
 
 		if( my_rank == 0 ){
@@ -148,20 +148,20 @@ int main( int argc, char *argv[] )
 		 #endif
 
 		/****Reading in Solute site parameters******************************/
-		
+
 		for( i=0; i<=n_procs-1; i++ ){
-		    if( my_rank == i) 
+		    if( my_rank == i)
 		    {
 			printf("Processor-%d reading in solute parameters from: \"%s\" of type ", my_rank, ARGV3 );fflush(stdout);
 			set_par( *(argv +3) );
-			printf("...Done!\n", my_rank ); fflush(stdout);		
+			printf("Node %d, ...Done!\n", my_rank ); fflush(stdout);
 		    }
 
 		    #ifdef MPI
 			MPI_Barrier( MPI_COMM_WORLD );
 		     #endif
 		}
-			
+
 		int nu_sites = NU_SITES;
 
 		if( my_rank == 0 )
@@ -170,9 +170,9 @@ int main( int argc, char *argv[] )
 		/*checking solute.par*/
 		for( i=0; i<=n_procs-1; i++ ){
 			if( my_rank == i )
-			{		
+			{
 				printf("%d:# solute sites - %d ...", my_rank, NU_SITES );fflush(stdout);
-				check_par( );	
+				check_par( );
 			}
 
 			#ifdef MPI
@@ -183,10 +183,10 @@ int main( int argc, char *argv[] )
 		/***********Calculating Energy Fields****************************************/
 		if( my_rank == 0 )
 		   	printf("\nCalculating potential fields with %d processors...\n", n_procs ); fflush(stdout);
-		
+
 		/********LENNARD-JONES term*****************/
 		if( my_rank == 0 )
-			printf("...u(r)_lj...");  fflush(stdout);	
+			printf("...u(r)_lj...");  fflush(stdout);
 
 		for( i=0; i<=NRSITES-1; i++){
 			sprintf( s1, "ur_%s_lj", NAMES[i] );
@@ -201,18 +201,18 @@ int main( int argc, char *argv[] )
 				#ifdef MPI
 				 MPI_Barrier( MPI_COMM_WORLD );
  				  #endif
-	
+
 		/***** UR_lj-12 ******/
 		if( (strncmp( "yes0", BRIDGE_FUNC0,4) == 0) || (strncmp( "yes", RBC_FUNC, 3) == 0)){
 
-			if( my_rank == 0) 
+			if( my_rank == 0)
 			   printf( "\n...u(r)_lj-12...");  fflush(stdout);
 
 			for( i=0; i<=NRSITES-1; i++){
 				sprintf( s1, "ur_%s_lj12", NAMES[i] );
 
 				calc_and_print_ur_lj12( U, nu_sites, EP12[i], EP6[i], SIG[i], s1, i );
-			}	
+			}
 		}
 
 				#ifdef MPI
@@ -223,24 +223,24 @@ int main( int argc, char *argv[] )
 		if( strncmp( "no", EWALD_SUMS, 2) == 0 ){
 
 				/*****COULOMB term*****/
-				if( my_rank == 0) 
-					printf("\n...u(r)_clmb...");  fflush(stdout);	
+				if( my_rank == 0)
+					printf("\n...u(r)_clmb...");  fflush(stdout);
 				for( i=0; i<=NRSITES-1; i++){
 					sprintf( s1, "ur_%s_clmb", NAMES[i] );
 					calc_and_print_ur_clmb( U,  nu_sites, CHARGE[i], s1, i );
 				}
-	
+
 				/*****long range (r) term*****/
-				if( my_rank == 0) 
-					printf("\n...u(r)_l...");  fflush(stdout);	
+				if( my_rank == 0)
+					printf("\n...u(r)_l...");  fflush(stdout);
 				for( i=0; i<=NRSITES-1; i++){
 					sprintf( s1, "ur_%s_l", NAMES[i] );
-					calc_and_print_ur_erf( U, nu_sites, CHARGE[i], s1 , i);	
+					calc_and_print_ur_erf( U, nu_sites, CHARGE[i], s1 , i);
 				}
-		
+
 				/*****long range (k) term*****/
-				if( my_rank == 0) 
-					printf("\n...u(k)_l...");  fflush(stdout);	
+				if( my_rank == 0)
+					printf("\n...u(k)_l...");  fflush(stdout);
 				for( i=0; i<=NRSITES-1; i++){
 					sprintf( s1, "uk_%s_l", NAMES[i] );
 					calc_and_print_uk_erf( U, nu_sites, CHARGE[i], s1 , i);
@@ -250,14 +250,14 @@ int main( int argc, char *argv[] )
 		 if( strncmp( "yes", EWALD_SUMS, 3) == 0) {
 
 				/*Coulomb-Ewald term*/
-				if( my_rank == 0) 
-					printf("\n...u(r)_clmb_ewald...");  fflush(stdout);	
+				if( my_rank == 0)
+					printf("\n...u(r)_clmb_ewald...");  fflush(stdout);
 				for( i=0; i<=NRSITES-1; i++){
 					sprintf( s1, "ur_%s_clmb", NAMES[i] );
 					calc_and_print_ur_clmb_ewald( U,  nu_sites, CHARGE[i], s1, i );
 				}
-	
-				if( my_rank == 0) 
+
+				if( my_rank == 0)
 					printf("\n...u(r)_ewald_corrections...");  fflush(stdout);
 					if( my_rank == 0 )
 						calc_and_print_ewald_corrections();
@@ -265,16 +265,16 @@ int main( int argc, char *argv[] )
 		 /**** ERROR with Ewald ***/
 		 }else
 		  if( strncmp( "rad", EWALD_SUMS, 3) == 0 ) {
-		
+
 				/*Coulomb-Ewald term*/
-				if( my_rank == 0) 
-					printf("\n...u(r)_clmb_ewald...");  fflush(stdout);	
+				if( my_rank == 0)
+					printf("\n...u(r)_clmb_ewald...");  fflush(stdout);
 				for( i=0; i<=NRSITES-1; i++){
 					sprintf( s1, "ur_%s_clmb", NAMES[i] );
 					calc_and_print_ur_clmb_ewald_rad( U,  nu_sites, CHARGE[i], s1, i );
 				}
-	
-				if( my_rank == 0) 
+
+				if( my_rank == 0)
 					printf("\n...u(r)_ewald_corrections...");  fflush(stdout);
 					if( my_rank == 0 )
 						calc_and_print_ewald_corrections();
@@ -282,7 +282,7 @@ int main( int argc, char *argv[] )
 		  }else{
 			printf("\nNo value for EWALD_SUMS was detected!!!\n");
 			exit(1);
-		      }	
+		      }
 #ifdef MPI
 		MPI_Barrier( MPI_COMM_WORLD );
  #endif
@@ -290,7 +290,7 @@ int main( int argc, char *argv[] )
 
 		if( my_rank == 0)
 			printf("\n.....DONE!\n\n"); fflush(stdout);
-	
+
 #ifdef MPI
 	MPI_Finalize();
  #endif
@@ -301,11 +301,11 @@ int main( int argc, char *argv[] )
 
 
 
-/****************************************************************************************/ 
+/****************************************************************************************/
 /*					I/O						*/
 /*				GET Parameter and solvent				*/
 /*											*/
-/****************************************************************************************/ 
+/****************************************************************************************/
 
 void set_dis( char infile[] )
 {
@@ -330,9 +330,9 @@ void set_dis( char infile[] )
 void check_dis( void )
 {
 	int i;
-			printf("\n****************************************\n"); 
-			printf("*		DIS		       *\n"); 
-			printf("****************************************\n"); 
+			printf("\n****************************************\n");
+			printf("*		DIS		       *\n");
+			printf("****************************************\n");
 			printf("\nTEMP = %lf", TEMP ); fflush(stdout);
 			printf("\nTYPE = %d", TYPE ); fflush(stdout);
 			printf("\nNSITES = %d", NSITES ); fflush(stdout);
@@ -383,7 +383,7 @@ void set_env( char infile[] )
 	if( get_tag( infile, "A_ERF" ) == 1 )
 		A_ERF = (double) get_dval( infile, "A_ERF");
 	   else	A_ERF = 1.08;
-	
+
 	if( get_tag( infile, "GAUSS_SMEAR") == 1 )
 		GAUSS_SMEAR = (double) get_dval( infile, "GAUSS_SMEAR");
 	   else GAUSS_SMEAR = 0.65;
@@ -413,9 +413,9 @@ void set_env( char infile[] )
 
 void check_env( void )
 {
-			printf("\n****************************************\n"); 
-			printf("*		ENV		       *\n"); 
-			printf("****************************************\n"); 
+			printf("\n****************************************\n");
+			printf("*		ENV		       *\n");
+			printf("****************************************\n");
 			printf("\nNX = %d\nNY = %d\nNZ = %d\n", NX, NY, NZ); 	fflush(stdout);
 			printf("\nLX = %f\nLY = %f\nLZ = %f\n", LX, LY, LZ); 	fflush(stdout);
 			printf("\nCX = %d\nCY = %d\nCZ = %d\n\n", CX, CY, CZ); 	fflush(stdout);
@@ -429,7 +429,7 @@ void check_env( void )
 			printf("FILE_TYPE = %s \n", FILE_TYPE );		fflush(stdout);
 			printf("RBC_FUNC = %s \n", RBC_FUNC );			fflush(stdout);
 			printf("****************************************\n\n"); fflush(stdout);
-		
+
 }
 
 
@@ -437,20 +437,17 @@ void set_par( char infile[] )
 {
 		int *nu_s = (int *) malloc(sizeof(int));
 		int i, idx=0, len;
-		U_PAR *u1;
-		U_PAR2 *u2;
+		U_PAR *u1 = NULL;
+		U_PAR2 *u2 = NULL;
 
-		char end[5], vs;
-		
+		char vs;
+
 		while( infile[idx] != '.' )  idx++;
 		idx++;
-		for( i=0; i<=4; i++)
-		    end[i] = infile[ idx+i ];
 
 		len = strlen( infile );
 		vs = infile[len-1];
 
-		//if( strncmp( "par2", end , 4 ) == 0 ){
 		if( vs == '2' ){
 			printf( "par2" );
 			PAR_TYPE = 2;
@@ -461,24 +458,24 @@ void set_par( char infile[] )
 			u1 = (U_PAR *) get_par( nu_s, infile );
 		  }
 
-		NU_SITES = *nu_s;						
-		
-		if( PAR_TYPE == 1 ){	
-		
+		NU_SITES = *nu_s;
+
+		if( PAR_TYPE == 1 ){
+
 			U = (U_PAR2 *) malloc( (NU_SITES+1) * sizeof(U_PAR2));
-			
+
 			for( i=1; i<=NU_SITES; i++){
-				U[i].num     = u1[i].num ; 
-			   	sprintf( U[i].element, "%s", u1[i].element ) ; 
-			   	U[i].mol     = 0 ;  
-				U[i].ep12    = u1[i].ep ;  
-			   	U[i].ep6     = u1[i].ep ;  
-			   	U[i].sig     = u1[i].sig ;  
-			   	U[i].charge  = u1[i].charge ;  
-		   		U[i].x 	     = u1[i].x ;  
-			   	U[i].y 	     = u1[i].y ;  
-			   	U[i].z 	     = u1[i].z ;  
-			} 
+				U[i].num     = u1[i].num ;
+			   	sprintf( U[i].element, "%s", u1[i].element ) ;
+			   	U[i].mol     = 0 ;
+				U[i].ep12    = u1[i].ep ;
+			   	U[i].ep6     = u1[i].ep ;
+			   	U[i].sig     = u1[i].sig ;
+			   	U[i].charge  = u1[i].charge ;
+		   		U[i].x 	     = u1[i].x ;
+			   	U[i].y 	     = u1[i].y ;
+			   	U[i].z 	     = u1[i].z ;
+			}
 		} else
  		 if( PAR_TYPE == 2)
 			U = (U_PAR2 *) u2;
@@ -488,30 +485,30 @@ void set_par( char infile[] )
 void check_par( void )
 {
 	int i;
-	double dx=(double)LX/(NX-1); 
+	double dx=(double)LX/(NX-1);
 	double dy=(double)LY/(NY-1);
 	double dz=(double)LZ/(NZ-1);
-	
+
 	int ix, iy, iz, stat=0;
 	double x, y, z;
 
 		for( i=1; i<=NU_SITES; i++)
 		{
-			ix = U[i].x / dx; 
-			iy = U[i].y / dy;	
+			ix = U[i].x / dx;
+			iy = U[i].y / dy;
 			iz = U[i].z / dz;
 
 			x = U[i].x - ix*dx;
 			y = U[i].y - iy*dy;
 			z = U[i].z - iz*dz;
-		
+
 			if( x == 0.00 && y == 0.00 && z == 0.00 )
 			{
-			   printf("\n::ERROR - Element %d is on a grid point\n", i); fflush(stdout);  	
+			   printf("\n::ERROR - Element %d is on a grid point\n", i); fflush(stdout);
 			   /*exit(1);*/ stat = 1;
 			}
 		}
-		
+
 		if( stat != 1 )
 			printf("...checked out OK!!!\n");fflush(stdout);
 
@@ -522,7 +519,7 @@ void set_sys( void )
 		SYS.nx = NX;	SYS.ny = NY; 	SYS.nz = NZ;
 		SYS.cx = CX;	SYS.cy = CY; 	SYS.cz = CZ;
 		SYS.lx = LX;	SYS.ly = LY;	SYS.lz = LZ;
-	
+
 		DX=(double)LX/(NX-1);
 		DY=(double)LY/(NY-1);
 		DZ=(double)LZ/(NZ-1);
@@ -537,7 +534,7 @@ void set_sys( void )
 //			DKZ2 = 2.0 *DKZ;
 //		 else
 		DKZ2 = DKZ;
-		
+
 }
 
 
@@ -561,29 +558,31 @@ void  calc_and_print_ur_lj( U_PAR2 * u, int nu_sites, double ep12, double ep6, d
 	for( i=1; i<=nu_sites; i++)	ep6_ux[i]  = sqrt( u[i].ep6 * ep6 );
 	for( i=1; i<=nu_sites; i++)	sig_ux[i]  = (u[i].sig + sig ) /2;
 
-	int xs,my_rank=0, np=1, root=0; 
+	int xs,my_rank=0, np=1;
+#ifdef MPI
+        int root=0;
+#endif
 
 #ifdef MPI
-		MPI_Comm_rank( MPI_COMM_WORLD, &my_rank );		
+		MPI_Comm_rank( MPI_COMM_WORLD, &my_rank );
 		MPI_Comm_size( MPI_COMM_WORLD, &np );
-#endif		
+#endif
 		int nx_red = (int) (nx/np) ;
 		int nx_rmd = nx % np;
 		if( nx_rmd != 0 )   nx_red++;
-		int nx_ext = nx_red * np;
 		double *ur = (double *) malloc( nx_red*NY*NZ *sizeof(double));
-			for( i=0; i<= (nx_red*NY*NZ)-1; i++)	ur[i] = 0.00;		
+			for( i=0; i<= (nx_red*NY*NZ)-1; i++)	ur[i] = 0.00;
 
 	for( x=my_rank; x<=nx-1; x += np )
 	{
 	    xs = (int) (x/np);
 	    for( y=0; y<=ny-1; y++)
 		for( z=0; z<=nz-1; z++)
-		{	
+		{
 			indx = ii( xs, y, z );
 			for( i=1; i<=nu_sites; i++){
 				if( strncmp( "wall", u[i].element , 4 ) == 0 )
-				 	r = rw(z, u[i].z);	
+				 	r = rw(z, u[i].z);
 				else
 				 	r = rx(x,y,z, u[i].x, u[i].y, u[i].z);
 
@@ -592,12 +591,13 @@ void  calc_and_print_ur_lj( U_PAR2 * u, int nu_sites, double ep12, double ep6, d
 		}
 	}
 
-#ifdef MPI	
-	double *ur_ux;
+#ifdef MPI
+	double *ur_ux = NULL;
+	int nx_ext = nx_red * np;
 	if( my_rank == 0 )	ur_ux = (double *) malloc( nx_ext *NYZ *sizeof(double));
 
 	MPI_Barrier( MPI_COMM_WORLD );
-	
+
 	for( i=0; i<=nx_red-1; i++)
 	    MPI_Gather( (ur + ix(i)), NYZ, MPI_DOUBLE, (ur_ux +ix(i*np)), NYZ, MPI_DOUBLE, root, MPI_COMM_WORLD );
 
@@ -605,7 +605,7 @@ void  calc_and_print_ur_lj( U_PAR2 * u, int nu_sites, double ep12, double ep6, d
 
 	MPI_Barrier( MPI_COMM_WORLD );
  #else
-	print_3d(fname, ur, nx, ny, nz, PND[ns]);	
+	print_3d(fname, ur, nx, ny, nz, PND[ns]);
   #endif
 
 }
@@ -622,34 +622,33 @@ void  calc_and_print_ur_lj12( U_PAR2 * u, int nu_sites, double ep12, double ep6,
 	int nx=NX, ny=NY, nz=NZ;
 	double r, t = TEMP;
 
-	double ep12_ux[nu_sites +1], ep6_ux[nu_sites +1], sig_ux[nu_sites +1];
+	double ep12_ux[nu_sites +1], sig_ux[nu_sites +1];
 	for( i=1; i<=nu_sites; i++)	ep12_ux[i] = sqrt( u[i].ep12 * ep12 );
-	for( i=1; i<=nu_sites; i++)	ep6_ux[i]  = sqrt( u[i].ep6 * ep6 );
 	for( i=1; i<=nu_sites; i++)	sig_ux[i]  = (u[i].sig + sig ) /2;
 
-	int xs,my_rank=0, np=1, root=0; 
+	int xs,my_rank=0, np=1;
 
 #ifdef MPI
-		MPI_Comm_rank( MPI_COMM_WORLD, &my_rank );		
+        int root = 0;
+		MPI_Comm_rank( MPI_COMM_WORLD, &my_rank );
 		MPI_Comm_size( MPI_COMM_WORLD, &np );
-#endif		
+#endif
 		int nx_red = (int) (nx/np) ;
 		int nx_rmd = nx % np;
 		if( nx_rmd != 0 )   nx_red++;
-		int nx_ext = nx_red * np;
 		double *ur = (double *) malloc( nx_red*NY*NZ *sizeof(double));
-			for( i=0; i<= (nx_red*NY*NZ)-1; i++)	ur[i] = 0.00;		
+			for( i=0; i<= (nx_red*NY*NZ)-1; i++)	ur[i] = 0.00;
 
 	for( x=my_rank; x<=nx-1; x += np )
 	{
 	    xs = (int) (x/np);
 	    for( y=0; y<=ny-1; y++)
 		for( z=0; z<=nz-1; z++)
-		{	
+		{
 			indx = ii( xs, y, z );
 			for( i=1; i<=nu_sites; i++){
 				if( strncmp( "wall", u[i].element , 4 ) == 0 )
-				 	r = rw(z, u[i].z);	
+				 	r = rw(z, u[i].z);
 				else
 				 	r = rx(x,y,z, u[i].x, u[i].y, u[i].z);
 				ur[ indx ] += 4 /t *( (ep12_ux[i] *pow( (sig_ux[i]/r) ,12) ) );
@@ -657,12 +656,13 @@ void  calc_and_print_ur_lj12( U_PAR2 * u, int nu_sites, double ep12, double ep6,
 		}
 	}
 
-#ifdef MPI	
-	double *ur_ux;
+#ifdef MPI
+	double *ur_ux = NULL;
+	int nx_ext = nx_red * np;
 	if( my_rank == 0 )	ur_ux = (double *) malloc( nx_ext *NYZ *sizeof(double));
 
 	MPI_Barrier( MPI_COMM_WORLD );
-	
+
 	for( i=0; i<=nx_red-1; i++)
 	    MPI_Gather( (ur + ix(i)), NYZ, MPI_DOUBLE, (ur_ux +ix(i*np)), NYZ, MPI_DOUBLE, root, MPI_COMM_WORLD );
 
@@ -670,7 +670,7 @@ void  calc_and_print_ur_lj12( U_PAR2 * u, int nu_sites, double ep12, double ep6,
 
 	MPI_Barrier( MPI_COMM_WORLD );
  #else
-	print_3d(fname, ur, nx, ny, nz, PND[ns]);	
+	print_3d(fname, ur, nx, ny, nz, PND[ns]);
   #endif
 
 }
@@ -695,36 +695,36 @@ void  calc_and_print_ur_wca( U_PAR2 * u, int nu_sites, double ep12, double ep6, 
 	for( i=1; i<=nu_sites; i++)	sig_ux[i]  = (u[i].sig + sig ) /2;
 	for( i=1; i<=nu_sites; i++)	r_wca[i] = sig_ux[i]  * (1.122462048309372981);
 
-	int xs,my_rank=0, np=1, root=0; 
+	int xs,my_rank=0, np=1, root=0;
 
 #ifdef MPI
-		MPI_Comm_rank( MPI_COMM_WORLD, &my_rank );		
+		MPI_Comm_rank( MPI_COMM_WORLD, &my_rank );
 		MPI_Comm_size( MPI_COMM_WORLD, &np );
-#endif		
+#endif
 		int nx_red = (int) (nx/np) ;
 		int nx_rmd = nx % np;
 		if( nx_rmd != 0 )   nx_red++;
 		int nx_ext = nx_red * np;
 		double *ur = (double *) malloc( nx_red*NY*NZ *sizeof(double));
-			for( i=0; i<= (nx_red*NY*NZ)-1; i++)	ur[i] = 0.00;		
+			for( i=0; i<= (nx_red*NY*NZ)-1; i++)	ur[i] = 0.00;
 
 	for( x=my_rank; x<=nx-1; x += np )
 	{
 	    xs = (int) (x/np);
 	    for( y=0; y<=ny-1; y++)
 		for( z=0; z<=nz-1; z++)
-		{	
+		{
 			indx = ii( xs, y, z );
 			for( i=1; i<=nu_sites; i++){
 				if( strncmp( "wall", u[i].element , 4 ) == 0 )
-				 	r = rw(z, u[i].z);	
+				 	r = rw(z, u[i].z);
 				else
 				 	r = rx(x,y,z, u[i].x, u[i].y, u[i].z);
 				u_lj = 4 /t *( (ep12_ux[i] *pow( (sig_ux[i]/r) ,12) )- (ep6_ux[i] *pow( (sig_ux[i]/r) ,6)));
 
 				if( r <= r_wca[i] )
 					u_wca = u_lj + (ep6_ux[i]/t) ;
-				else 
+				else
 					u_wca = 0.00;
 
 				ur[ indx ] += ( ((1.0-WCA)*u_lj) + (WCA*u_wca) );
@@ -733,12 +733,12 @@ void  calc_and_print_ur_wca( U_PAR2 * u, int nu_sites, double ep12, double ep6, 
 		}
 	}
 
-#ifdef MPI	
+#ifdef MPI
 	double *ur_ux;
 	if( my_rank == 0 )	ur_ux = (double *) malloc( nx_ext *NYZ *sizeof(double));
 
 	MPI_Barrier( MPI_COMM_WORLD );
-	
+
 	for( i=0; i<=nx_red-1; i++)
 	    MPI_Gather( (ur + ix(i)), NYZ, MPI_DOUBLE, (ur_ux +ix(i*np)), NYZ, MPI_DOUBLE, root, MPI_COMM_WORLD );
 
@@ -746,7 +746,7 @@ void  calc_and_print_ur_wca( U_PAR2 * u, int nu_sites, double ep12, double ep6, 
 
 	MPI_Barrier( MPI_COMM_WORLD );
  #else
-	print_3d(fname, ur, nx, ny, nz, PND[ns]);	
+	print_3d(fname, ur, nx, ny, nz, PND[ns]);
   #endif
 
 }
@@ -762,23 +762,23 @@ void  calc_and_print_ur_wca( U_PAR2 * u, int nu_sites, double ep12, double ep6, 
 void calc_and_print_ur_clmb( U_PAR2 *u, int nu_sites, double z_x, char fname[], int ns )
 /*	ur_clmb,		*/
 {
-	int i, x, y, z, nnn = NNN, nx = NX, ny = NY, nz = NZ;
+	int i, x, y, z, nx = NX, ny = NY, nz = NZ;
 	int indx;
 	double r, t = TEMP, K = CONST_CLMB;
 
-	int xs, ix1, ix2;
-	int my_rank=0, np=1, root=0; 
+	int xs;
+	int my_rank = 0, np = 1;
 
 #ifdef MPI
-		MPI_Comm_rank( MPI_COMM_WORLD, &my_rank );		
+        int root = 0;
+		MPI_Comm_rank( MPI_COMM_WORLD, &my_rank );
 		MPI_Comm_size( MPI_COMM_WORLD, &np );
-#endif		
+#endif
 		int nx_red = (int) (nx/np) ;
-		int nx_rmd = nx % np ;	
+		int nx_rmd = nx % np ;
 		if( nx_rmd != 0 )   nx_red++;
-		int nx_ext = nx_red * np;
 		double *ur = (double *) malloc( nx_red*NY*NZ *sizeof(double));
-			for( i=0; i<= (nx_red*NY*NZ)-1; i++) 	ur[i] = 0.00;		
+			for( i=0; i<= (nx_red*NY*NZ)-1; i++) 	ur[i] = 0.00;
 
 	for( x=my_rank; x<=nx-1; x+=np )
 	{
@@ -788,7 +788,7 @@ void calc_and_print_ur_clmb( U_PAR2 *u, int nu_sites, double z_x, char fname[], 
 		{
 			indx = ii(xs,y,z);
 			for( i=1; i<=nu_sites; i++)
-			{	
+			{
 				if( u[i].charge == 0.0 ) continue;
 				r = rx( x, y, z, u[i].x, u[i].y, u[i].z );
 				ur[ indx ] += K /t *( u[i].charge * z_x /r);
@@ -797,16 +797,17 @@ void calc_and_print_ur_clmb( U_PAR2 *u, int nu_sites, double z_x, char fname[], 
 	}
 
 #ifdef MPI
-	double *urx;	
+	double *urx = NULL;
+	int nx_ext = nx_red * np;
 	if( my_rank == 0 )
 		urx = (double *) malloc( nx_ext*NYZ *sizeof(double));
 
 	MPI_Barrier( MPI_COMM_WORLD );
 
-	for( i=0; i<=nx_red-1; i++) 
+	for( i=0; i<=nx_red-1; i++)
 	    MPI_Gather( (ur + ix(i)), NYZ, MPI_DOUBLE, (urx + ix(i*np)), NYZ, MPI_DOUBLE, root, MPI_COMM_WORLD );
 
-	if( my_rank == root)	print_3d( fname, urx, nx, ny, nz, PND[ns]);	
+	if( my_rank == root)	print_3d( fname, urx, nx, ny, nz, PND[ns]);
 
 	MPI_Barrier( MPI_COMM_WORLD );
  #else
@@ -825,24 +826,24 @@ void calc_and_print_ur_clmb( U_PAR2 *u, int nu_sites, double z_x, char fname[], 
 void calc_and_print_ur_erf( U_PAR2 *u, int nu_sites, double z_x, char fname[], int ns )
 {
 	int i, x, y, z, indx;
-	int nnn = NNN, nx = NX, ny = NY, nz = NZ;
+	int nx = NX, ny = NY, nz = NZ;
 	double t = TEMP, Kc = CONST_CLMB;
 	double a = A_ERF, r;
 
-	int xs, ix1, ix2;
-	int my_rank=0, np=1, root=0; 
+	int xs;
+	int my_rank = 0, np = 1;
 
 #ifdef MPI
-		MPI_Comm_rank( MPI_COMM_WORLD, &my_rank );		
+        int root = 0;
+		MPI_Comm_rank( MPI_COMM_WORLD, &my_rank );
 		MPI_Comm_size( MPI_COMM_WORLD, &np );
-#endif		
+#endif
 		int nx_red = (int) (nx/np) ;
 		int nx_rmd = nx % np;
 		if( nx_rmd != 0 )   nx_red++;
-		int nx_ext = nx_red * np;
 		double *ur = (double *) malloc( nx_red*NY*NZ *sizeof(double));
-			for( i=0; i<= (nx_red*NY*NZ)-1; i++) 
-		    		ur[i] = 0.00;		
+			for( i=0; i<= (nx_red*NY*NZ)-1; i++)
+		    		ur[i] = 0.00;
 
 	for( x=my_rank; x<=nx-1; x+=np )
 	{
@@ -859,21 +860,24 @@ void calc_and_print_ur_erf( U_PAR2 *u, int nu_sites, double z_x, char fname[], i
 		}
 	}
 
-#ifdef MPI	
-	double *ur_erf;	
+#ifdef MPI
+	double *ur_erf = NULL;
+	int nx_ext = nx_red * np;
 	if( my_rank == root )
-		ur_erf = (double *) malloc( nx_ext*NYZ *sizeof(double));  		MPI_Barrier( MPI_COMM_WORLD);
+		ur_erf = (double *) malloc( nx_ext*NYZ *sizeof(double));
+        MPI_Barrier( MPI_COMM_WORLD);
 
 	for( i=0; i<=nx_red-1; i++)
 	    MPI_Gather( (ur +ix(i)), NYZ, MPI_DOUBLE, (ur_erf +ix(i*np)), NYZ, MPI_DOUBLE, root, MPI_COMM_WORLD );
 			/*	ur_erf[ii(u_x,u_y,u_z)] = 0.00;*/
 
-	if( my_rank == root)	print_3d( fname, ur_erf, nx, ny, nz, PND[ns] );	  		MPI_Barrier( MPI_COMM_WORLD );
-#else 
+	if( my_rank == root)	print_3d( fname, ur_erf, nx, ny, nz, PND[ns] );
+        MPI_Barrier( MPI_COMM_WORLD );
+#else
 	print_3d( fname, ur, nx, ny, nz, PND[ns] );
 #endif
 
-				
+
 
 }
 
@@ -885,30 +889,30 @@ void calc_and_print_ur_erf( U_PAR2 *u, int nu_sites, double z_x, char fname[], i
 
 void calc_and_print_uk_erf( U_PAR2 *u, int nu_sites, double z_x, char fname[], int ns )
 {
-	int i, j, x, y, z, indx, nnn = NNN, nx = NX, ny = NY, nz = NZ;
+	int i, x, y, z, indx, nx = NX, ny = NY, nz = NZ;
 	int u_x=CX, u_y=CY, u_z=CZ;
 	double al, Kc, t, k, kr, xf=1.0, yf=1.0, zf=1.0;
 		al = A_ERF;
 		Kc = CONST_CLMB;
 		t = TEMP;
 
-	int xs, ix1, ix2;
-	int my_rank=0, np=1, root=0; 
+	int xs;
+	int my_rank=0, np=1, root=0;
 
 #ifdef MPI
-		MPI_Comm_rank( MPI_COMM_WORLD, &my_rank );		
+		MPI_Comm_rank( MPI_COMM_WORLD, &my_rank );
 		MPI_Comm_size( MPI_COMM_WORLD, &np );
-#endif		
+#endif
 		int nx_red = (int) (nx/np) ;
 		int nx_rmd = nx % np;
 		if( nx_rmd != 0 )   nx_red++;
 		int nx_ext = nx_red * np;
 		double *ukr = (double *) malloc( nx_red*NY*NZ *sizeof(double));
 		double *uki = (double *) malloc( nx_red*NY*NZ *sizeof(double));
-		
-		for( i=0; i<= (nx_red*NY*NZ)-1; i++){ 
-		    ukr[i] = 0.00; 
-		    uki[i] = 0.00;   
+
+		for( i=0; i<= (nx_red*NY*NZ)-1; i++){
+		    ukr[i] = 0.00;
+		    uki[i] = 0.00;
 		}
 
 	for( x=my_rank; x<=nx-1; x+=np )
@@ -918,7 +922,7 @@ void calc_and_print_uk_erf( U_PAR2 *u, int nu_sites, double z_x, char fname[], i
 	   for( y=0; y<=ny-1; y++)
 	   {	 if( y < u_y ) yf=(-1.0); else yf=1.0;
 	     for( z=0; z<=nz-1; z++)
-	     {	  if( z < u_z ) zf=(-1.0); else zf=1.0; 
+	     {	  if( z < u_z ) zf=(-1.0); else zf=1.0;
 			indx = ii(xs,y,z);
 			k = k0( x,y,z);
 			for( i=1; i<=nu_sites; i++){
@@ -932,24 +936,25 @@ void calc_and_print_uk_erf( U_PAR2 *u, int nu_sites, double z_x, char fname[], i
 	}
 
 	fftw_complex *uk_erf;
-	double *ukr_erf, *uki_erf;
 
 #ifdef MPI
+        double *ukr_erf = NULL, *uki_erf = NULL;
+
 	if( my_rank == root ){
-		ukr_erf = (double *) malloc( nx_ext *NYZ *sizeof(double)); 
-		uki_erf = (double *) malloc( nx_ext *NYZ *sizeof(double)); 
-			     }	
+		ukr_erf = (double *) malloc( nx_ext *NYZ *sizeof(double));
+		uki_erf = (double *) malloc( nx_ext *NYZ *sizeof(double));
+	}
 	for( i=0; i<=nx_red-1; i++){
 	    MPI_Gather( (ukr +ix(i)), NYZ, MPI_DOUBLE, (ukr_erf +ix(i*np)), NYZ, MPI_DOUBLE, root, MPI_COMM_WORLD );
 	    MPI_Gather( (uki +ix(i)), NYZ, MPI_DOUBLE, (uki_erf +ix(i*np)), NYZ, MPI_DOUBLE, root, MPI_COMM_WORLD );
-				   }
+        }
 	if( my_rank == 0 ){
 		uk_erf = (fftw_complex *) malloc( nx_ext *NYZ *sizeof(fftw_complex));
 		for( i=0; i<= (nx_ext*NYZ)-1; i++){
-				uk_erf[i][0] = ukr_erf[i];
-				uk_erf[i][1] = uki_erf[i];
-						  }
-			  }
+			uk_erf[i][0] = ukr_erf[i];
+			uk_erf[i][1] = uki_erf[i];
+		}
+	}
  #else
 	uk_erf = (fftw_complex *) malloc( nx_ext *NYZ *sizeof( fftw_complex ));
 		for( i=0; i<= (nx_ext*NYZ) -1; i++){
@@ -957,7 +962,7 @@ void calc_and_print_uk_erf( U_PAR2 *u, int nu_sites, double z_x, char fname[], i
 				uk_erf[i][1] = uki[i];
 						}
   #endif
-			
+
 	if( my_rank == root )
 	{
 				indx = ii(u_x,u_y,u_z);
@@ -971,8 +976,8 @@ void calc_and_print_uk_erf( U_PAR2 *u, int nu_sites, double z_x, char fname[], i
 				uk_erf[indx][1] = 0.00;
 	}
 
-	if( my_rank == root)	
-		print_cmplx_3d( fname, uk_erf, nx, ny, nz, PND[ns]);	
+	if( my_rank == root)
+		print_cmplx_3d( fname, uk_erf, nx, ny, nz, PND[ns]);
 }
 
 
@@ -991,21 +996,20 @@ void calc_and_print_uk_erf( U_PAR2 *u, int nu_sites, double z_x, char fname[], i
 
 void calc_and_print_ur_clmb_ewald( U_PAR2 *u, int nu_sites, double z_x, char fname[], int ns )
 {
-	int i, j, x, y, z, indx, nnn = NNN, nx = NX, ny = NY, nz = NZ;
+	int i, x, y, z, indx, nx = NX, ny = NY, nz = NZ;
 	int cx=CX, cy=CY, cz=CZ;
 	double  r, k, kr, kx, ky, kz;
-	double	al = A_ERF;
 	double	Kc = CONST_CLMB;
 	double	t = TEMP;
 	double gs = GAUSS_SMEAR;
 
-	int xs, ix1, ix2;
-	int my_rank=0, np=1, root=0; 
+	int xs;
+	int my_rank = 0, np = 1, root = 0;
 
 #ifdef MPI
-		MPI_Comm_rank( MPI_COMM_WORLD, &my_rank );		
+		MPI_Comm_rank( MPI_COMM_WORLD, &my_rank );
 		MPI_Comm_size( MPI_COMM_WORLD, &np );
-#endif		
+#endif
 		int nx_red = (int) (nx/np) ;
 		int nx_rmd = nx % np;
 		if( nx_rmd != 0 )   nx_red++;
@@ -1013,14 +1017,14 @@ void calc_and_print_ur_clmb_ewald( U_PAR2 *u, int nu_sites, double z_x, char fna
 
 		double *ukr   = (double *) malloc( nx_red*NY*NZ *sizeof(double));
 		double *uki   = (double *) malloc( nx_red*NY*NZ *sizeof(double));
-		double *uerfc = (double *) malloc( nx_red*NY*NZ *sizeof(double));		
-	
-		for( i=0; i<= (nx_red*NY*NZ)-1; i++){ 
-		    ukr[i] = 0.00; 
-		    uki[i] = 0.00;   
-		    uerfc[i] = 0.00;   
+		double *uerfc = (double *) malloc( nx_red*NY*NZ *sizeof(double));
+
+		for( i=0; i<= (nx_red*NY*NZ)-1; i++){
+		    ukr[i] = 0.00;
+		    uki[i] = 0.00;
+		    uerfc[i] = 0.00;
 		}
-	
+
 
 		for( x=my_rank; x<=nx-1; x+=np )
 		{
@@ -1029,15 +1033,15 @@ void calc_and_print_ur_clmb_ewald( U_PAR2 *u, int nu_sites, double z_x, char fna
 			if( x < cx ){ kx*=(-1.0); }
 
 		   for( y=0; y<=ny-1; y++)
-		   {	 
+		   {
 			ky = (double) k0(cx,y,cz);
 			if( y < cy ) {ky*=(-1.0); }
- 
+
 		     for( z=0; z<=nz-1; z++)
-		     {	  
+		     {
 			  	kz = (double) k0(cx,cy,z);
 			  	if( z < cz ){ kz*=(-1.0);}
- 
+
 				indx = ii(xs,y,z);
 				k = k2( x,y,z);
 				for( i=1; i<=nu_sites; i++){
@@ -1048,9 +1052,9 @@ void calc_and_print_ur_clmb_ewald( U_PAR2 *u, int nu_sites, double z_x, char fna
 
 				 	r = rx(x,y,z, u[i].x, u[i].y, u[i].z);
 					uerfc[indx] += (u[i].charge * z_x) *erfc( r/gs )/r;
-							
+
 				}
-	
+
 				ukr[indx] *= (4*Pi/(k*k)) *(Kc/t) *exp( (-1.0)*(k*k)*(gs*gs)/4.0 );
 				uki[indx] *= (4*Pi/(k*k)) *(Kc/t) *exp( (-1.0)*(k*k)*(gs*gs)/4.0 );
 
@@ -1059,15 +1063,16 @@ void calc_and_print_ur_clmb_ewald( U_PAR2 *u, int nu_sites, double z_x, char fna
 		}
 
 	/*collect from all processes*/
-	fftw_complex *uk_erf;
-	double *ukr_erf, *uki_erf, *uerfc2;
+	fftw_complex *uk_erf = NULL;
+        double *uerfc2 = NULL;
 
 #ifdef MPI
+	double *ukr_erf = NULL, *uki_erf = NULL;
 	if( my_rank == root ){
-		ukr_erf = (double *) malloc( nx_ext *NYZ *sizeof(double)); 
-		uki_erf = (double *) malloc( nx_ext *NYZ *sizeof(double)); 
-		uerfc2 = (double *) malloc( nx_ext *NYZ *sizeof(double)); 
-			     }	
+		ukr_erf = (double *) malloc( nx_ext *NYZ *sizeof(double));
+		uki_erf = (double *) malloc( nx_ext *NYZ *sizeof(double));
+		uerfc2 = (double *) malloc( nx_ext *NYZ *sizeof(double));
+			     }
 	for( i=0; i<=nx_red-1; i++){
 	    MPI_Gather( (ukr +ix(i)), NYZ, MPI_DOUBLE, (ukr_erf +ix(i*np)), NYZ, MPI_DOUBLE, root, MPI_COMM_WORLD );
 	    MPI_Gather( (uki +ix(i)), NYZ, MPI_DOUBLE, (uki_erf +ix(i*np)), NYZ, MPI_DOUBLE, root, MPI_COMM_WORLD );
@@ -1088,7 +1093,7 @@ void calc_and_print_ur_clmb_ewald( U_PAR2 *u, int nu_sites, double z_x, char fna
 						}
 	uerfc2 = (double *) malloc( nx_ext *NYZ *sizeof(double));
 		for( i=0; i<= NNN-1; i++)
-			uerfc2[i] = uerfc[i];  
+			uerfc2[i] = uerfc[i];
   #endif
 
 	fftw_complex *uk, *ur;
@@ -1105,26 +1110,26 @@ void calc_and_print_ur_clmb_ewald( U_PAR2 *u, int nu_sites, double z_x, char fna
 		uk = (fftw_complex *) malloc( NNN *sizeof(fftw_complex) );
 		ur = (fftw_complex *) malloc( NNN *sizeof(fftw_complex) );
 		ur1 = (double *) malloc( NNN *sizeof(double) );
-	
+
 		for(i=0; i<=NNN-1; i++){
 			uk[i][0] = uk_erf[i][0];
 			uk[i][1] = uk_erf[i][1];
 		}
-	
-		shift_origin_complex_inplace( uk, SYS );  
+
+		shift_origin_complex_inplace( uk, SYS );
 		invfftw_3d( uk , ur );	/*in, out*/
 		unshift_origin_complex_inplace( ur, SYS);
-	
+
 		for( i=0; i<=NNN-1; i++)
 			ur1[i] = ur[i][0] + uerfc2[i];
-	
+
 	}
 
-	
+
 
 	/* Print to disk file*/
-	if( my_rank == root)	
-		print_3d( fname, ur1, nx, ny, nz, PND[ns]);	
+	if( my_rank == root)
+		print_3d( fname, ur1, nx, ny, nz, PND[ns]);
 
 	//fftw routines, maybe put these into a subroutine file
 
@@ -1137,30 +1142,29 @@ void calc_and_print_ur_clmb_ewald( U_PAR2 *u, int nu_sites, double z_x, char fna
 
 }
 
-/****************************************************************************************/ 
+/****************************************************************************************/
 /*											*/
 /*			Calculate EWALD 1D rad						*/
 /*											*/
-/****************************************************************************************/ 
+/****************************************************************************************/
 
 
 void calc_and_print_ur_clmb_ewald_rad( U_PAR2 *u, int nu_sites, double z_x, char fname[], int ns )
 {
-	int i, j, x, y, z, indx, nnn = NNN, nx = NX, ny = NY, nz = NZ;
+	int i, x, y, z, indx, nx = NX, ny = NY, nz = NZ;
 	int cx=CX, cy=CY, cz=CZ;
 	double  r, k, kr, kx, ky, kz;
-	double	al = A_ERF;
 	double	Kc = CONST_CLMB;
 	double	t = TEMP;
 	double gs = GAUSS_SMEAR;
 
-	int xs, ix1, ix2;
-	int my_rank=0, np=1, root=0; 
+	int xs;
+	int my_rank = 0, np = 1, root = 0;
 
 #ifdef MPI
-		MPI_Comm_rank( MPI_COMM_WORLD, &my_rank );		
+		MPI_Comm_rank( MPI_COMM_WORLD, &my_rank );
 		MPI_Comm_size( MPI_COMM_WORLD, &np );
-#endif		
+#endif
 		int nx_red = (int) (nx/np) ;
 		int nx_rmd = nx % np;
 		if( nx_rmd != 0 )   nx_red++;
@@ -1168,14 +1172,14 @@ void calc_and_print_ur_clmb_ewald_rad( U_PAR2 *u, int nu_sites, double z_x, char
 
 		double *ukr   = (double *) malloc( nx_red*NY*NZ *sizeof(double));
 		double *uki   = (double *) malloc( nx_red*NY*NZ *sizeof(double));
-		double *uerfc = (double *) malloc( nx_red*NY*NZ *sizeof(double));		
-	
-		for( i=0; i<= (nx_red*NY*NZ)-1; i++){ 
-		    ukr[i] = 0.00; 
-		    uki[i] = 0.00;   
-		    uerfc[i] = 0.00;   
+		double *uerfc = (double *) malloc( nx_red*NY*NZ *sizeof(double));
+
+		for( i=0; i<= (nx_red*NY*NZ)-1; i++){
+		    ukr[i] = 0.00;
+		    uki[i] = 0.00;
+		    uerfc[i] = 0.00;
 		}
-	
+
 
 		for( x=my_rank; x<=nx-1; x+=np )
 		{
@@ -1184,15 +1188,15 @@ void calc_and_print_ur_clmb_ewald_rad( U_PAR2 *u, int nu_sites, double z_x, char
 			if( x < cx ){ kx*=(-1.0); }
 
 		   for( y=0; y<=ny-1; y++)
-		   {	 
+		   {
 			ky = (double) k0(cx,y,cz);
 			if( y < cy ) {ky*=(-1.0); }
- 
+
 		     for( z=0; z<=nz-1; z++)
-		     {	  
+		     {
 			  	kz = (double) k0(cx,cy,z);
 			  	if( z < cz ){ kz*=(-1.0);}
- 
+
 				indx = ii(xs,y,z);
 				k = k2( x,y,z);
 				for( i=1; i<=nu_sites; i++){
@@ -1203,9 +1207,9 @@ void calc_and_print_ur_clmb_ewald_rad( U_PAR2 *u, int nu_sites, double z_x, char
 
 				 	r = rx(x,y,z, u[i].x, u[i].y, u[i].z);
 					uerfc[indx] += (u[i].charge * z_x) *erfc( r/gs )/r;
-							
+
 				}
-	
+
 				ukr[indx] *= (4*Pi/(k*k)) *(Kc/t) *exp( (-1.0)*(k*k)*(gs*gs)/4.0 );
 				uki[indx] *= (4*Pi/(k*k)) *(Kc/t) *exp( (-1.0)*(k*k)*(gs*gs)/4.0 );
 
@@ -1214,15 +1218,17 @@ void calc_and_print_ur_clmb_ewald_rad( U_PAR2 *u, int nu_sites, double z_x, char
 		}
 
 	/*collect from all processes*/
-	fftw_complex *uk_erf;
-	double *ukr_erf, *uki_erf, *uerfc2;
+	fftw_complex *uk_erf = NULL;
+	double *uerfc2 = NULL;
 
 #ifdef MPI
+        double *ukr_erf = NULL, *uki_erf = NULL;
+
 	if( my_rank == root ){
-		ukr_erf = (double *) malloc( nx_ext *NYZ *sizeof(double)); 
-		uki_erf = (double *) malloc( nx_ext *NYZ *sizeof(double)); 
-		uerfc2 = (double *) malloc( nx_ext *NYZ *sizeof(double)); 
-			     }	
+		ukr_erf = (double *) malloc( nx_ext *NYZ *sizeof(double));
+		uki_erf = (double *) malloc( nx_ext *NYZ *sizeof(double));
+		uerfc2 = (double *) malloc( nx_ext *NYZ *sizeof(double));
+                             }
 	for( i=0; i<=nx_red-1; i++){
 	    MPI_Gather( (ukr +ix(i)), NYZ, MPI_DOUBLE, (ukr_erf +ix(i*np)), NYZ, MPI_DOUBLE, root, MPI_COMM_WORLD );
 	    MPI_Gather( (uki +ix(i)), NYZ, MPI_DOUBLE, (uki_erf +ix(i*np)), NYZ, MPI_DOUBLE, root, MPI_COMM_WORLD );
@@ -1243,7 +1249,7 @@ void calc_and_print_ur_clmb_ewald_rad( U_PAR2 *u, int nu_sites, double z_x, char
 						}
 	uerfc2 = (double *) malloc( nx_ext *NYZ *sizeof(double));
 		for( i=0; i<= NNN-1; i++)
-			uerfc2[i] = uerfc[i];  
+			uerfc2[i] = uerfc[i];
   #endif
 
 	fftw_complex *uk, *ur;
@@ -1260,26 +1266,26 @@ void calc_and_print_ur_clmb_ewald_rad( U_PAR2 *u, int nu_sites, double z_x, char
 		uk = (fftw_complex *) malloc( NNN *sizeof(fftw_complex) );
 		ur = (fftw_complex *) malloc( NNN *sizeof(fftw_complex) );
 		ur1 = (double *) malloc( NNN *sizeof(double) );
-	
+
 		for(i=0; i<=NNN-1; i++){
 			uk[i][0] = uk_erf[i][0];
 			uk[i][1] = uk_erf[i][1];
 		}
-	
-		shift_origin_complex_inplace( uk, SYS );  
+
+		shift_origin_complex_inplace( uk, SYS );
 		invfftw_3d( uk , ur );	/*in, out*/
 		unshift_origin_complex_inplace( ur, SYS);
-	
+
 		for( i=0; i<=NNN-1; i++)
 			ur1[i] = ur[i][0] + uerfc2[i];
-	
+
 	}
 
-	
+
 
 	/* Print to disk file*/
-	if( my_rank == root)	
-		print_3d( fname, ur1, nx, ny, nz, PND[ns]);	
+	if( my_rank == root)
+		print_3d( fname, ur1, nx, ny, nz, PND[ns]);
 
 	//fftw routines, maybe put these into a subroutine file
 
@@ -1292,11 +1298,11 @@ void calc_and_print_ur_clmb_ewald_rad( U_PAR2 *u, int nu_sites, double z_x, char
 
 }
 
-/****************************************************************************************/ 
+/****************************************************************************************/
 /*											*/
 /*			Calculate EWALD Correction Constant				*/
 /*											*/
-/****************************************************************************************/ 
+/****************************************************************************************/
 
 
 double ** get_hr1vv_dis( void );
@@ -1308,34 +1314,31 @@ void calc_hk_terms( double *, double *, double , int , int );  /* out, in, rad, 
 void calc_and_print_ewald_corrections( void )
 {
 
-	int i, j, k, slen, idx1=0;
-	char s1[50], s2[50];
-	FILE *out;
+	int i, j, k, idx1=0;
 
 	double Kc = CONST_CLMB;
 	double t = TEMP;
 	int n_pts  = (int) get_dval( ARGV1, "N_PTS" );
 	double rad = (double) get_dval( ARGV1, "RADIUS");
-	double dr = rad/(double)(n_pts-1);
 	double dk = Pi/rad;
 	double tc=0.0;
 	int num_k = 10;
 
-	double *e_cor = (double *) malloc( NRSITES *sizeof(double) );
-	double    *kv = (double *) malloc( num_k *sizeof( double) );
-	double  *coef = (double *) malloc( num_k *sizeof(double) );
 	double    *h0 = (double *) malloc( NRSITES *sizeof(double) );
 
 	double **e_sum = (double **) matrix_malloc0( NRSITES, num_k );
 	double **hr1vv = (double **) get_hr1vv_dis( );
+#ifndef MPI
+	double  *coef = (double *) malloc( num_k *sizeof(double) );
 	double **a = (double **) calc_dkn_mat( num_k, dk );
+#endif
 
 	double **hk    = (double **) malloc( DIS_NUM *sizeof(double ));
 			for( i=0; i<=DIS_NUM-1; i++){
 				*(hk+i) = (double *) malloc( num_k *sizeof(double) );
-				calc_hk_terms( *(hk+i), *(hr1vv +i) , rad, n_pts, num_k  );	
+				calc_hk_terms( *(hk+i), *(hr1vv +i) , rad, n_pts, num_k  );
 			}
-	
+
 	double ***hk_mat = (double ***) malloc( NRSITES *sizeof(double) );
 			for( i=0; i<=NRSITES-1; i++)
 			    *(hk_mat +i) = (double **) malloc( NRSITES *sizeof(double));
@@ -1345,10 +1348,10 @@ void calc_and_print_ewald_corrections( void )
 				*(*(hk_mat +i)+j) = *(hk + idx1);
 				idx1++;
 			    }
-	
+
 			for( i=1; i<=NRSITES-1; i++)
 			    for( j=0; j<= i-1; j++)
-				*(*(hk_mat +i) +j) = *(*(hk_mat +j) +i);		
+				*(*(hk_mat +i) +j) = *(*(hk_mat +j) +i);
 
 
 	double *wk_oh= (double *) malloc( num_k *sizeof(double) );
@@ -1367,7 +1370,7 @@ void calc_and_print_ewald_corrections( void )
 					    for( j=0; j<=NRSITES-1; j++)
 						e_sum[i][k-1] += CHARGE[i]*PND[j]*hk_mat[j][i][k-1]*REDUN[j] /(k*k*dk*dk);
 					}
-		} else 
+		} else
 		 if( TYPE == 1){
 				for( k=1; k<=num_k; k++){
 					e_sum[0][k-1] = CHARGE[0]/ (k*k*dk*dk);
@@ -1375,7 +1378,7 @@ void calc_and_print_ewald_corrections( void )
 				}
 				for( k=1; k<=num_k; k++){
 					e_sum[0][k-1] += CHARGE[1] * wk_oh[k-1] * 2.00 /(k*k*dk*dk);
-					e_sum[1][k-1] += (CHARGE[0] * wk_oh[k-1] + CHARGE[1] * wk_hh[k-1]) /(k*k*dk*dk); 
+					e_sum[1][k-1] += (CHARGE[0] * wk_oh[k-1] + CHARGE[1] * wk_hh[k-1]) /(k*k*dk*dk);
 				}
 
 				for( i=0; i<=NRSITES-1; i++)
@@ -1383,11 +1386,11 @@ void calc_and_print_ewald_corrections( void )
 					    for( j=0; j<=NRSITES-1; j++)
 						e_sum[i][k-1] += CHARGE[j]*PND[j]*hk_mat[j][i][k-1]*REDUN[j] /(k*k*dk*dk);
 					}
-		} else 
+		} else
 		 if( TYPE == 2){
 				for( k=1; k<=num_k; k++){
 					e_sum[0][k-1] = CHARGE[1] * wk_oh[k-1] * 2.00 /(k*k*dk*dk);
-					e_sum[1][k-1] = (CHARGE[0] * wk_oh[k-1] + CHARGE[1] * wk_hh[k-1]) /(k*k*dk*dk); 
+					e_sum[1][k-1] = (CHARGE[0] * wk_oh[k-1] + CHARGE[1] * wk_hh[k-1]) /(k*k*dk*dk);
 				}
 
 				for( i=0; i<=NRSITES-1; i++)
@@ -1396,12 +1399,12 @@ void calc_and_print_ewald_corrections( void )
 					    for( j=0; j<=NRSITES-1; j++)
 						e_sum[i][k-1] += CHARGE[j]*PND[j]*hk_mat[j][i][k-1]*REDUN[j] /(k*k*dk*dk);
 					}
-					
 
-		} else 
+
+		} else
 		 if( TYPE == 3){
 					printf("\nHasn't been done yet.\n"); 	fflush(stdout);
-		} else{	
+		} else{
 				printf("\nNO type specified - bye!\n"); 	fflush(stdout);
 				exit(1);
 		}
@@ -1415,7 +1418,7 @@ void calc_and_print_ewald_corrections( void )
 #endif
 			for( i=1; i<=NU_SITES; i++)
 				tc += U[i].charge;
-	
+
 			for( i=0; i<=NRSITES-1; i++)
 				h0[i] *= 4.0*Pi*tc*Kc/t/(LX*LY*LZ);
 
@@ -1432,13 +1435,13 @@ void print_ewald( double *h0, double tc, int nr)
 	fprintf(out, "#TOTAL_SOLUTE_CHARGE	%f\n", tc);
 	fprintf(out, "#EWALD_BGC\t");
 	for( i=0; i<=nr-1; i++)
-	    fprintf(out, "%f\t", h0[i]); 
+	    fprintf(out, "%f\t", h0[i]);
 	fprintf(out, "\n");
 
 }
 double ** get_hr1vv_dis( void )
 {
-	int i,j;
+	int j;
 	double **hr1vv = (double **) malloc( DIS_NUM *sizeof(double) );
 			for( j=0; j<=DIS_NUM-1; j++)
 				*(hr1vv +j) = (double *) get_dis( ARGV1, j+1);
@@ -1468,39 +1471,38 @@ void calc_hk_terms(  double * y, double * x, double R, int Nn, int Nk )   /* out
 {
 
 	int j, l;
-	double C2, dr, dk;
+	double C2, dr;
 	double Tmp=0;
 
 	C2 = R*R/((Nn-1)*Pi);
         dr = (R/(Nn-1));
-        dk = (Pi/R);
 
         /* End of initial point mess*/
-	for( l=1; l<=Nk; l++){ 
+	for( l=1; l<=Nk; l++){
 		Tmp=0;
-                for( j=1; j<=Nn-2; j++) 
+                for( j=1; j<=Nn-2; j++)
 			Tmp += sin(Pi/(Nn-1)*j*l)*x[j]*C2*j/l;
-             	y[l-1] = Tmp*4*Pi*dr;  
+             	y[l-1] = Tmp*4*Pi*dr;
         }
 }
 
 
-/****************************************************************************************/ 
-/****************************************************************************************/ 
-/****************************************************************************************/ 
-/****************************************************************************************/ 
-/****************************************************************************************/ 
-/****************************************************************************************/ 
+/****************************************************************************************/
+/****************************************************************************************/
+/****************************************************************************************/
+/****************************************************************************************/
+/****************************************************************************************/
+/****************************************************************************************/
 
 /****************************************************************************************/
-/****************************************************************************************/ 
-/****************************************************************************************/ 
+/****************************************************************************************/
+/****************************************************************************************/
 /*											*/
 /*				FFTW_3D routines					*/
 /*											*/
 /****************************************************************************************/
-/****************************************************************************************/ 
-/****************************************************************************************/ 
+/****************************************************************************************/
+/****************************************************************************************/
 
 
 
@@ -1511,12 +1513,12 @@ void fftw_3d( fftw_complex *in_r , fftw_complex *out_k )
 
 	int i;
 	double dx = lx/(nx-1);
-	double dy = ly/(ny-1); 
+	double dy = ly/(ny-1);
 	double dz = lz/(nz-1);
 	double con = dx*dy*dz;
 
 #ifdef FFTW_THREADS
-  	fftw_init_threads(); 
+  	fftw_init_threads();
 	fftw_plan_with_nthreads(NUM_THREADS);
 #endif
 
@@ -1535,10 +1537,10 @@ void invfftw_3d( fftw_complex *in_k, fftw_complex *out_r )
 
 	int i;
 	double dx = lx/(nx-1),  dy = ly/(ny-1),  dz = lz/(nz-1);
-	double con = dx*dy*dz*nnn; 
+	double con = dx*dy*dz*nnn;
 
 #ifdef FFTW_THREADS
-  	fftw_init_threads(); 
+  	fftw_init_threads();
 	fftw_plan_with_nthreads(NUM_THREADS);
 #endif
 
@@ -1575,10 +1577,10 @@ void invfftw_3d( fftw_complex *in_k, fftw_complex *out_r )
 double rx( int x, int y, int z, double ux, double uy, double uz)
 {
 	double tmp;
-	
+
 	tmp  = pow(fabs( x*DX - (CX*DX + ux) ), 2) ;
 	tmp += pow(fabs( y*DY - (CY*DY + uy) ), 2) ;
-	tmp += pow(fabs( z*DZ - (CZ*DZ + uz) ), 2) ; 
+	tmp += pow(fabs( z*DZ - (CZ*DZ + uz) ), 2) ;
 	tmp = sqrt( tmp );
 
 	return tmp;
@@ -1588,10 +1590,10 @@ double rx( int x, int y, int z, double ux, double uy, double uz)
 double r0( int x, int y, int z)
 {
 	double tmp;
-	
+
 	tmp  = pow(fabs(x - CX),2) * pow(DX,2);
 	tmp += pow(fabs(y - CY),2) * pow(DY,2);
-	tmp += pow(fabs(z - CZ),2) * pow(DZ,2); 
+	tmp += pow(fabs(z - CZ),2) * pow(DZ,2);
 	tmp = sqrt( tmp );
 
 	if ( tmp == 0.0 )
@@ -1616,7 +1618,7 @@ double kk( int x, int y, int z, double ux, double uy, double uz)
 
 	tmp  = pow(fabs( x - (CX + (ux/DX)) ),2) *pow(DKX,2);
 	tmp += pow(fabs( y - (CY + (uy/DY)) ),2) *pow(DKY,2);
-	tmp += pow(fabs( z - (CZ + (uz/DZ)) ),2) *pow(DKZ,2); 
+	tmp += pow(fabs( z - (CZ + (uz/DZ)) ),2) *pow(DKZ,2);
 	tmp = sqrt( tmp );
 	if ( tmp == 0.0 )
 		tmp = 1e-10 ;
@@ -1629,7 +1631,7 @@ double k0( int x, int y, int z )
 
 	tmp  = pow(fabs(x - CX),2) * pow(DKX,2);
 	tmp += pow(fabs(y - CY),2) * pow(DKY,2);
-	tmp += pow(fabs(z - CZ),2) * pow(DKZ,2); 
+	tmp += pow(fabs(z - CZ),2) * pow(DKZ,2);
 	if ( tmp == 0.0 )
 		tmp = 1e-10 ;
 	tmp = sqrt( tmp );
@@ -1644,7 +1646,7 @@ double k2( int x, int y, int z )
 
 	tmp  = pow(fabs(x - CX),2) * pow(DKX2,2);
 	tmp += pow(fabs(y - CY),2) * pow(DKY2,2);
-	tmp += pow(fabs(z - CZ),2) * pow(DKZ2,2); 
+	tmp += pow(fabs(z - CZ),2) * pow(DKZ2,2);
 	tmp = sqrt( tmp );
 
 	if ( tmp == 0.0 )
@@ -1660,26 +1662,26 @@ void print_3d( char name[], double *v, int nx, int ny, int nz, double pnd )
 
 	if( strncmp( "sit", FILE_TYPE, 3 ) == 0 )
 		print_sit( name, v, SYS );
-	 else 
+	 else
 	   if( strncmp( "jh3d", FILE_TYPE, 8 ) == 0 )
 		print_jh3d( name, v, SYS, TEMP, pnd );
 	   else
-		printf("\nFile name not specified correctly\n" ); fflush(stdout); 
-	   
+		printf("\nFile name not specified correctly\n" ); fflush(stdout);
+
 }
-	
+
 void print_cmplx_3d( char name[], fftw_complex *v, int nx, int ny, int nz, double pnd )
 {
 
 	sprintf( name, "%s.%s", name, FILE_TYPE );
-	
+
 	if( strncmp( "sit", FILE_TYPE, 3 ) == 0 )
 		print_cmplx_sit( name, v, SYS );
-	 else 
+	 else
 	   if( strncmp( "jh3d", FILE_TYPE, 8 ) == 0 )
 		print_cmplx_jh3d( name, v, SYS, TEMP, pnd );
 	   else
-		printf("\nFile name not specified correctly\n" ); fflush(stdout); 
+		printf("\nFile name not specified correctly\n" ); fflush(stdout);
 }
 
 

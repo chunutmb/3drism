@@ -21,14 +21,14 @@
 
 
 /*U_PAR*/
-struct solute_param {	int num; char element[25]; 
+struct solute_param {	int num; char element[25];
 				double ep; double sig; double charge;
 				double x; double y; double z;
 		       };
 typedef struct solute_param U_PAR;
 
 /*U_PAR*/
-struct solute_param2 {	int num; char element[25]; int mol; 
+struct solute_param2 {	int num; char element[25]; int mol;
 				double ep12; double ep6; double sig; double charge;
 				double x; double y; double z;
 		       };
@@ -37,7 +37,7 @@ typedef struct solute_param2 U_PAR2;
 /*ENV_PAR*/
 struct environment_par { int nx; int ny; int nz;
 			 int cx; int cy; int cz;
-			double lx; double ly; double lz; 
+			double lx; double ly; double lz;
 			};
 typedef struct environment_par ENV_PAR;
 

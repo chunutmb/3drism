@@ -1,0 +1,46 @@
+QUICK TIPS
+==========
+
+1. Typing
+    make
+  will create most the needed programs:
+    3drism        regular version (gcc)
+    3drism_thr    thread version (icc)
+    pot           regular version (gcc)
+    pot_mpi       MPI version
+  among others
+
+2. This directory are under the version control system git
+   see the [Git Tips] section for details
+
+3. To beautify a source code, type
+    uncrustify -c uncrustify.cfg jh_get.c
+   A copy of the program uncrustify is saved on /Bossman/cz1/app/bin/
+
+
+
+
+
+Git Tips
+==========
+
+To see the changes, type
+  gitk
+
+Before making changes, check the current branch
+  git branch
+
+If it is not the branch you want, switch
+  git checkout master
+
+The command to commit a change is
+  git commit -a
+
+The command to start a new branch is
+  git checkout -b my_new_branch
+
+
+Use
+  make chmod
+to reset the file permssion
+

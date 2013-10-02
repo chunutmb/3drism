@@ -5,9 +5,9 @@
 
 /****************************************************************************************/
 /*											*/
-/*				Utilities						*/		
-/*											*/		
-/****************************************************************************************/ 
+/*				Utilities						*/
+/*											*/
+/****************************************************************************************/
 
 double * add_arrays( double *v1, double *v2, int n )
 {
@@ -17,14 +17,14 @@ double * add_arrays( double *v1, double *v2, int n )
 }
 
 double * assign_0( int n )
-{	int i; 
+{	int i;
 	double *array; array = (double *) malloc( n* sizeof(double ));
 	for( i=0; i<=n-1; i++) array[i] = 0.0;
 	return array;
 }
 
 double * assign_1( int n )
-{	int i; 
+{	int i;
 	double *array; array = (double *) malloc( n* sizeof(double ));
 	for( i=0; i<=n-1; i++) array[i] = 1.0;
 	return array;
@@ -36,15 +36,6 @@ void assign_array( double *out, double *in, int n )
 	for( i=0; i<=n-1; i++)	out[i] = in[i];
 }
 
-void check_array( double *in, int n)
-{
-	int i; 
-	double tmp;
-	if( in == NULL)
-		printf("\nError in array\n"); fflush(stdout);
-	for( i=0; i<=n-1; i++) tmp = in[i]; 
-}
-
 double ** matrix_malloc( int nn, int mm)
 {
 	double **tmp;
@@ -54,8 +45,8 @@ double ** matrix_malloc( int nn, int mm)
 	if( tmp == NULL) printf("\nallocation failed\n");
 
 	for( i=0; i<= nn-1; i++){
-		 *(tmp + i) = malloc(mm * sizeof(  double));
-		if( *(tmp + i) == NULL);
+		tmp[i] = malloc(mm * sizeof(  double));
+		if( tmp[i] == NULL) exit(1);
 				};
 	return tmp;
 }
@@ -69,8 +60,8 @@ double ** matrix_malloc0( int nn, int mm)
 	if( tmp == NULL) printf("\nallocation failed\n");
 
 	for( i=0; i<= nn-1; i++){
-		 *(tmp + i) = malloc(mm * sizeof(  double));
-		if( *(tmp + i) == NULL);
+		 tmp[i] = malloc(mm * sizeof(  double));
+		if( tmp[i] == NULL) exit(1);
 				};
 	for( i=0; i<=nn-1; i++)
 	    for( j=0; j<=mm-1; j++)
@@ -113,11 +104,11 @@ double vector_sum( double *v, int n)
 {
 	int i;
 	double tmp=0;
-	
+
 	for( i=0; i<=n-1; i++)
 	    tmp += fabs( v[i] );
 
 	return tmp;
 }
-	
+
 

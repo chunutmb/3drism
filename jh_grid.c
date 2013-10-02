@@ -8,11 +8,11 @@
 
 
 
-/****************************************************************************************/ 
+/****************************************************************************************/
 /*											*/
 /*				Shifting routines					*/
 /*											*/
-/****************************************************************************************/ 
+/****************************************************************************************/
 
 /*Shifts origin and wraps data around for FT routines*/
 
@@ -135,7 +135,7 @@ void unshift_origin_complex( fftw_complex *in, fftw_complex *out, ENV_PAR sys )
 			tmp[i][0] = out[i][0];
 			tmp[i][1] = out[i][1];
 		    }
-	
+
 		/* unShifting x-coordinate*/
 		if( cx != 0 )
 		    for( z=0; z<= nz-1; z++)
@@ -166,8 +166,8 @@ void shift_origin_inplace( double *in, ENV_PAR sys )
 
 	int x, y, z, i;
 
-	double *tmp  = (double *) malloc( nnn *sizeof( double )); 
-	double *tmp2 = (double *) malloc( nnn *sizeof( double )); 
+	double *tmp  = (double *) malloc( nnn *sizeof( double ));
+	double *tmp2 = (double *) malloc( nnn *sizeof( double ));
 
 		/* Shifting x-coordinate*/
 		if( cx != 0 )
@@ -179,7 +179,7 @@ void shift_origin_inplace( double *in, ENV_PAR sys )
 		else
 		    for( i=0; i<=nnn-1; i++)
 			tmp[i] = in[i];
-		    
+
 		/* Shifting y-coordinate*/
 		if( cy != 0 )
 		    for( z=0; z<= nz-1; z++)
@@ -190,7 +190,7 @@ void shift_origin_inplace( double *in, ENV_PAR sys )
 		else
 		    for( i=0; i<=nnn-1; i++)
 			tmp2[i] = tmp[i];
-		    
+
 		/* Shifting z-coordinate*/
 		if( cz != 0 )
 		    for( x=0; x<= nx-1; x++)
@@ -201,7 +201,7 @@ void shift_origin_inplace( double *in, ENV_PAR sys )
 		else
 		    for( i=0; i<=nnn-1; i++)
 			in[i] = tmp2[i];
-		    
+
 	free(tmp);
 	free(tmp2);
 }
@@ -214,8 +214,8 @@ void unshift_origin_inplace( double *in, ENV_PAR sys )
 
 	int x, y, z, i;
 
-	double *tmp  = (double *) malloc( nnn *sizeof( double )); 
-	double *tmp2 = (double *) malloc( nnn *sizeof( double )); 
+	double *tmp  = (double *) malloc( nnn *sizeof( double ));
+	double *tmp2 = (double *) malloc( nnn *sizeof( double ));
 
 		/* unShifting z-coordinate*/
 		if( cz != 0 )
@@ -229,7 +229,7 @@ void unshift_origin_inplace( double *in, ENV_PAR sys )
 		else
 		    for( i=0; i<=nnn-1; i++)
 			tmp[i] = in[i];
-		    
+
 		/* unShifting y-coordinate*/
 		if( cy != 0 )
 		    for( z=0; z<= nz-1; z++)
@@ -242,7 +242,7 @@ void unshift_origin_inplace( double *in, ENV_PAR sys )
 		else
 		    for( i=0; i<=nnn-1; i++)
 			tmp2[i] = tmp[i];
-		    
+
 		/* unShifting x-coordinate*/
 		if( cx != 0 )
 		    for( z=0; z<= nz-1; z++)
@@ -255,7 +255,7 @@ void unshift_origin_inplace( double *in, ENV_PAR sys )
 		else
 		    for( i=0; i<=nnn-1; i++)
 			in[i] = tmp2[i];
-		    
+
 	free(tmp);
 	free(tmp2);
 
@@ -269,8 +269,8 @@ void shift_origin_complex_inplace( fftw_complex *in, ENV_PAR sys)
 
 	int x, y, z, i;
 
-	fftw_complex *tmp  = (fftw_complex *) malloc( nnn *sizeof( fftw_complex )); 
-	fftw_complex *tmp2 = (fftw_complex *) malloc( nnn *sizeof( fftw_complex )); 
+	fftw_complex *tmp  = (fftw_complex *) malloc( nnn *sizeof( fftw_complex ));
+	fftw_complex *tmp2 = (fftw_complex *) malloc( nnn *sizeof( fftw_complex ));
 
 		/* Shifting x-coordinate*/
 		if( cx != 0 )
@@ -290,7 +290,7 @@ void shift_origin_complex_inplace( fftw_complex *in, ENV_PAR sys)
 			tmp[i][0] = in[i][0];
 			tmp[i][1] = in[i][1];
 		    }
-		    
+
 		/* Shifting y-coordinate*/
 		if( cy != 0 )
 		    for( z=0; z<= nz-1; z++)
@@ -309,7 +309,7 @@ void shift_origin_complex_inplace( fftw_complex *in, ENV_PAR sys)
 			tmp2[i][0] = tmp[i][0];
 			tmp2[i][1] = tmp[i][1];
 		    }
-		    
+
 		/* Shifting z-coordinate*/
 		if( cz != 0 )
 		    for( x=0; x<= nx-1; x++)
@@ -328,7 +328,7 @@ void shift_origin_complex_inplace( fftw_complex *in, ENV_PAR sys)
 			in[i][0] = tmp2[i][0];
 			in[i][1] = tmp2[i][1];
 		    }
-		    
+
 		free(tmp);
 		free(tmp2);
 }
@@ -341,16 +341,16 @@ void unshift_origin_complex_inplace( fftw_complex *in, ENV_PAR sys)
 
 	int x, y, z, i;
 
-	fftw_complex *tmp  = (fftw_complex *) malloc( nnn *sizeof( fftw_complex )); 
-	fftw_complex *tmp2 = (fftw_complex *) malloc( nnn *sizeof( fftw_complex )); 
+	fftw_complex *tmp  = (fftw_complex *) malloc( nnn *sizeof( fftw_complex ));
+	fftw_complex *tmp2 = (fftw_complex *) malloc( nnn *sizeof( fftw_complex ));
 
 		/* unShifting z-coordinate*/
 		if( cz != 0 )
 		    for( x=0; x<= nx-1; x++)
 		    for( y=0; y<= ny-1; y++){
-		    	for( z=0; z<=(nz-1)-cz; z++){	
+		    	for( z=0; z<=(nz-1)-cz; z++){
 			    tmp[ ii( x, y, (z+cz)) ][0] = in[ii(x,y,z)][0];
-			    tmp[ ii( x, y, (z+cz)) ][1] = in[ii(x,y,z)][1]; 
+			    tmp[ ii( x, y, (z+cz)) ][1] = in[ii(x,y,z)][1];
 		    	}
 		    	for( z=nz-cz; z<=nz-1; z++){
 			    tmp[ ii( x, y, (z-(nz-cz))) ][0] = in[ii(x,y,z)][0];
@@ -362,7 +362,7 @@ void unshift_origin_complex_inplace( fftw_complex *in, ENV_PAR sys)
 			tmp[i][0] = in[i][0];
 			tmp[i][1] = in[i][1];
 		    }
-		    
+
 		/* unShifting y-coordinate*/
 		if( cy != 0 )
 		    for( z=0; z<= nz-1; z++)
@@ -381,7 +381,7 @@ void unshift_origin_complex_inplace( fftw_complex *in, ENV_PAR sys)
 			tmp2[i][0] = tmp[i][0];
 			tmp2[i][1] = tmp[i][1];
 		    }
-		    
+
 		/* unShifting x-coordinate*/
 		if( cz != 0 )
 		    for( z=0; z<= nz-1; z++)
@@ -400,7 +400,7 @@ void unshift_origin_complex_inplace( fftw_complex *in, ENV_PAR sys)
 			in[i][0] = tmp2[i][0];
 			in[i][1] = tmp2[i][1];
 		    }
-		    
+
 	free(tmp);
 	free(tmp2);
 

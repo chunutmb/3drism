@@ -53,7 +53,7 @@ void Set_VV( double * A, double *B, int n)
 {
 	int i;
 
-	for( i=0; i<=n-1; i++) 
+	for( i=0; i<=n-1; i++)
 		A[i] = B[i];
 }
 
@@ -61,7 +61,7 @@ void Sub_VV( double  * A, double * B, double * C, int n)
 /*sub vec C from vec B and return new vec A*/
 {
 	int i;
-	
+
 	for( i=0; i<=n-1; i++)
 		A[i] = B[i] - C[i];
 
@@ -106,7 +106,7 @@ double * Mul_SV( double cnst , double * A, int dim )
 	int i;
 	double *B = (double *) malloc( dim *sizeof(double));
 	for( i=0; i<=dim-1; i++)    B[i] = cnst * A[i];
-	return B;	
+	return B;
 }
 
 double * MulAsgn_VS( double * A, double cnst, int dim )
@@ -119,12 +119,12 @@ double * MulAsgn_VS( double * A, double cnst, int dim )
 double * SubAsgn_VV( double * A, double * B , int dim)
 {
 	int i;
-	
+
 	for( i=0; i<=dim-1; i++)
 		A[i] = A[i] - B[i];
-	
+
 	return A;
-}	     
+}
 
 void Matrix_Matrix( double ** Xl, double ** Al, double ** Bl, int il)
 {
@@ -172,7 +172,7 @@ void JH_inp2_mat_mat( double ** A, double ** B, int n)
 	double **X = (double **) malloc( n *sizeof(double));
 	for( i=0; i<=n-1; i++)
 		*(X+i) = (double *) malloc( n *sizeof(double));
-        
+
 	        for( i=0; i<=n-1; i++)
                     for( j=0; j<=n-1; j++){
                         X[i][j] = 0;
@@ -198,8 +198,8 @@ void JMat_Inv_2x2( double **I, double **Mat)
 
       	tmp = (M[1][0]/M[0][0]);
 	M[1][0] -= (tmp * M[0][0]);	M[1][1] -= (tmp * M[0][1]);
-	I[1][0] -= (tmp * I[0][0]);	I[1][1] -= (tmp * I[0][1]);	
-	
+	I[1][0] -= (tmp * I[0][0]);	I[1][1] -= (tmp * I[0][1]);
+
       	tmp = (M[0][1]/M[1][1]);
 	M[0][0] -= (tmp * M[1][0]);	M[0][1] -= (tmp * M[1][1]);
 	I[0][0] -= (tmp * I[1][0]);	I[0][1] -= (tmp * I[1][1]);
@@ -298,6 +298,7 @@ void ludcmp(double **a, int n, int *index, double *d)
                         a[i][j]=sum;
                 }
                 big=0.0;
+                imax = j;
                 for (i=j;i<=n;i++) {
                         sum=a[i][j];
                         for (k=1;k<j;k++)
@@ -363,11 +364,11 @@ void Matrix_Inverse2( double **invMat, double **Mat, int nn)
         double **col = dmatrix( 1, nn, 1, 1);
 	    for( i=1; i<=nn; i++) col[i][1] = 0.0;
 
-	gaussj( LU, nn, col, 1); 
+	gaussj( LU, nn, col, 1);
 
 	for( j=1; j<=nn; j++)
 	    for( i=1; i<=nn; i++) invMat[i-1][j-1] = (double) LU[i][j];
-			    
+
 	free_dmatrix( col, 1, nn, 1, 1);
 	free_dmatrix( LU, 1, nn, 1, nn);
 
@@ -387,6 +388,7 @@ void gaussj(double **a, int n, double **b, int m)
         for (j=1;j<=n;j++) ipiv[j]=0;
         for (i=1;i<=n;i++) {
                 big=0.0;
+                irow = icol = 0;
                 for (j=1;j<=n;j++)
                         if (ipiv[j] != 1)
                                 for (k=1;k<=n;k++) {

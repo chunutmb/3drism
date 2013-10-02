@@ -8,7 +8,7 @@
 #define ii(x,y,z) ( NZ*NY*(x) + NZ*(y) + (z) )
 #define ii2(x,y,z) ( NZ2*NY2*(x) + NZ2*(y) + (z) )
 
-int NX, NY, NZ; 
+int NX, NY, NZ;
 int NX2, NY2, NZ2;
 int CX=0.0, CY=0.0, CZ=0.0;
 double LX, LY, LZ;
@@ -17,7 +17,7 @@ double TEMP, PND;
 double *Vec;
 double *Vec2;
 
-ENV_PAR SYS;		
+ENV_PAR SYS;
 
 void set_sys( char [] );
 void convert_grid( void );
@@ -31,26 +31,27 @@ int main( int argc, char *argv[] )
 
 	Vec = (double *) get_jh3d_dat( infile, TEMP, PND, SYS);
 
-	printf("\nEnter new NX: "); fscanf( stdin, "%d", &NX2);  
-	printf("\nEnter new NY: "); fscanf( stdin, "%d", &NY2);  
-	printf("\nEnter new NZ: "); fscanf( stdin, "%d", &NZ2);  
-	printf("\n"); 
+	printf("\nEnter new NX: "); fscanf( stdin, "%d", &NX2);
+	printf("\nEnter new NY: "); fscanf( stdin, "%d", &NY2);
+	printf("\nEnter new NZ: "); fscanf( stdin, "%d", &NZ2);
+	printf("\n");
 
 	Vec2 = (double *)malloc( NNN2 *sizeof(double));
-	
-	convert_grid();	
+
+	convert_grid();
 
 	print_jh3d( infile );
 
 	return 0;
 
 }
-	
+
 void set_sys( char infile[] )
 {
 	FILE *in;
-		if( ( in = fopen( infile, "r" )) == NULL )
-			fprintf( stderr, "\nCan't open file:%s\n", infile );
+
+        if( ( in = fopen( infile, "r" )) == NULL )
+        	fprintf( stderr, "\nCan't open file:%s\n", infile );
 
 	/*Begin reading in jh3d.dat file*/
 	fscanf( in, "%d%d%d"   , &NX, &NY, &NZ );
@@ -75,7 +76,7 @@ void convert_grid( void )
 	double tmp;
 	double dx  = ((double) 1/(NX -1)), dy  = ((double) 1/(NY -1)), dz  = ((double) 1/(NZ -1));
 	double dx2 = ((double) 1/(NX2-1)), dy2 = ((double) 1/(NY2-1)), dz2 = ((double) 1/(NZ2-1));
-	
+
         for( x=0; x<=NX2-1; x++)
 	    for( y=0; y<=NY2-1; y++)
 		for( z=0; z<=NZ2-1; z++){
@@ -119,7 +120,7 @@ void convert_grid( void )
 
 
  	     	}
-	
+
 
 }
 
@@ -129,7 +130,7 @@ void convert_grid( void )
 	FILE *out;
 	if ( ( out = fopen( name, "w" )) == NULL)
 		printf( "\nFile could not be opened\n");
-	
+
 	fprintf( out, "%d\n%d\n%d\n", NX2, NY2, NZ2 ); fflush(out);
 	fprintf( out, "%.10f\n%.10f\n%.10f\n", LX, LY, LZ ); fflush(out);
 	fprintf( out, "%.10f\n", TEMP ); fflush(out);
@@ -138,9 +139,9 @@ void convert_grid( void )
 	for( x=0; x<=NX2-1; x++){
 	    for( y=0; y<=NY2-1; y++){
 	      	for( z=0; z<=NZ2-1; z++)
-			fprintf( out, "%d\t%d\t%d\t%.15e\n", x, y, z, Vec2[ NZ2*NY2*x + NZ2*y + z ]); 
+			fprintf( out, "%d\t%d\t%d\t%.15e\n", x, y, z, Vec2[ NZ2*NY2*x + NZ2*y + z ]);
 	    	fprintf( out, "\n");}
 	    fflush(out);}
 	fclose( out );
 }
-	
+

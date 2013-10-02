@@ -5,7 +5,7 @@
 #include "jh_get.h"
 #include "jh_struct.h"
 
-int NX, NY, NZ; 
+int NX, NY, NZ;
 int CX, CY, CZ;
 double LX, LY, LZ;
 int MAX_ITER, N_DUMP, INIT_PIC_ITER, DIIS_SIZE;
@@ -38,7 +38,7 @@ void set_env( char infile[] )
 	CX = (int) get_dval( infile, "CX" );
 	CY = (int) get_dval( infile, "CY" );
 	CZ = (int) get_dval( infile, "CZ" );
-	
+
 	A_ERF	 = (double) get_dval( infile, "A_ERF");
 	CHRG_PCT = (double) get_dval( infile, "CHRG_PCT");
 	CLOSURE  = (char *)get_sval( infile, "CLOSURE");
@@ -64,43 +64,43 @@ void print_env( char outfile[] )
 	char s1[50], s2[50];
 	FILE *out;
 			if( (out = fopen( outfile, "w" )) == NULL )
-			   printf("Can't open %s to write\n", outfile ); 
+			   printf("Can't open %s to write\n", outfile );
 
 		printf("\nEnter variable to change: "); fflush(stdout);
 		scanf("%s", s1 );
 		printf("\nNew value: "); fflush(stdout);
 
-		if( strncmp( "NX", s1 , 2) == 0 ){ 
-			scanf( "%d", &d); 	
-			fprintf( out, "#NX\t\t%d\n",  d);  
+		if( strncmp( "NX", s1 , 2) == 0 ){
+			scanf( "%d", &d);
+			fprintf( out, "#NX\t\t%d\n",  d);
 		} else 	fprintf( out, "#NX\t\t%d\n", NX);
-	 
-		if( strncmp( "NY", s1 , 2) == 0 ){ 
-			scanf( "%d", &d); 	
-			fprintf( out, "#NY\t\t%d\n",  d);  
+
+		if( strncmp( "NY", s1 , 2) == 0 ){
+			scanf( "%d", &d);
+			fprintf( out, "#NY\t\t%d\n",  d);
 		} else 	fprintf( out, "#NY\t\t%d\n", NY);
 
-		if( strncmp( "NZ", s1 , 2) == 0 ){ 
-			scanf( "%d", &d);	
-			fprintf( out, "#NZ\t\t%d\n",  d);  
+		if( strncmp( "NZ", s1 , 2) == 0 ){
+			scanf( "%d", &d);
+			fprintf( out, "#NZ\t\t%d\n",  d);
 		} else 	fprintf( out, "#NZ\t\t%d\n", NZ);
 
-		if( strncmp( "LX", s1 , 2) == 0 ){ 
+		if( strncmp( "LX", s1 , 2) == 0 ){
 			scanf("%lf", &f);
 			fprintf( out, "#LX\t\t%f\n",  f );
 		} else	fprintf( out, "#LX\t\t%f\n", LX );
 
-		if( strncmp( "LY", s1 , 2) == 0 ){ 
+		if( strncmp( "LY", s1 , 2) == 0 ){
 			scanf("%lf", &f);
-			fprintf( out, "#LY\t\t%f\n",  f ); 
+			fprintf( out, "#LY\t\t%f\n",  f );
 		} else	fprintf( out, "#LY\t\t%f\n", LY );
 
-		if( strncmp( "LZ", s1 , 2) == 0 ){ 
-			scanf("%lf", &f);	
-			fprintf( out, "#LZ\t\t%f\n", f ); 
+		if( strncmp( "LZ", s1 , 2) == 0 ){
+			scanf("%lf", &f);
+			fprintf( out, "#LZ\t\t%f\n", f );
 		} else	fprintf( out, "#LZ\t\t%f\n", LZ );
 
-		if( strncmp( "CX", s1 , 2) == 0 ){ 
+		if( strncmp( "CX", s1 , 2) == 0 ){
 			scanf( "%d", &d);
 		  	fprintf( out, "#CX\t\t%d\n", d );
 		} else	fprintf( out, "#CX\t\t%d\n", CX );
@@ -192,7 +192,7 @@ int select_var( void )
 		printf("\n%s-%d", "SOLVER", ++i ); fflush(stdout);
 		printf("\n%s-%d", "T_ERR", ++i ); fflush(stdout);/*24*/
 
-		printf("\nEnter choice: "); 
+		printf("\nEnter choice: ");
 		scanf("%d", &sel);
 
 }

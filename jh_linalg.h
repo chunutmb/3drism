@@ -35,8 +35,8 @@
 		 * m2, input
 		 */
 double   l2Norm_V( double *, int );
-		/*returns the sqrt of (v1.v1), 
-	 	* v1, array 
+		/*returns the sqrt of (v1.v1),
+	 	* v1, array
 	 	* n, size of v1
 	 	*/
   void   lubksb( double ** , int , int * , double *);
@@ -68,33 +68,33 @@ double   l2Norm_V( double *, int );
   void   Matrix_Matrix(  double ** ,  double ** ,  double ** , int );
   		/*multiplies 2 matrices together and returns in a 3rd, m3 = m1.m2
 	 	* m1 is null, returned with m2.m3
-	 	* m2, first matrix 
-	 	* m3, 2nd matrix in 
+	 	* m2, first matrix
+	 	* m3, 2nd matrix in
 	 	* n, rank of m1, m2, m3
 	 	*/
   void   JH_inp1_mat_mat(  double ** ,  double ** , int );
   		/*multiplies 2 matrices together and returns 1st mat
-	 	* m1, first matrix, also returned matrix 
-	 	* m2, 2nd matrix in 
+	 	* m1, first matrix, also returned matrix
+	 	* m2, 2nd matrix in
 	 	* n, rank of m1, m2, m3
 	 	*/
   void   JH_inp2_mat_mat(  double ** ,  double ** , int );
   		/*multiplies 2 matrices together and returns 1st mat
-	 	* m1, first matrix  
-	 	* m2, 2nd matrix, also returned matrix 
+	 	* m1, first matrix
+	 	* m2, 2nd matrix, also returned matrix
 	 	* n, rank of m1, m2, m3
 	 	*/
   void   Matrix_Vec(  double * ,  double ** ,  double * , int, int );
   		/* multiplies a matrix times a vector, v1 = m1.v2
 		 * v1
-		 * m1, matrix 
+		 * m1, matrix
 		 * v2, input vector
 		 * nr, number of rows of m1
 		 * nc, number of columns of m1 ans size of v1 and v2
 		 */
 double * Mul_MV( double **, double *, int, int);
   		/* multiplies a matrix times a vector, return = m1.v1
-		 * m1, matrix 
+		 * m1, matrix
 		 * v1, input vector
 		 * nr, number of rows of m1
 		 * nc, number of columns of m1 ans size of v1

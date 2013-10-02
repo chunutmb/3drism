@@ -12,7 +12,7 @@ void print_jh3d( char name[], double *v, ENV_PAR sys, double temp, double pnd )
 	FILE *out;
 	if ( ( out = fopen( name, "w" )) == NULL)
 		printf( "\nFile could not be opened\n");
-	
+
 	fprintf( out, "%d\n%d\n%d\n", sys.nx, sys.ny, sys.nz ); fflush(out);
 	fprintf( out, "%.10f\n%.10f\n%.10f\n", sys.lx, sys.ly, sys.lz ); fflush(out);
 	fprintf( out, "%.10f\n", temp ); fflush(out);
@@ -21,12 +21,12 @@ void print_jh3d( char name[], double *v, ENV_PAR sys, double temp, double pnd )
 	for( x=0; x<=nx-1; x++){
 	    for( y=0; y<=ny-1; y++){
 	      	for( z=0; z<=nz-1; z++)
-			fprintf( out, "%d\t%d\t%d\t%.15e\n", x, y, z, v[ nz*ny*x + nz*y + z ]); 
+			fprintf( out, "%d\t%d\t%d\t%.15e\n", x, y, z, v[ nz*ny*x + nz*y + z ]);
 	    	fprintf( out, "\n");}
 	    fflush(out);}
 	fclose( out );
 }
-	
+
 
 
 void print_sit( char name[], double *v, ENV_PAR sys )
@@ -38,8 +38,8 @@ void print_sit( char name[], double *v, ENV_PAR sys )
 	FILE *out;
 	if ( ( out = fopen( name, "w" )) == NULL)
 		printf( "\nFile could not be opened\n");
-	
-	double dx = sys.lx/(nx-1); 
+
+	double dx = sys.lx/(nx-1);
 	double dy = sys.ly/(ny-1);
 	double dz = sys.lz/(nz-1);
 
@@ -54,14 +54,14 @@ void print_sit( char name[], double *v, ENV_PAR sys )
 	for( z=0; z<=nz-1; z++)
 	    for( y=0; y<=ny-1; y++)
 		for( x=0; x<=nx-1; x++)
-			fprintf( out, "%.15e\n", v[ nz*ny*x + nz*y + z ]); 
+			fprintf( out, "%.15e\n", v[ nz*ny*x + nz*y + z ]);
 
 	fflush( out );
 	fclose( out );
 }
 
 
-	
+
 void print_cmplx_jh3d( char name[], fftw_complex *v, ENV_PAR sys, double temp, double pnd )
 {
 	int x, y, z;
@@ -72,7 +72,7 @@ void print_cmplx_jh3d( char name[], fftw_complex *v, ENV_PAR sys, double temp, d
 	FILE *out;
 	if ( ( out = fopen( name, "w" )) == NULL)
 		printf( "\nFile could not be opened\n");
-	
+
 	fprintf( out, "%d\n%d\n%d\n", nx, ny, nz ); fflush(out);
 	fprintf( out, "%.10f\n%.10f\n%.10f\n", sys.lx, sys.ly, sys.lz ); fflush(out);
 	fprintf( out, "%.10f\n", temp ); fflush(out);
@@ -81,14 +81,14 @@ void print_cmplx_jh3d( char name[], fftw_complex *v, ENV_PAR sys, double temp, d
 	for( x=0; x<=nx-1; x++){
 	    for( y=0; y<=ny-1; y++){
 	      	for( z=0; z<=nz-1; z++)
-			fprintf( out, "%d\t%d\t%d\t%.14e\t%.14e\n", x, y, z, v[ nz*ny*x + nz*y + z ][0], v[ nz*ny*x + nz*y + z][1]); 
+			fprintf( out, "%d\t%d\t%d\t%.14e\t%.14e\n", x, y, z, v[ nz*ny*x + nz*y + z ][0], v[ nz*ny*x + nz*y + z][1]);
 	    	fprintf( out, "\n");}
 	    fflush(out);}
 	fclose( out );
 }
 
 
-	
+
 void print_cmplx_sit( char name[], fftw_complex *v, ENV_PAR sys )
 {
 	int x, y, z;
@@ -99,8 +99,8 @@ void print_cmplx_sit( char name[], fftw_complex *v, ENV_PAR sys )
 	FILE *out;
 	if ( ( out = fopen( name, "w" )) == NULL)
 		printf( "\nFile could not be opened\n");
-	
-	double dx = sys.lx/(nx-1); 
+
+	double dx = sys.lx/(nx-1);
 	double dy = sys.ly/(ny-1);
 	double dz = sys.lz/(nz-1);
 
@@ -115,8 +115,8 @@ void print_cmplx_sit( char name[], fftw_complex *v, ENV_PAR sys )
   	for( z=0; z<=nz-1; z++)
 	    for( y=0; y<=ny-1; y++)
 		for( x=0; x<=nx-1; x++)
-			fprintf( out, "%.14e\t%.14e\n", v[ nz*ny*x + nz*y + z ][0], v[ nz*ny*x + nz*y + z][1]); 
-	
+			fprintf( out, "%.14e\t%.14e\n", v[ nz*ny*x + nz*y + z ][0], v[ nz*ny*x + nz*y + z][1]);
+
 	fflush( out );
 	fclose( out );
 }
@@ -134,7 +134,7 @@ void print_par1d( U_PAR2 *u, int n_sites )
 
 	for( i=1; i<=n_sites; i++)
 	{
-		fprintf( out, "%d:%s\n", u[i].num, u[i].element); fflush(out); 
+		fprintf( out, "%d:%s\n", u[i].num, u[i].element); fflush(out);
 		fprintf( out, "mol:%d\n", u[i].mol ); fflush(out);
 		fprintf( out, "ep12:%f\n", u[i].ep12 ); fflush(out);
 		fprintf( out, "ep6:%f\n", u[i].ep6 ); fflush(out);
@@ -174,7 +174,7 @@ void print_jh3d_mp( char name[], double *v, int nx, int ny, int nz, double pnd )
 		for( x=0; x<=nx-1; x++){
 	    	  for( y=0; y<=ny-1; y++){
 	      	    for( z=0; z<=nz-1; z++)
-			fprintf( out, "%d\t%d\t%d\t%.14e\n", x, y, z, v[ nz*ny*x + nz*y + z ]); 
+			fprintf( out, "%d\t%d\t%d\t%.14e\n", x, y, z, v[ nz*ny*x + nz*y + z ]);
 	    	    fprintf( out, "\n");}
 	          fflush(out);}
 		fclose( out );
@@ -184,5 +184,5 @@ void print_jh3d_mp( char name[], double *v, int nx, int ny, int nz, double pnd )
 
 }
 *******/
-#endif	
-	
+#endif
+

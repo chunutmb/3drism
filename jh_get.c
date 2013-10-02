@@ -22,15 +22,15 @@ double get_dval( char in_file[], char val[] )
 		if( c1 != '#' )	{
 			idx=0;
 			do{	s1[idx] = c1;	/*get full variable name*/
-				idx++;	
-				c1 = fgetc(in);  
+				idx++;
+				c1 = fgetc(in);
 			} while( (c1 != ' ') && (c1 != '\n') && (c1 != '\t') && (c1 != '\r'));
 			s1[idx] = '\0';
-				
-			if( strncmp( val, s1, idx ) == 0 ){	
+
+			if( strncmp( val, s1, idx ) == 0 ){
 						fscanf( in, "%lf", &tmp );	/*set_temp*/
 						test1=1;
-			} 
+			}
 		}
 		if( test1 == 1 ) break;
 	}
@@ -56,15 +56,15 @@ char * get_sval( char in_file[], char val[] )
 		if( c1 != '#' )	{
 			idx=0;
 			do{	s1[idx] = c1;	/*get full variable name*/
-				idx++;	
-				c1 = fgetc(in);  
+				idx++;
+				c1 = fgetc(in);
 			} while( (c1 != ' ') && (c1 != '\n') && (c1 != '\t') && (c1 != '\r'));
 			s1[idx] = '\0';
-				
-			if( strncmp( val, s1, idx ) == 0 ){	
+
+			if( strncmp( val, s1, idx ) == 0 ){
 						fscanf( in, "%s", s2 );	/*set_temp*/
 						test1=1;
-			} 
+			}
 		}
 		if( test1 == 1 ) break;
 	}
@@ -92,16 +92,16 @@ double * get_array_dval( char in_file[], char val[], int n )
 		if( c1 != '#' )	{
 			idx=0;
 			do{	s1[idx] = c1;	/*get full variable name*/
-				idx++;	
-				c1 = fgetc(in);  
+				idx++;
+				c1 = fgetc(in);
 			} while( (c1 != ' ') && (c1 != '\n') && (c1 != '\t') && (c1 != '\r'));
 			s1[idx] = '\0';
-				
-			if( strncmp( val, s1, idx ) == 0 ){	
+
+			if( strncmp( val, s1, idx ) == 0 ){
 				for( i=0; i<=n-1; i++)
 					fscanf( in, "%lf", (tmp+i) );	/*set_temp*/
 						test1=1;
-			} 
+			}
 		}
 		if( test1 == 1 ) break;
 	}
@@ -132,16 +132,16 @@ char ** get_array_sval( char in_file[], char val[], int n )
 		if( c1 != '#' )	{
 			idx=0;
 			do{	s1[idx] = c1;	/*get full variable name*/
-				idx++;	
-				c1 = fgetc(in);  
+				idx++;
+				c1 = fgetc(in);
 			} while( (c1 != ' ') && (c1 != '\n') && (c1 != '\t') && (c1 != '\r'));
 			s1[idx] = '\0';
-				
-			if( strncmp( val, s1, idx ) == 0 ){	
+
+			if( strncmp( val, s1, idx ) == 0 ){
 				for( i=0; i<=n-1; i++)
 					fscanf( in, "%s", *(s2+i) );	/*set_temp*/
 				test1=1;
-			} 
+			}
 		}
 		if( test1 == 1 ) break;
 	}
@@ -172,7 +172,6 @@ int get_tag( char in_file[], char val[] )
 	int idx;
 	char s1[100], c1;
 	int test1=0;
-	int slen = (int) strlen( val );
 
 
 	while( !feof(in) ){
@@ -181,14 +180,14 @@ int get_tag( char in_file[], char val[] )
 		if( c1 != '#' )	{
 			idx=0;
 			do{	s1[idx] = c1;	/*get full variable name*/
-				idx++;	
-				c1 = fgetc(in);  
+				idx++;
+				c1 = fgetc(in);
 			} while( (c1 != ' ') && (c1 != '\n') && (c1 != '\t') && (c1 != '\r'));
 			s1[idx] = '\0';
-				
-			if( strncmp( val, s1, idx ) == 0 ){	
+
+			if( strncmp( val, s1, idx ) == 0 ){
 						test1=1;
-			}else 
+			}else
 			if( (strncmp( "DIS", s1, idx ) == 0) || (strncmp( "END", s1, idx) == 0 )){
 				break;
 			}
@@ -210,7 +209,7 @@ char * get_ext( char infile[] )
 	int idx = slen -1;
 	int xlen;
 
-		while( infile[idx] != '.' )  
+		while( infile[idx] != '.' )
 			idx--;
 		idx++;
 		xlen = slen - idx;
@@ -235,36 +234,36 @@ double * get_dis( char in_file[], int col )
 	int i, j, i2, idx;
 	int n_pts, dis_num;
 	double radius, tmp;
-	double *hr ;
+	double *hr = NULL;
 	char s1[100], c1;
 
 
 	while( !feof(in) ){
 
 		while( fgetc(in) != '#' );
-		
+
 		c1 = fgetc(in);
 					/*ungetc(char, stream)*/
 		if( c1 != '#' )	{
 			idx=0;
 			/*get full variable name*/
-			do{  
-				s1[idx] = c1;	
-				idx++;	
-				c1 = fgetc(in);  
+			do{
+				s1[idx] = c1;
+				idx++;
+				c1 = fgetc(in);
 			} while( (c1 != ' ') && (c1 != '\n') && (c1 != '\t') && (c1 != '\r'));
 			s1[idx] = '\0';
-							
+
 			if( strncmp( "N_PTS", s1, idx ) == 0 ){		fscanf( in, "%d", &n_pts );
 			} else
 			if( strncmp( "RADIUS", s1, idx ) == 0 ){	fscanf( in, "%lf", &radius );
 			} else
 			if( strncmp( "DIS_NUM", s1, 7 ) == 0){		fscanf( in, "%d", &dis_num );
 			} else
-			if( strncmp( "DIS", s1, idx ) == 0 ){	
+			if( strncmp( "DIS", s1, idx ) == 0 ){
 
 						hr = (double *) malloc( n_pts *sizeof(double));
-		
+
 						for( j=0; j<=n_pts-1; j++){
 							fscanf( in,  "%d", &i2 );
 							for( i=1; i<=dis_num; i++){
@@ -273,8 +272,8 @@ double * get_dis( char in_file[], int col )
 									hr[i2] = tmp;
 							}
 						} break;
-			} 
-		}		
+			}
+		}
 				/*fscanf( in, "%[^#], );*/
 	}
 
@@ -320,9 +319,9 @@ U_PAR * get_par( int *nu_sites, char *in_name )
 		fscanf( in, "%lf", &u[n].charge );
 		fscanf( in, "%lf%lf%lf", &u[n].x, &u[n].y, &u[n].z );
 		n_atoms = n;
-	}	
-	
-	if( n_atoms != *nu_sites ){	
+	}
+
+	if( n_atoms != *nu_sites ){
 		fprintf( stdout, "::Problem with number of sites specified and number read in, %s", in_name);
 		exit(1);
 	}
@@ -359,9 +358,9 @@ U_PAR2 * get_par2( int *nu_sites, char *in_name )
 		fscanf( in, "%lf", &u[n].charge );
 		fscanf( in, "%lf%lf%lf", &u[n].x, &u[n].y, &u[n].z );
 		n_atoms = n;
-	}	
-	
-	if( n_atoms != *nu_sites ){	
+	}
+
+	if( n_atoms != *nu_sites ){
 		fprintf( stdout, "::Problem with number of sites specified and number read in, %s", in_name);
 		exit(1);
 				  }
@@ -396,9 +395,9 @@ U_PAR2 * get_par2_par( char *infile )
 		fscanf( in, "%lf", &u[n].charge );
 		fscanf( in, "%lf%lf%lf", &u[n].x, &u[n].y, &u[n].z );
 		n_atoms = n;
-	}	
-	
-	if( n_atoms != nu_sites ){	
+	}
+
+	if( n_atoms != nu_sites ){
 		fprintf( stdout, "::Problem with number of sites specified and number read in, %s", infile);
 		exit(1);
 	}
@@ -447,7 +446,7 @@ double * get_jh3d( char in_name[], double temp, double pnd, ENV_PAR sys )
 	{
 		fscanf( in,  "%d%d%d", &x, &y, &z );
 		fscanf( in, "%lf", &vec_3d[ nz*ny*x + nz*y + z ] );
-	}	
+	}
 	return vec_3d;
 }
 
@@ -486,7 +485,7 @@ fftw_complex * get_complex_jh3d( char in_name[], double temp, double pnd, ENV_PA
 		fscanf( in,  "%d%d%d", &x, &y, &z );
 		id = nz*ny*x +nz*y + z;
 		fscanf( in, "%lf%lf", &jh_3d[ id ][0], &jh_3d[ id ][1] );
-	}	
+	}
 	return jh_3d;
 }
 
@@ -495,9 +494,10 @@ fftw_complex * get_complex_jh3d( char in_name[], double temp, double pnd, ENV_PA
 double * get_sit( char in_name[], ENV_PAR sys )
 {
 
-	int x, y, z, bx, by, bz, nx, ny, nz;
+	int x, y, z, nx, ny, nz;
+        double bx, by, bz;
 	int status=0, idx;
-	double vox, pnd2;
+	double vox;
 
 	FILE *in;
 		if( ( in = fopen( in_name, "r" )) == NULL )
@@ -520,7 +520,7 @@ double * get_sit( char in_name[], ENV_PAR sys )
 	{
 		if( fscanf( in, "%lf", &vec_3d[ idx ] ) == 1 )
 		   idx++;
-	}	
+	}
 
 	if ( idx != (nx*ny*nz) )
 	{
@@ -540,23 +540,27 @@ double * get_sit( char in_name[], ENV_PAR sys )
 
 fftw_complex * get_complex_sit( char in_name[], ENV_PAR sys )
 {
-	/*GLOBAL*/
-	int x, y, z,bx, by, bz, nx, ny, nz, ix;
-	int status=0, idx;
-	double vox; 
+	int x, y, z, nx, ny, nz;
+        double bx, by, bz;
+	int idx;
+	double vox;
 
 	FILE *in;
-		if( ( in = fopen( in_name, "r" )) == NULL )
-			fprintf( stderr, "\nCan't open file:%s\n", in_name );
+
+        if( ( in = fopen( in_name, "r" )) == NULL ) {
+          fprintf( stderr, "\nCan't open file:%s\n", in_name );
+          exit(1);
+        }
 
 	/*Begin reading in jh3d.dat file*/
 	fscanf( in, "%lf", &vox );
 	fscanf( in, "%lf%lf%lf", &bx, &by, &bz );
 	fscanf( in, "%d%d%d"   , &nx, &ny, &nz );
 
-		if( (sys.nx != nx) || (sys.ny != ny) || (sys.nz != nz) )	status++;
-		if( status != 0 ) { fprintf( stdout, "\n::%s input system values and runtime system values are not the same: exiting\n", in_name);
-				    exit(1);}
+        if  ( (sys.nx != nx) || (sys.ny != ny) || (sys.nz != nz) ) {
+          fprintf(stderr, "\n::%s input system values and runtime system values are not the same: exiting\n", in_name);
+          exit(1);
+        }
 
 	fftw_complex *jh_3d = (fftw_complex *) malloc( nx*ny*nz *sizeof(fftw_complex));
 	fftw_complex *jh2_3d = (fftw_complex *) malloc( nx*ny*nz *sizeof(fftw_complex));
@@ -567,7 +571,7 @@ fftw_complex * get_complex_sit( char in_name[], ENV_PAR sys )
 		if( fscanf( in, "%lf%lf", &jh_3d[ idx ][0], &jh_3d[ idx ][1] ) == 2 )
 		   idx++;
 	}
-	
+
 	if ( idx != (nx*ny*nz) )
 	{
 		fprintf( stdout, "\n:: %s, number of specified points and number of grid points don't match\n", in_name );
@@ -584,7 +588,6 @@ fftw_complex * get_complex_sit( char in_name[], ENV_PAR sys )
 	free( jh_3d );
 
 	return jh2_3d;
-
 }
 
 
@@ -600,10 +603,10 @@ void check_par( U_PAR *u, int n_sites )
 	extern double NX, NY, NZ;
 
 	int i;
-	double dx=LX/NX; 
+	double dx=LX/NX;
 	double dy=LY/NY;
 	double dz=LZ/NZ;
-	
+
 	double x, y, z;
 
 	FILE *out;
@@ -612,7 +615,7 @@ void check_par( U_PAR *u, int n_sites )
 
 	for( i=1; i<=n_sites; i++)
 	{
-		fprintf( out, "%d:%s\n", u[i].num, u[i].element); fflush(out); 
+		fprintf( out, "%d:%s\n", u[i].num, u[i].element); fflush(out);
 		fprintf( out, "ep:%f\n", u[i].ep ); fflush(out);
 		fprintf( out, "sig:%f\n", u[i].sig ); fflush(out);
 		fprintf( out, "Coulomb Charge:%f\n", u[i].charge ); fflush( out );
@@ -622,13 +625,13 @@ void check_par( U_PAR *u, int n_sites )
 
 	for( i=1; i<=n_sites; i++)
 	{
-		x = u[i].x/dx; 
+		x = u[i].x/dx;
 		y = u[i].y/dy;
 		z = u[i].z/dz;
-		
+
 		if( x == 0.00 && y == 0.00 && z == 0.00 )
 		{
-		   printf("\n::ERROR - Element %d is on a grid point\n", i); fflush(stdout);  	
+		   printf("\n::ERROR - Element %d is on a grid point\n", i); fflush(stdout);
 		   exit(1);
 		}
 	}
@@ -639,7 +642,7 @@ void check_par( U_PAR *u, int n_sites )
 
 int get_file_stat( char infile[] )
 {
-	int stat;	
+	int stat;
 	FILE *in;
 		if( ( in = fopen( infile, "r")) == NULL )
 			stat = 0;

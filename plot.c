@@ -1070,18 +1070,6 @@ double r0( int x, int y, int z)
 }
 
 
-double * add_arrays( double *v1, double *v2, int n )
-{
-	int i;
-	double *v3 = (double *) malloc( n *sizeof(double));
-	for( i=0; i<=n-1; i++)
-		v3[i] = v1[i] + v2[i];
-	return v3;
-}
-
-
-
-
 /****************************************************************************************/
 /****************************************************************************************/
 /*											*/
@@ -1143,47 +1131,6 @@ double k0( int x, int y, int z )
 /*				Utilities						*/
 /*											*/
 /****************************************************************************************/
-
-double ** matrix_malloc( int nn, int mm)
-{
-	double **tmp;
-	int i;
-
-	tmp = malloc( nn * sizeof(  double));
-	if( tmp == NULL) printf("\nallocation failed\n");
-
-	for( i=0; i<= nn-1; i++){
-		 *(tmp + i) = malloc(mm * sizeof(  double));
-		if( *(tmp + i) == NULL);
-				};
-	return tmp;
-}
-
-void assign_array( double *out, double *in, int n )
-{
-	int i;
-	for( i=0; i<=n-1; i++)	out[i] = in[i];
-}
-double * assign_1( int n )
-{	int i;
-	double *array; array = (double *) malloc( n* sizeof(double ));
-	for( i=0; i<=n-1; i++) array[i] = 1.0;
-	return array;
-}
-double * assign_0( int n )
-{	int i;
-	double *array; array = (double *) malloc( n* sizeof(double ));
-	for( i=0; i<=n-1; i++) array[i] = 0.0;
-	return array;
-}
-double * sub_arrays( double *v1, double *v2, int n )
-{
-	int i;
-	double *v3 = (double *) malloc( n *sizeof(double));
-	for( i=0; i<= n-1; i++)
-		v3[i] = v1[i] - v2[i];
-	return v3;
-}
 
 void check_array( double *in, int n)
 {

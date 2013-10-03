@@ -20,7 +20,7 @@ TILM = -lm -lfftw3 -lfftw3_threads -lpthread
 # common code
 sources = jh_get.c jh_grid.c jh_linalg.c jh_util.c jh_print.c nrutil.c
 
-targets = 3drism analyze pot
+targets = 3drism analyze pot plot
 targets_mpi = pot_mpi
 targets_thr = 3drism_thr
 

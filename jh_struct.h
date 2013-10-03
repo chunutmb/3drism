@@ -1,6 +1,6 @@
 
 #ifndef JH_STRUCT
-  #define JH_STRUCT
+#define JH_STRUCT
 /*	This file contains all the jh structures
  *
  *

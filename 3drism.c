@@ -42,6 +42,7 @@
 #include "jh_util.h"
 #include "jh_linalg.h"
 #include "jh_print.h"
+#include "binio.h"
 
 /*#define FFTW_THREADS*/
 #ifdef FFTW_THREADS
@@ -2577,6 +2578,8 @@ double * get_3d(char fin[], double temp, double pnd, ENV_PAR sys)
     v3d = get_sit(fin, sys);
   } else if (strncmp("jh3d", FILE_TYPE, 4) == 0) {
     v3d = get_jh3d(fin, temp, pnd, sys);
+  } else if (strncmp("bin3d", FILE_TYPE, 5) == 0) {
+    v3d = readbin3dreal(fin, &sys);
   } else {
     fprintf(stderr, "\nError in get_3d with file type\n"); fflush(stdout);
   }
@@ -2595,6 +2598,8 @@ fftw_complex * get_complex_3d(char fin[], double temp, double pnd, ENV_PAR sys)
     v3d = get_complex_sit(fin, sys);
   } else if (strncmp("jh3d", FILE_TYPE, 4) == 0) {
     v3d = get_complex_jh3d(fin, temp, pnd, sys);
+  } else if (strncmp("bin3d", FILE_TYPE, 5) == 0) {
+    v3d = readbin3dcomplex(fin, &sys);
   } else {
     fprintf(stdout, "\nError in get_3d with file type\n"); fflush(stdout);
   }
@@ -2620,8 +2625,10 @@ void print_3d(char name[], double *v)
 
   if (strncmp("sit", FILE_TYPE, 3) == 0)
     print_sit(name, v, SYS);
-  else if (strncmp("jh3d", FILE_TYPE, 8) == 0)
+  else if (strncmp("jh3d", FILE_TYPE, 4) == 0)
     print_jh3d(name, v, SYS, TEMP, PND[0]);
+  else if (strcmp("bin3d", FILE_TYPE) == 5)
+    writebin3dreal(v, name, &SYS, TEMP, PND[0]);
   else
     printf("\nFile name not specified correctly\n"); fflush(stdout);
 }

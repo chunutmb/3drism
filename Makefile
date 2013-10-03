@@ -23,8 +23,9 @@ sources = jh_get.c jh_grid.c jh_linalg.c jh_util.c jh_print.c nrutil.c
 targets = 3drism analyze pot plot
 targets_mpi = pot_mpi
 targets_thr = 3drism_thr
+indeps = bincvt
 
-all: $(targets) $(targets_mpi) $(targets_thr)
+all: $(targets) $(targets_mpi) $(targets_thr) $(indeps)
 
 $(targets) : % : %.c $(sources)
 	$(CC) $(CFLAGS) -o $@ $^ $(LM)
@@ -35,6 +36,8 @@ $(targets_mpi) : %_mpi : %.c $(sources)
 $(targets_thr) : %_thr : %.c $(sources)
 	$(TICC) $(TICFLAGS) -o $@ $^ $(TILM)
 
+bincvt : bincvt.c binio.h
+	$(CC) $(CFLAGS) -o $@ $<
 
 pack:
 	tar -cvf code_pac.tar *.c *.h Makefile test

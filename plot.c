@@ -161,9 +161,7 @@ int main(int argc, char *argv[])
 void print_2d_file(void)
 {
   int x, y, z, axis, axval;
-  int n[3] = {
-    NX,NY,NZ
-  };
+  int n[3] = {NX, NY, NZ};
   char fname[50];
 
   printf("\nEnter name of output file:");
@@ -219,12 +217,8 @@ void print_2d_file(void)
 
 void print_3d_to_1d_radial_average(void)
 {
-  int n[3] = {
-    NX,NY,NZ
-  };
-  double l[3] = {
-    LX,LY,LZ
-  };
+  int n[3] = {NX, NY, NZ};
+  double l[3] = {LX, LY, LZ};
 
   int n_1d, i, id, x, y, z;
   int nu_sites = NU_SITES;
@@ -290,22 +284,12 @@ void print_3d_to_1d_radial_average(void)
 
 void print_3d_to_1d_cartesian_average(void)
 {
-  int n[3] = {
-    NX,NY,NZ
-  }, c[3] = {
-    CX,CY,CZ
-  };
-  double d[3] = {
-    DX,DY,DZ
-  };
+  int n[3] = {NX, NY, NZ}, c[3] = {CX, CY, CZ};
+  double d[3] = {DX, DY, DZ};
 
   int i, x, y, z, axis, chc;
-  int imin[3] = {
-    0, 0, 0
-  };
-  int imax[3] = {
-    NX - 1, NY - 1, NZ - 1
-  };
+  int imin[3] = {0, 0, 0};
+  int imax[3] = {NX - 1, NY - 1, NZ - 1};
   double min[3];
   for (i = 0; i <= 2; i++)
     min[i] = (-c[i] * d[i]);
@@ -788,9 +772,7 @@ void print_2d_avg_sit(void)
 {
   int x, y, z, axis, axval, nslc;
   double div;
-  int n[3] = {
-    NX,NY,NZ
-  };
+  int n[3] = {NX, NY, NZ};
   double gval;
   char fname[50];
 

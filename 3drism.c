@@ -2700,9 +2700,7 @@ void print_3d(char name[], double *v)
 /**/ void print_jh3d_box(char name[], double *v, int nx, int ny, int nz)
 {
   int x, y, z;
-  double l[3] = {
-    LX,LY,LZ
-  };
+  double l[3] = {LX, LY, LZ};
   double PD = PND[0];
   FILE *out;
   if ((out = fopen(name, "w")) == NULL)
@@ -2730,9 +2728,7 @@ void print_3d(char name[], double *v)
 /**/ void print_jh3d_box3(char name[], double *v, int nx, int ny, int nz)
 {
   int x, y, z;
-  double l[3] = {
-    LX,LY,LZ
-  };
+  double l[3] = {LX, LY, LZ};
   double PD = PND[0];
   FILE *out;
   if ((out = fopen(name, "w")) == NULL)

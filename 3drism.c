@@ -46,7 +46,7 @@
 /*#define FFTW_THREADS*/
 #ifdef FFTW_THREADS
         #include <pthread.h>
-        #define NUM_THREADS 16
+        int NUM_THREADS = 16;
 #endif
 
 #ifdef MPI
@@ -175,6 +175,13 @@ int main(int argc, char *argv[])
     fprintf(stderr, "need three parameters\n");
     exit(1);
   }
+
+#ifdef FFTW_THREADS
+  if (argc >= 5) { /* set up the number of threads */
+    NUM_THREADS = atoi(argv[4]);
+    printf("Using %d threads\n", NUM_THREADS);
+  }
+#endif
 
   set_env(*(argv + 2));
   check_env();

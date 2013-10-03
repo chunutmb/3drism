@@ -70,9 +70,8 @@ double * add_arrays( double *, double *, int );
 int main(int argc, char *argv[])
 {
 
-	int i, j, k, l, x, y, z, cnt=0, *dum;
+	int *dum=NULL;
 	int choice;
-	char *parfile, jh3dfile;
 	char *ext1;
 
 	/*****************************GET SOLUTE PARAMETERS*****************************************/
@@ -167,7 +166,7 @@ int main(int argc, char *argv[])
 
 void print_2d_file( void )
 {
-	int i, x, y, z, axis, axval;
+	int x, y, z, axis, axval;
 	int n[3]={NX,NY,NZ};
 	char fname[50];
 
@@ -294,9 +293,9 @@ void print_3d_to_1d_radial_average( void )
 void print_3d_to_1d_cartesian_average( void )
 {
 	int n[3]={NX,NY,NZ}, c[3]={CX,CY,CZ};
-	double l[3]={LX,LY,LZ}, d[3]={DX,DY,DZ};
+	double d[3]={DX,DY,DZ};
 
-	int i, x, y, z, axis, chc, chc1;
+	int i, x, y, z, axis, chc;
 	int imin[3] = { 0, 0, 0 };
 	int imax[3] = { NX-1, NY-1, NZ-1 };
 	double min[3];
@@ -305,7 +304,6 @@ void print_3d_to_1d_cartesian_average( void )
 	double max[3];
 			for( i=0; i<=2; i++)
 				max[i] = (n[i]-1-c[i])*d[i];
-	double r_x, r_y, r_z;
 	char ax[]="xyz";
 
 	double *gr_1d = (double *) malloc( NZ * sizeof(double));
@@ -434,9 +432,9 @@ void print_3d_to_1d_cartesian_average( void )
 void print_1d_unaveraged( void )
 {
 
-	int axis, x, y, z, i, j;
+	int axis, x, y, z, i;
 	char fname[50];
-	FILE *fout;
+	FILE *fout = NULL;
 
 	printf(" What axis is to be plotted (1->x, 2->y, 3->z): "); fflush( stdout );
 	scanf("%d", &axis );
@@ -490,7 +488,7 @@ void print_1d_unaveraged( void )
 	  } else { printf("\nERROR choosing axis\n\n" ); fflush(stdout); }
 
 
-	fclose( fout );
+	if (fout != NULL) fclose( fout );
 
 }
 
@@ -629,9 +627,9 @@ void print_sit_file( void )
 void print_peak_list( void )
 {
 
-	int i, id=0, x, y, z;
+	int id=0, x, y, z;
 	int chc;
-	double r, rr, dr1d, x0=0.0, y0=0.0, z0=0.0;
+	double x0=0.0, y0=0.0, z0=0.0;
 	char fname[50];
 
 	printf("\nEnter name of output file: ");					scanf( "%s", fname );
@@ -699,9 +697,7 @@ void print_peak_list( void )
 void print_altered_data_set( void )
 {
 
-	int x, y, z, stat=0, schc, chc1;
-	int ix, iy, iz, lx, ly, lz;
-	int nx, ny, nz;
+	int x, y, z, stat=0, chc1;
 	double rix, riy, riz, rs;
 	double xmin, ymin, zmin, xmax, ymax, zmax, rho, ngr, rad;
 
@@ -845,7 +841,7 @@ void print_altered_data_set( void )
 
 void print_2d_avg_sit( void )
 {
-	int i, x, y, z, axis, axval, nslc;
+	int x, y, z, axis, axval, nslc;
 	double div;
 	int n[3]={NX,NY,NZ};
 	double gval;
@@ -943,12 +939,11 @@ void get_3d( char fname[]  )
 {
 	FILE *fin;
 		if( ( fin = fopen( fname, "r")) == NULL )
-			fprintf( stdout, "::Problem opening file containing solUte parameters:%s\n", fname );
+			fprintf( stdout, "::Problem opening file containing solute parameters:%s\n", fname );
 
 	int x, y, z;
-	int bx, by, bz, nx, ny, nz;
-	int status=0, idx;
-	double vox, pnd2;
+	int idx;
+	double vox;
 
 	char *ext;
 	ext = get_ext( fname );
@@ -1128,22 +1123,6 @@ double k0( int x, int y, int z )
 
 /****************************************************************************************/
 /*											*/
-/*				Utilities						*/
-/*											*/
-/****************************************************************************************/
-
-void check_array( double *in, int n)
-{
-	int i;
-	double tmp;
-	if( in == NULL)
-		printf("\nError in array\n"); fflush(stdout);
-	for( i=0; i<=n-1; i++) tmp = in[i];
-}
-
-
-/****************************************************************************************/
-/*											*/
 /*				Printing Routines					*/
 /*											*/
 /****************************************************************************************/
@@ -1170,7 +1149,7 @@ void print_1d( char nameq[], double * xq, int nq, double dq)
 
 void print_2d( char nameq[], double *xq, int u_zq )
 {
-	int x, y, Nx=NX, Ny=NY, Nz=NZ;
+	int x, y, Nx=NX, Ny=NY;
 	FILE *out;
 	if ( ( out = fopen( nameq, "w" )) == NULL)   printf( "\nFile could not be opened\n");
 	for( x=0; x<=Nx-1; x++){

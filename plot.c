@@ -69,7 +69,7 @@ double * add_arrays(double *, double *, int);
 
 int main(int argc, char *argv[])
 {
-  int i, j, k, l, x, y, z, cnt = 0, *dum;
+  int i, j, k, l, x, y, z, cnt = 0, *dum = NULL;
   int choice;
   char *parfile, jh3dfile;
   char *ext1;
@@ -424,7 +424,7 @@ void print_1d_unaveraged(void)
 {
   int axis, x, y, z, i, j;
   char fname[50];
-  FILE *fout;
+  FILE *fout = NULL;
 
   printf(" What axis is to be plotted (1->x, 2->y, 3->z): "); fflush(stdout);
   scanf("%d", &axis);
@@ -469,8 +469,8 @@ void print_1d_unaveraged(void)
     printf("\nERROR choosing axis\n\n"); fflush(stdout);
   }
 
-
-  fclose(fout);
+  if (fout != NULL)
+    fclose(fout);
 }
 
 
@@ -889,8 +889,7 @@ void get_3d(char fname[])
     fprintf(stdout, "::Problem opening file containing solUte parameters:%s\n", fname);
 
   int x, y, z;
-  int bx, by, bz, nx, ny, nz;
-  int status = 0, idx;
+  int idx;
   double vox, pnd2;
 
   char *ext;
@@ -1094,7 +1093,7 @@ void print_1d(char nameq[], double * xq, int nq, double dq)
 
 void print_2d(char nameq[], double *xq, int u_zq)
 {
-  int x, y, Nx = NX, Ny = NY, Nz = NZ;
+  int x, y, Nx = NX, Ny = NY;
   FILE *out;
   if ((out = fopen(nameq, "w")) == NULL) printf("\nFile could not be opened\n");
   for (x = 0; x <= Nx - 1; x++) {

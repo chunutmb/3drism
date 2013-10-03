@@ -85,7 +85,8 @@ __inline static double *readbin3d(const char *fn, ENV_PAR *sys, int cpx,
         sys->nx, sys->ny, sys->nz);
     return NULL;
   }
-  if (cpx < 0) cpx = ival[0] - 1;
+  if (loadsys) cpx = ival[0] - 1;
+  if (iscpx != NULL) *iscpx = cpx;
 
   if (fread(dval, sizeof(double), 5, fp) != 5 
       || (!loadsys && 
@@ -105,7 +106,6 @@ __inline static double *readbin3d(const char *fn, ENV_PAR *sys, int cpx,
     sys->ly = dval[1];
     sys->lz = dval[2];
   }
-  if (iscpx != NULL) *iscpx = cpx;
   if (temp != NULL) *temp = dval[3];
   if (den != NULL) *den = dval[4];
 
@@ -153,6 +153,7 @@ __inline int writejh3d(const double *arr, const char *fn, ENV_PAR *sys,
       fprintf(fp, "\n");
     }
   }
+
   fclose(fp);
   return 0;
 }

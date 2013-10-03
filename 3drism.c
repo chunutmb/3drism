@@ -53,8 +53,8 @@
         #include <mpi.h>
 #endif
 
-#define NNN NX * NY * NZ
-#define ii(x,y,z) (NZ * NY * (x) + NZ * (y) + (z))
+#define NNN ((NX) * (NY) * (NZ))
+#define ii(x, y, z) (NZ * NY * (x) + NZ * (y) + (z))
 
 /*env - values*/
 int NX, NY, NZ;
@@ -912,7 +912,6 @@ void set_b0r(double **);
 
 int set_potential_fields(void)
 {
-  int nnn = NNN;
   double temp = TEMP;
 
   printf("\n...Reading in Potential Functions...");
@@ -952,12 +951,12 @@ int set_potential_fields(void)
   /*scale charged arrays*/
   if (CHRG_PCT < 1.000) {
     for (j = 0; j <= NRSITES - 1; j++)
-      for (i = 0; i <= nnn - 1; i++)
+      for (i = 0; i <= NNN - 1; i++)
         ur_clmb[j][i] *= CHRG_PCT;
 
     if (strncmp("no", EWALD_SUMS, 2) == 0)
       for (j = 0; j <= NRSITES - 1; j++)
-        for (i = 0; i <= nnn - 1; i++) {
+        for (i = 0; i <= NNN - 1; i++) {
           ur_l[j][i] *= CHRG_PCT;
           uk_l[j][i][0] *= CHRG_PCT;
           uk_l[j][i][1] *= CHRG_PCT;
@@ -970,12 +969,12 @@ int set_potential_fields(void)
       printf("\nStarting with a temp_factor = %f\n", RT_TEMP_FACTOR[0]);
 
       for (j = 0; j <= NRSITES - 1; j++) {
-        for (i = 0; i <= nnn - 1; i++) ur_lj[j][i] /= RT_TEMP_FACTOR[0];
-        for (i = 0; i <= nnn - 1; i++) ur_clmb[j][i] /= RT_TEMP_FACTOR[0];
+        for (i = 0; i <= NNN - 1; i++) ur_lj[j][i] /= RT_TEMP_FACTOR[0];
+        for (i = 0; i <= NNN - 1; i++) ur_clmb[j][i] /= RT_TEMP_FACTOR[0];
       }
       if (strncmp("no", EWALD_SUMS, 2) == 0)
         for (j = 0; j <= NRSITES - 1; j++)
-          for (i = 0; i <= nnn - 1; i++) {
+          for (i = 0; i <= NNN - 1; i++) {
             ur_l[j][i] /= RT_TEMP_FACTOR[0];
             uk_l[j][i][0] /= RT_TEMP_FACTOR[0];
             uk_l[j][i][1] /= RT_TEMP_FACTOR[0];
@@ -984,13 +983,13 @@ int set_potential_fields(void)
   } else {
     if (TEMP_FACTOR > 1.00) {
       for (j = 0; j <= NRSITES - 1; j++) {
-        for (i = 0; i <= nnn - 1; i++) ur_lj[j][i] /= TEMP_FACTOR;
-        for (i = 0; i <= nnn - 1; i++) ur_clmb[j][i] /= TEMP_FACTOR;
+        for (i = 0; i <= NNN - 1; i++) ur_lj[j][i] /= TEMP_FACTOR;
+        for (i = 0; i <= NNN - 1; i++) ur_clmb[j][i] /= TEMP_FACTOR;
       }
 
       if (strncmp("no", EWALD_SUMS, 2) == 0)
         for (j = 0; j <= NRSITES - 1; j++)
-          for (i = 0; i <= nnn - 1; i++) {
+          for (i = 0; i <= NNN - 1; i++) {
             ur_l[j][i] /= TEMP_FACTOR;
             uk_l[j][i][0] /= TEMP_FACTOR;
             uk_l[j][i][1] /= TEMP_FACTOR;
@@ -1001,13 +1000,13 @@ int set_potential_fields(void)
 
   double **ur = (double **) malloc(NRSITES * sizeof(double));
   for (i = 0; i <= NRSITES - 1; i++)
-    *(ur + i) = add_arrays(*(ur_lj + i), *(ur_clmb + i), nnn);
+    *(ur + i) = add_arrays(*(ur_lj + i), *(ur_clmb + i), NNN);
 
   double **ur_s = (double **) malloc(NRSITES * sizeof(double));
 
   if (strncmp("no", EWALD_SUMS, 2) == 0)
     for (i = 0; i <= NRSITES - 1; i++)
-      *(ur_s + i) = sub_arrays(*(ur + i), *(ur_l + i), nnn);
+      *(ur_s + i) = sub_arrays(*(ur + i), *(ur_l + i), NNN);
 
   else if (strncmp("yes", EWALD_SUMS, 3) == 0)
     ur_s = ur;
@@ -1579,17 +1578,13 @@ int calc_intramolecular_functions(void)
 
 double * calc_wk(double l_xx)
 {
-  /*EXTERN*/
-  int nnn = NNN, nx = NX, ny = NY, nz = NZ;
-  /*EXTERN*/
-
   int x, y, z;
   double k;
-  double *wk = (double *) malloc(nnn * sizeof(double));
+  double *wk = (double *) malloc(NNN * sizeof(double));
 
-  for (x = 0; x <= nx - 1; x++)
-    for (y = 0; y <= ny - 1; y++)
-      for (z = 0; z <= nz - 1; z++) {
+  for (x = 0; x <= NX - 1; x++)
+    for (y = 0; y <= NY - 1; y++)
+      for (z = 0; z <= NZ - 1; z++) {
         k = k0(x, y, z);
         wk[ii(x,y,z)] = sin(k * l_xx) / (k * l_xx);
       }
@@ -1688,20 +1683,18 @@ int calc_hk_vv_correlations(char hr_fname[])
 
 double * calc_1d_to_3d_shift_fft(double *hr1d, int n_vv, double r_vv)
 {
-  int nx = NX, ny = NY, nz = NZ, nnn = NNN;             /*EXTERN*/
-
   int i, x, y, z;
   int indx;
   double r3, rmd;
 
   double dr = r_vv / (double) (n_vv - 1);
-  double *hk3d = (double *) malloc(nnn * sizeof(double));
-  fftw_complex *rk1 = (fftw_complex *) malloc(nnn * sizeof(fftw_complex));
-  fftw_complex *rk2 = (fftw_complex *) malloc(nnn * sizeof(fftw_complex));
+  double *hk3d = (double *) malloc(NNN * sizeof(double));
+  fftw_complex *rk1 = (fftw_complex *) malloc(NNN * sizeof(fftw_complex));
+  fftw_complex *rk2 = (fftw_complex *) malloc(NNN * sizeof(fftw_complex));
 
-  for (x = 0; x <= nx - 1; x++)
-    for (y = 0; y <= ny - 1; y++)
-      for (z = 0; z <= nz - 1; z++) {
+  for (x = 0; x <= NX - 1; x++)
+    for (y = 0; y <= NY - 1; y++)
+      for (z = 0; z <= NZ - 1; z++) {
         r3 = r0(x, y, z);
         indx = r3 / dr;
         if (indx > (n_vv - 1)) {
@@ -1715,7 +1708,7 @@ double * calc_1d_to_3d_shift_fft(double *hr1d, int n_vv, double r_vv)
   shift_origin_complex(rk1, rk2, SYS);
   fftw_3d(rk2, rk1);
 
-  for (i = 0; i <= nnn - 1; i++) hk3d[i] = rk1[i][0];
+  for (i = 0; i <= NNN - 1; i++) hk3d[i] = rk1[i][0];
 
   free(rk1);
   free(rk2);
@@ -1727,18 +1720,16 @@ double * calc_1d_to_3d_shift_fft(double *hr1d, int n_vv, double r_vv)
 
 double * calc_1d_to_3d_shift(double *hk1d, int n_vv, double r_vv)
 {
-  int nx = NX, ny = NY, nz = NZ, nnn = NNN;             /*EXTERN*/
-
   int x, y, z;
   int indx;
   double k3, rmd;
 
   double dk = (double) Pi / r_vv;
-  double *hk3d = (double *) malloc(nnn * sizeof(double));
+  double *hk3d = (double *) malloc(NNN * sizeof(double));
 
-  for (x = 0; x <= nx - 1; x++)
-    for (y = 0; y <= ny - 1; y++)
-      for (z = 0; z <= nz - 1; z++) {
+  for (x = 0; x <= NX - 1; x++)
+    for (y = 0; y <= NY - 1; y++)
+      for (z = 0; z <= NZ - 1; z++) {
         k3 = k0(x, y, z);
         indx = k3 / dk;
         if (indx > (n_vv - 1)) {
@@ -1775,8 +1766,6 @@ void closure_cr(fftw_complex **, fftw_complex **);
 
 void full_picard_iter(int max_iter)
 {
-  int nnn = NNN;
-
   double *hk3_oo = NULL;                /* [row][col][idx] */
   double *hk3_oh = NULL;
   double *hk3_hh = NULL;
@@ -1816,7 +1805,7 @@ void full_picard_iter(int max_iter)
   /*  Initialize u(r)  */
 
   for (m = 0; m <= NRSITES - 1; m++) {
-    for (i = 0; i <= nnn - 1; i++) {
+    for (i = 0; i <= NNN - 1; i++) {
       cr_s[m][i][0] = CR_S[m][i];
       cr_s[m][i][1] = 0.00;
     }                                                   /*cr = CR*/
@@ -1835,7 +1824,7 @@ void full_picard_iter(int max_iter)
     /* set Im[ c(r) ] = 0 */
     for (m = 0; m <= NRSITES - 1; m++) {
       {
-        for (i = 0; i <= nnn - 1; i++)
+        for (i = 0; i <= NNN - 1; i++)
           cr_s[m][i][1] = 0.00;
 
         /*FFT cr_uo_s and cr_uh_s*/
@@ -1843,7 +1832,7 @@ void full_picard_iter(int max_iter)
 
         /*Long Range*/
         if (strncmp("no", EWALD_SUMS,2) == 0)
-          for (i = 0; i <= nnn - 1; i++) {
+          for (i = 0; i <= NNN - 1; i++) {
             ck[m][i][0] = ck[m][i][0] - uk_l[m][i][0];
             ck[m][i][1] = ck[m][i][1] - uk_l[m][i][1];
           }
@@ -1867,13 +1856,13 @@ void full_picard_iter(int max_iter)
         }
       }
     } else if (TYPE == 1) {
-      for (i = 0; i <= nnn - 1; i++) {
+      for (i = 0; i <= NNN - 1; i++) {
         tk[0][i][0] = ck[0][i][0] * (PND[0] * hk3_oo[i]);                                                       /* O-O */
         tk[0][i][0] += 2 * ck[1][i][0] * (WK_OH[i] + PND[1] * hk3_oh[i]);                                       /* H-O, H2-O */
         tk[0][i][1] = ck[0][i][1] * (PND[0] * hk3_oo[i]);                                                       /* O-O */
         tk[0][i][1] += 2 * ck[1][i][1] * (WK_OH[i] + PND[1] * hk3_oh[i]);                               /* H-O, H2-O */
       }
-      for (i = 0; i <= nnn - 1; i++) {
+      for (i = 0; i <= NNN - 1; i++) {
         tk[1][i][0] = ck[0][i][0] * (WK_OH[i] + PND[0] * hk3_oh[i]);                                           /* O-H */
         tk[1][i][0] += ck[1][i][0] * (WK_HH[i] + 2 * PND[1] * hk3_hh[i]);                                       /* H-H, H2-H */
         tk[1][i][1] = ck[1][i][1] * (WK_HH[i] + 2 * PND[0] * hk3_hh[i]);                                        /* O-H */
@@ -1883,25 +1872,25 @@ void full_picard_iter(int max_iter)
       /* k=0-real, k=1-imag */
       for (k = 0; k <= 1; k++) {
         /* H20 part */
-        for (i = 0; i <= nnn - 1; i++) {
+        for (i = 0; i <= NNN - 1; i++) {
           tk[0][i][k] = ck[0][i][k] * (PND[0] * hk3_oo[i]);                                                             /* O-O */
           tk[0][i][k] += 2 * ck[1][i][k] * (WK_OH[i] + PND[1] * hk3_oh[i]);                                     /* H-O, H2-O */
         }
-        for (i = 0; i <= nnn - 1; i++) {
+        for (i = 0; i <= NNN - 1; i++) {
           tk[1][i][k] = ck[0][i][k] * (WK_OH[i] + PND[0] * hk3_oh[i]);                                                  /* O-H */
           tk[1][i][k] += ck[1][i][k] * (WK_HH[i] + 2 * PND[1] * hk3_hh[i]);                                             /* H-H, H2-H */
         }
 
         /* other contributors to O and H part*/
         for (n = 2; n <= NRSITES - 1; n++)
-          for (i = 0; i <= nnn - 1; i++) {
+          for (i = 0; i <= NNN - 1; i++) {
             tk[0][i][k] += REDUN[n] * ck[n][i][k] * PND[n] * HK3[n][0][i];
             tk[1][i][k] += REDUN[n] * ck[n][i][k] * PND[n] * HK3[n][1][i];
           }
 
         for (m = 2; m <= NRSITES - 1; m++)
           for (n = 0; n <= NRSITES - 1; n++)
-            for (i = 0; i <= nnn - 1; i++)
+            for (i = 0; i <= NNN - 1; i++)
               tk[m][i][k] += REDUN[n] * ck[n][i][k] * PND[n] * HK3[n][m][i];
       }
     }
@@ -1913,7 +1902,7 @@ void full_picard_iter(int max_iter)
     /*Subtract long range pot. int k space, tk -> tk_s*/
     if (strncmp("no", EWALD_SUMS,2) == 0)
       for (m = 0; m <= NRSITES - 1; m++)
-        for (i = 0; i <= nnn - 1; i++) {
+        for (i = 0; i <= NNN - 1; i++) {
           tk[m][i][0] = tk[m][i][0] - uk_l[m][i][0];
           tk[m][i][1] = tk[m][i][1] - uk_l[m][i][1];
         }
@@ -2147,7 +2136,6 @@ int find_rmax(double *, int);
 void mdiis_iter(int max_iter)
 {
   /*EXTERN*/
-  int nnn = NNN;
   double mp = DIIS_MP;
   int n_diis = DIIS_SIZE;
   /*END EXTERN*/
@@ -2167,11 +2155,11 @@ void mdiis_iter(int max_iter)
 
   for (m = 0; m <= NRSITES - 1; m++)
     for (n = 0; n <= n_diis - 1; n++)
-      cr[m][n] = (double *) malloc(nnn * sizeof(double));
+      cr[m][n] = (double *) malloc(NNN * sizeof(double));
 
   for (m = 0; m <= NRSITES - 1; m++)
     for (n = 0; n <= n_diis; n++)
-      res[m][n] = (double *) malloc(nnn * sizeof(double));
+      res[m][n] = (double *) malloc(NNN * sizeof(double));
 
   double **s_mat, *c_vec, *b_vec;       /* sc-b=0 */
   c_vec = (double *) malloc((n_diis + 1) * sizeof(double));
@@ -2201,19 +2189,19 @@ void mdiis_iter(int max_iter)
       /*initial population of cr and r*/
       for (j = 0; j <= n_diis - 1; j++) {
         for (m = 0; m <= NRSITES - 1; m++)
-          for (i = 0; i <= nnn - 1; i++)
+          for (i = 0; i <= NNN - 1; i++)
             cr[m][j][i] = CR_S[m][i];
 
         full_picard_iter(1);
 
         for (m = 0; m <= NRSITES - 1; m++)
-          for (i = 0; i <= nnn - 1; i++)
+          for (i = 0; i <= NNN - 1; i++)
             res[m][j][i] = CR2_S[m][i] - cr[m][j][i];
 
-        r_mag[j] = svector_norm(res[0][j], nnn);
+        r_mag[j] = svector_norm(res[0][j], NNN);
 
         for (m = 1; m <= NRSITES - 1; m++)
-          r_mag[j] += svector_norm(res[m][j], nnn);
+          r_mag[j] += svector_norm(res[m][j], NNN);
       }
       if (MY_RANK == 0)
         for (i = 0; i <= n_diis - 1; i++)
@@ -2225,10 +2213,10 @@ void mdiis_iter(int max_iter)
       /*s_mat***/
       for (j = 0; j <= n_diis - 1; j++)
         for (k = 0; k <= n_diis - 1; k++) {
-          s_mat[j][k] = mul_vv(res[0][j], res[0][k], nnn);
+          s_mat[j][k] = mul_vv(res[0][j], res[0][k], NNN);
 
           for (m = 1; m <= NRSITES - 1; m++)
-            s_mat[j][k] += mul_vv(res[m][j], res[m][k], nnn);
+            s_mat[j][k] += mul_vv(res[m][j], res[m][k], NNN);
         }
       if (MY_RANK == 0)
         printf("\n%d:Starting iterations\n", MY_RANK); fflush(stdout);
@@ -2252,17 +2240,17 @@ void mdiis_iter(int max_iter)
     }
 
     for (m = 0; m <= NRSITES - 1; m++)
-      for (i = 0; i <= nnn - 1; i++)
+      for (i = 0; i <= NNN - 1; i++)
         res[m][n_diis][i] = 0.00;
 
     for (m = 0; m <= NRSITES - 1; m++)
       for (j = 0; j <= n_diis - 1; j++)
-        for (i = 0; i <= nnn - 1; i++)
+        for (i = 0; i <= NNN - 1; i++)
           res[m][n_diis][i] += (c_vec[j] * res[m][j][i]);
 
-    r_mag[n_diis] = svector_norm(res[0][n_diis], nnn);
+    r_mag[n_diis] = svector_norm(res[0][n_diis], NNN);
     for (m = 1; m <= NRSITES - 1; m++)
-      r_mag[n_diis] += svector_norm(res[m][n_diis], nnn);
+      r_mag[n_diis] += svector_norm(res[m][n_diis], NNN);
 
     if (MY_RANK == 0)
       printf("\nError[%d:%d] = %.10e\n", cnt2, cnt, r_mag[n_diis]);
@@ -2271,16 +2259,16 @@ void mdiis_iter(int max_iter)
     test = FERR;
 
     for (m = 0; m <= NRSITES - 1; m++)
-      for (i = 0; i <= nnn - 1; i++)
+      for (i = 0; i <= NNN - 1; i++)
         CR2_S[m][i] = 0.00;
 
     for (m = 0; m <= NRSITES - 1; m++)
       for (j = 0; j <= n_diis - 1; j++)
-        for (i = 0; i <= nnn - 1; i++)
+        for (i = 0; i <= NNN - 1; i++)
           CR2_S[m][i] += (c_vec[j] * cr[m][j][i]);
 
     for (m = 0; m <= NRSITES - 1; m++)
-      for (i = 0; i <= nnn - 1; i++)
+      for (i = 0; i <= NNN - 1; i++)
         CR_S[m][i] = CR2_S[m][i] + (mp * res[m][n_diis][i]);
 
     if (r_mag[n_diis] < T_ERR && RT_CNT >= RT_CHANGES) break;
@@ -2290,28 +2278,28 @@ void mdiis_iter(int max_iter)
     i_rmax = find_rmax(r_mag, n_diis);
 
     for (m = 0; m <= NRSITES - 1; m++)
-      for (i = 0; i <= nnn - 1; i++)
+      for (i = 0; i <= NNN - 1; i++)
         cr[m][i_rmax][i] = CR_S[m][i];
 
     full_picard_iter(1);
 
     for (m = 0; m <= NRSITES - 1; m++)
-      for (i = 0; i <= nnn - 1; i++)
+      for (i = 0; i <= NNN - 1; i++)
         res[m][i_rmax][i] = CR2_S[m][i] - cr[m][i_rmax][i];
 
-    r_mag[i_rmax] = svector_norm(res[0][i_rmax], nnn);
+    r_mag[i_rmax] = svector_norm(res[0][i_rmax], NNN);
     for (m = 1; m <= NRSITES - 1; m++)
-      r_mag[i_rmax] += svector_norm(res[m][i_rmax], nnn);
+      r_mag[i_rmax] += svector_norm(res[m][i_rmax], NNN);
 
     /*update s_mat with new row and column i_rmax*/
     for (i = 0; i <= n_diis - 1; i++) {
-      s_mat[i][i_rmax] = mul_vv(*(res[0] + i), *(res[0] + i_rmax), nnn);
+      s_mat[i][i_rmax] = mul_vv(*(res[0] + i), *(res[0] + i_rmax), NNN);
       for (m = 1; m <= NRSITES - 1; m++)
-        s_mat[i][i_rmax] += mul_vv(*(res[m] + i), *(res[m] + i_rmax), nnn);
+        s_mat[i][i_rmax] += mul_vv(*(res[m] + i), *(res[m] + i_rmax), NNN);
 
-      s_mat[i_rmax][i] = mul_vv(*(res[0] + i_rmax), *(res[0] + i), nnn);
+      s_mat[i_rmax][i] = mul_vv(*(res[0] + i_rmax), *(res[0] + i), NNN);
       for (m = 1; m <= NRSITES - 1; m++)
-        s_mat[i_rmax][i] += mul_vv(*(res[m] + i_rmax), *(res[m] + i), nnn);
+        s_mat[i_rmax][i] += mul_vv(*(res[m] + i_rmax), *(res[m] + i), NNN);
     }
 
     /**RT_CHANGES and bridge functions **/
@@ -2385,26 +2373,6 @@ int find_rmax(double *r_vec, int n)
 /****************************************************************************************/
 /****************************************************************************************/
 /****************************************************************************************/
-/****************************************************************************************/
-/****************************************************************************************/
-/****************************************************************************************/
-/****************************************************************************************/
-/****************************************************************************************/
-/*											*/
-/*				Utilities						*/
-/*											*/
-/****************************************************************************************/
-/****************************************************************************************/
-/****************************************************************************************/
-
-
-
-
-
-
-/****************************************************************************************/
-/****************************************************************************************/
-/****************************************************************************************/
 /*											*/
 /*				FFTW_3D routines					*/
 /*											*/
@@ -2415,14 +2383,8 @@ int find_rmax(double *r_vec, int n)
 
 void fftw_3d(fftw_complex *in_r, fftw_complex *out_k)
 {
-  int nx = NX, ny = NY, nz = NZ, nnn = NNN;             /*EXTERN*/
-  double lx = LX, ly = LY, lz = LZ;                     /*EXTERN*/
-
   int i;
-  double dx = lx / (nx - 1);
-  double dy = ly / (ny - 1);
-  double dz = lz / (nz - 1);
-  double con = dx * dy * dz;
+  double con = DX * DY * DZ;
 
 #ifdef FFTW_THREADS
   fftw_init_threads();
@@ -2430,9 +2392,9 @@ void fftw_3d(fftw_complex *in_r, fftw_complex *out_k)
 #endif
 
   fftw_plan rtok;
-  rtok = fftw_plan_dft_3d(nx, ny, nz, in_r, out_k, FFTW_FORWARD, FFTW_ESTIMATE);
+  rtok = fftw_plan_dft_3d(NX, NY, NZ, in_r, out_k, FFTW_FORWARD, FFTW_ESTIMATE);
   fftw_execute(rtok);
-  for (i = 0; i <= nnn - 1; i++) {
+  for (i = 0; i <= NNN - 1; i++) {
     out_k[i][0] *= con;  out_k[i][1] *= con;
   }                                                                              /*Normalizing*/
 }
@@ -2441,12 +2403,8 @@ void fftw_3d(fftw_complex *in_r, fftw_complex *out_k)
 
 void invfftw_3d(fftw_complex *in_k, fftw_complex *out_r)
 {
-  int nx = NX, ny = NY, nz = NZ, nnn = NNN;             /*EXTERN*/
-  double lx = LX, ly = LY, lz = LZ;                     /*EXTERN*/
-
   int i;
-  double dx = lx / (nx - 1),  dy = ly / (ny - 1),  dz = lz / (nz - 1);
-  double con = dx * dy * dz * nnn;
+  double con = DX * DY * DZ * NNN;
 
 #ifdef FFTW_THREADS
   fftw_init_threads();
@@ -2454,9 +2412,9 @@ void invfftw_3d(fftw_complex *in_k, fftw_complex *out_r)
 #endif
 
   fftw_plan ktor;
-  ktor = fftw_plan_dft_3d(nx, ny, nz, in_k, out_r, FFTW_BACKWARD, FFTW_ESTIMATE);
+  ktor = fftw_plan_dft_3d(NX, NY, NZ, in_k, out_r, FFTW_BACKWARD, FFTW_ESTIMATE);
   fftw_execute(ktor);
-  for (i = 0; i <= nnn - 1; i++) {
+  for (i = 0; i <= NNN - 1; i++) {
     out_r[i][0] *= (1 / con);  out_r[i][1] *= (1 / con);
   }                                                                                  /*Normalizing*/
 }
@@ -2476,7 +2434,7 @@ void invfftw_3d(fftw_complex *in_k, fftw_complex *out_r)
 
 double * calc_3d_to_1d_avg(double *gr3d, double xx, double yy, double zz)
 {
-  int n_1d = 2 * NX, nx = NX, ny = NY, nz = NZ;         /*EXTERN*/
+  int n_1d = 2 * NX;         /*EXTERN*/
   double lx = LX, ly = LY, lz = LZ;                     /*EXTERN*/
 
   int i, x, y, z, id;
@@ -2494,9 +2452,9 @@ double * calc_3d_to_1d_avg(double *gr3d, double xx, double yy, double zz)
   r1d = lmax;
   dr1d = (double) r1d / ((double) (n_1d - 1));
 
-  for (x = 0; x <= nx - 1; x++)
-    for (y = 0; y <= ny - 1; y++)
-      for (z = 0; z < nz - 1; z++) {
+  for (x = 0; x < NX; x++)
+    for (y = 0; y < NY; y++)
+      for (z = 0; z < NZ; z++) {
         r = rx(x, y, z, xx, yy, zz);
         r += (dr1d / 2.0);
         id = (int) (r / dr1d);

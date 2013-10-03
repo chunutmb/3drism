@@ -67,6 +67,9 @@ char *CONFIG_TYPE, *BRIDGE_FUNC1, *BRIDGE_FUNC0, *RBC_FUNC;
 int RT_CHANGES;
 double RT_ERR, *RT_TEMP_FACTOR;
 
+/* these values are to be computed from NX, NY, NZ and LX, LY, LZ */
+double DX, DY, DZ;
+double DKX, DKY, DKZ;
 
 /*dis2 - solvent properties*/
 int NSITES, NRSITES, TYPE, DIS_NUM;
@@ -103,6 +106,13 @@ int UR_S_STAT = 0, UR_L_STAT = 0, UK_L_STAT = 0, HK3_STAT = 0;
 int CR_S_STAT = 0, CR2_S_STAT = 0, TR_S_STAT = 0, HS_STAT = 0;
 int B1R_STAT = 0, EXP_BR_STAT = 0, WK_STAT = 0;
 
+__inline double dsqr(double x) { return x * x; }
+
+__inline double norm3(double x, double y, double z)
+{
+  return sqrt(x * x + y * y + z * z); 
+}
+
 void set_env(char []);
 void set_dis(char []);
 void set_par(char []);
@@ -114,7 +124,6 @@ void check_dis(void);
 void check_par(U_PAR2 *, int);
 
 /*________________Printing Routines____________________*/
-void print_1d(char [], double *, int, double);
 void print_3d(char [], double *);
 void print_jh3d_box(char [], double *, int, int, int);
 void print_jh3d_box3(char [], double *, int, int, int);
@@ -421,6 +430,14 @@ void set_env(char infile[])
   LX = (double) get_dval(infile, "LX");
   LY = (double) get_dval(infile, "LY");
   LZ = (double) get_dval(infile, "LZ");
+  
+  /* pre-compute bin sizes */
+  DX = LX / (NX - 1);
+  DY = LY / (NY - 1);
+  DZ = LZ / (NZ - 1);
+  DKX = 2.0 * Pi / LX;
+  DKY = 2.0 * Pi / LY;
+  DKZ = 2.0 * Pi / LZ;
 
   T_ERR = (double) get_dval(infile, "T_ERR");
   CLOSURE = (char *)get_sval(infile, "CLOSURE");
@@ -1457,7 +1474,7 @@ int calc_rbc(void)
   invfftw_3d(exp_uk_w1, exp_ur_w1);
 
   for (i = 0; i <= NNN - 1; i++)
-    exp_br[0][i] = pow(exp_ur_w1[i][0], 2);
+    exp_br[0][i] = dsqr(exp_ur_w1[i][0]);
 
 
   /**** exp(b(r)) - hydrogen ****/
@@ -1917,7 +1934,7 @@ void full_picard_iter(int max_iter)
     for (m = 0; m <= NRSITES - 1; m++) {
       for (i = 0; i <= NNN - 1; i++)
         t_vec[i] = cr_s[m][i][1] - cr_s[m][i][0];
-      Test += pow(svector_norm(t_vec, NNN), 2) / (double) NRSITES;
+      Test += dsqr(svector_norm(t_vec, NNN)) / (double) NRSITES;
     }
 
     Test = sqrt(Test);
@@ -2088,14 +2105,16 @@ void closure_cr(fftw_complex **cr_s, fftw_complex **tr)
     exit(1);
   }
 
-/*wall*/ if ((strncmp("wall1", CONFIG_TYPE, 5) == 0) && (strlen(CONFIG_TYPE) == 5))
+  /*wall*/ 
+  if ((strncmp("wall1", CONFIG_TYPE, 5) == 0) && (strlen(CONFIG_TYPE) == 5))
     for (m = 0; m <= NRSITES - 1; m++)
       for (i = 0; i <= NNN - 1; i++) {
         if (HS[i] == 0.0)
           cr_s[m][i][1] = -1.0 - tr[m][i][0];
       }
 
-/*wall*/ if ((strncmp("wall2", CONFIG_TYPE, 5) == 0) && (strlen(CONFIG_TYPE) == 5))
+  /*wall*/
+  if ((strncmp("wall2", CONFIG_TYPE, 5) == 0) && (strlen(CONFIG_TYPE) == 5))
     for (m = 0; m <= NRSITES - 1; m++)
       for (i = 0; i <= NNN - 1; i++) {
         if (HSW[m][i] == 0.0)
@@ -2504,80 +2523,34 @@ double * calc_3d_to_1d_avg(double *gr3d, double xx, double yy, double zz)
 /****************************************************************************************/
 /****************************************************************************************/
 
-double rx(int x, int y, int z, double ux, double uy, double uz)
+__inline double rx(int x, int y, int z, double ux, double uy, double uz)
 {
-  double Nx = NX, Ny = NY, Nz = NZ, lx = LX, ly = LY, lz = LZ;  /*EXTERN*/
-  int u_x = CX, u_y = CY, u_z = CZ;
-
-  double tmp;
-  double dx = lx / (Nx - 1);
-  double dy = ly / (Ny - 1);
-  double dz = lz / (Nz - 1);
-
-  tmp = pow(fabs(x * dx - (u_x * dx + ux)), 2);
-  tmp += pow(fabs(y * dy - (u_y * dy + uy)), 2);
-  tmp += pow(fabs(z * dz - (u_z * dz + uz)), 2);
-  tmp = sqrt(tmp);
-
-  return tmp;
+  return norm3(x * DX - (CX * DX + ux),
+               y * DY - (CY * DY + uy),
+               z * DZ - (CZ * DZ + uz));
 }
 
 
 
-double r0(int x, int y, int z)
+__inline double r0(int x, int y, int z)
 {
-  double Nx = NX, Ny = NY, Nz = NZ, lx = LX, ly = LY, lz = LZ;  /*EXTERN*/
-  int u_x = CX, u_y = CY, u_z = CZ;
-
-  double tmp;
-  double dx = lx / (Nx - 1);
-  double dy = ly / (Ny - 1);
-  double dz = lz / (Nz - 1);
-
-  tmp = pow(fabs(x - u_x),2) * pow(dx,2);
-  tmp += pow(fabs(y - u_y),2) * pow(dy,2);
-  tmp += pow(fabs(z - u_z),2) * pow(dz,2);
-  tmp = sqrt(tmp);
-
-  return tmp;
+  return norm3((x - CX) * DX, (y - CY) * DY, (z - CZ) * DZ);
 }
 
 
 
-double kx(int x, int y, int z, double ux, double uy, double uz)
+__inline double kx(int x, int y, int z, double ux, double uy, double uz)
 {
-  double nx = NX, ny = NY, nz = NZ, lx = LX, ly = LY, lz = LZ;  /*EXTERN*/
-  int u_x = CX, u_y = CY, u_z = CZ;
-
-  double tmp;
-  double dkx = 2 * Pi / lx,  dky = 2 * Pi / ly,   dkz = 2 * Pi / lz;
-  double dx = lx / (nx - 1), dy = ly / (ny - 1),  dz = lz / (nz - 1);
-
-  tmp = pow(fabs(x - (u_x + (ux / dx))),2) * pow(dkx,2);
-  tmp += pow(fabs(y - (u_y + (uy / dy))),2) * pow(dky,2);
-  tmp += pow(fabs(z - (u_z + (uz / dz))),2) * pow(dkz,2);
-  tmp = sqrt(tmp);
-  return tmp;
+  return norm3((x - (CX + (ux / DX))) * DKX,
+               (y - (CY + (uy / DY))) * DKY,
+               (z - (CZ + (uz / DZ))) * DKZ);
 }
 
 
 
-double k0(int x, int y, int z)
+__inline double k0(int x, int y, int z)
 {
-  double lx = LX, ly = LY, lz = LZ;     /*EXTERN*/
-  int u_x = CX, u_y = CY, u_z = CZ;
-
-  double tmp;
-  double dkx = 2 * Pi / lx;
-  double dky = 2 * Pi / ly;
-  double dkz = 2 * Pi / lz;
-
-  tmp = pow((x - u_x) * dkx, 2);
-  tmp += pow((y - u_y) * dky, 2);
-  tmp += pow((z - u_z) * dkz, 2);
-  tmp = sqrt(tmp);
-
-  return tmp;
+  return norm3((x - CX) * DKX, (y - CY) * DKY, (z - CZ) * DKZ);
 }
 
 
@@ -2697,7 +2670,7 @@ void print_3d(char name[], double *v)
 
 
 
-/**/ void print_jh3d_box(char name[], double *v, int nx, int ny, int nz)
+void print_jh3d_box(char name[], double *v, int nx, int ny, int nz)
 {
   int x, y, z;
   double l[3] = {LX, LY, LZ};
@@ -2725,7 +2698,7 @@ void print_3d(char name[], double *v)
 
 
 
-/**/ void print_jh3d_box3(char name[], double *v, int nx, int ny, int nz)
+void print_jh3d_box3(char name[], double *v, int nx, int ny, int nz)
 {
   int x, y, z;
   double l[3] = {LX, LY, LZ};
@@ -2787,29 +2760,3 @@ void change_RT(void)
       }
   }
 }
-
-
-
-/************************************************************************************************/
-/************************************************************************************************/
-/************************************************************************************************/
-/************************************************************************************************/
-/************************************************************************************************/
-/************************************************************************************************/
-/************************************************************************************************/
-/************************************************************************************************/
-/************************************ OPTIONAL CODE *********************************************/
-/************************************************************************************************/
-/************************************************************************************************/
-/************************************************************************************************/
-/************************************************************************************************/
-/************************************************************************************************/
-/************************************************************************************************/
-/************************************************************************************************/
-/************************************************************************************************/
-/************************************************************************************************/
-/************************************************************************************************/
-/************************************************************************************************/
-/************************************************************************************************/
-
-

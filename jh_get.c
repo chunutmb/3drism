@@ -421,6 +421,7 @@ double * get_jh3d(char in_name[], double temp, double pnd, ENV_PAR sys)
   int x, y, z, nx, ny, nz;
   int status = 0;
   double lx2, ly2, lz2, temp2, pnd2;
+  double val = 0;
 
   FILE *in;
   if ((in = fopen(in_name, "r")) == NULL)
@@ -444,8 +445,8 @@ double * get_jh3d(char in_name[], double temp, double pnd, ENV_PAR sys)
   double *vec_3d = (double *) malloc(nx * ny * nz * sizeof(double));
 
   while (!feof(in)) {       /*Read in Parameters*/
-    fscanf(in,  "%d%d%d", &x, &y, &z);
-    fscanf(in, "%lf", &vec_3d[nz * ny * x + nz * y + z]);
+    fscanf(in, "%d%d%d%lf", &x, &y, &z, &val);
+    vec_3d[nz * ny * x + nz * y + z] = val;
   }
   return vec_3d;
 }
@@ -462,6 +463,7 @@ fftw_complex * get_complex_jh3d(char in_name[], double temp, double pnd, ENV_PAR
   int x, y, z, nx, ny, nz, id;
   int status = 0;
   double lx2, ly2, lz2, temp2, pnd2;
+  double val1 = 0, val2 = 0;
 
   FILE *in;
   if ((in = fopen(in_name, "r")) == NULL)
@@ -485,9 +487,10 @@ fftw_complex * get_complex_jh3d(char in_name[], double temp, double pnd, ENV_PAR
   fftw_complex *jh_3d = (fftw_complex *) malloc(nx * ny * nz * sizeof(fftw_complex));
 
   while (!feof(in)) {        /*Read in Parameters*/
-    fscanf(in,  "%d%d%d", &x, &y, &z);
+    fscanf(in, "%d%d%d%lf%lf", &x, &y, &z, &val1, &val2);
     id = nz * ny * x + nz * y + z;
-    fscanf(in, "%lf%lf", &jh_3d[id][0], &jh_3d[id][1]);
+    jh_3d[id][0] = val1;
+    jh_3d[id][1] = val2;
   }
   return jh_3d;
 }

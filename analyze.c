@@ -377,20 +377,20 @@ void set_fnames(void)
     sprintf(*(b1r_fnames + j), "b1r_%s.%s", NAMES[j], FILE_TYPE);
   }
 
-                #ifdef TEST
+#ifdef TEST
   for (i = 0; i <= NRSITES - 1; i++) {
     fprintf(stdout, "%s\n",    *(cr_s_fnames + i));
-    fprintf(stdout, "%s\n",      *(gr_fnames + i));
-    fprintf(stdout, "%s\n",   *(ur_lj_fnames + i));
-    fprintf(stdout, "%s\n", *(ur_clmb_fnames + i));
+    fprintf(stdout, "%s\n",    *(gr_fnames + i));
+    fprintf(stdout, "%s\n",    *(ur_lj_fnames + i));
+    fprintf(stdout, "%s\n",    *(ur_clmb_fnames + i));
     fprintf(stdout, "%s\n",    *(ur_l_fnames + i));
-    fprintf(stdout, "%s\n",      *(ur_fnames + i));
+    fprintf(stdout, "%s\n",    *(ur_fnames + i));
     fprintf(stdout, "%s\n",    *(uk_l_fnames + i));
     fprintf(stdout, "%s\n",    *(br_fnames + i));
     fprintf(stdout, "%s\n",    *(b1r_fnames + i));
     printf("\n");
   }
-                #endif
+#endif
 }
 
 

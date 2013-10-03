@@ -143,9 +143,9 @@ int main(int argc, char *argv[])
     check_dis();
     check_env();
   }
-                #ifdef MPI
+#ifdef MPI
   MPI_Barrier(MPI_COMM_WORLD);
-                 #endif
+#endif
 
   /****Reading in Solute site parameters******************************/
 
@@ -156,9 +156,9 @@ int main(int argc, char *argv[])
       printf("Node %d, ...Done!\n", my_rank); fflush(stdout);
     }
 
-                    #ifdef MPI
+#ifdef MPI
     MPI_Barrier(MPI_COMM_WORLD);
-                     #endif
+#endif
   }
 
   int nu_sites = NU_SITES;
@@ -172,10 +172,9 @@ int main(int argc, char *argv[])
       printf("%d:# solute sites - %d ...", my_rank, NU_SITES); fflush(stdout);
       check_par( );
     }
-
-                        #ifdef MPI
+#ifdef MPI
     MPI_Barrier(MPI_COMM_WORLD);
-                         #endif
+#endif
   }
 
   /***********Calculating Energy Fields****************************************/
@@ -189,16 +188,16 @@ int main(int argc, char *argv[])
   for (i = 0; i <= NRSITES - 1; i++) {
     sprintf(s1, "ur_%s_lj", NAMES[i]);
 
-                        #ifndef WCA
+#ifndef WCA
     calc_and_print_ur_lj(U, nu_sites, EP12[i], EP6[i], SIG[i], s1, i);
-                        #else
+#else
     calc_and_print_ur_wca(U, nu_sites, EP12[i], EP6[i], SIG[i], s1, i);
-                        #endif
+#endif
   }
 
-                                #ifdef MPI
+#ifdef MPI
   MPI_Barrier(MPI_COMM_WORLD);
-                                  #endif
+#endif
 
   /***** UR_lj-12 ******/
   if ((strncmp("yes0", BRIDGE_FUNC0,4) == 0) || (strncmp("yes", RBC_FUNC, 3) == 0)) {
@@ -212,9 +211,9 @@ int main(int argc, char *argv[])
     }
   }
 
-                                #ifdef MPI
+#ifdef MPI
   MPI_Barrier(MPI_COMM_WORLD);
-                                  #endif
+#endif
 
   /***** NG's LONG RANGE METHOD ******/
   if (strncmp("no", EWALD_SUMS, 2) == 0) {

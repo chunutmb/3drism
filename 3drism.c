@@ -110,7 +110,7 @@ __inline double dsqr(double x) { return x * x; }
 
 __inline double norm3(double x, double y, double z)
 {
-  return sqrt(x * x + y * y + z * z); 
+  return sqrt(x * x + y * y + z * z);
 }
 
 void set_env(char []);
@@ -208,9 +208,11 @@ int main(int argc, char *argv[])
       printf("Calculating RBC function exp( b(r) )..."); fflush(stdout);
       calc_rbc();                 printf("...done!!!\n\n"); fflush(stdout);
     }
-                                                                                                   #ifdef MPI
+
+#ifdef MPI
   MPI_Barrier(MPI_COMM_WORLD);
-                                                                                                   #endif
+#endif
+
   /*Global Arrays - cr, cr2, tr************************************************/
   printf("%d:Allocating and setting arrays...", MY_RANK); fflush(stdout);
   set_arrays();                           printf("...done!!!\n\n"); fflush(stdout);
@@ -437,7 +439,7 @@ void set_env(char infile[])
   LX = (double) get_dval(infile, "LX");
   LY = (double) get_dval(infile, "LY");
   LZ = (double) get_dval(infile, "LZ");
-  
+
   /* pre-compute bin sizes */
   DX = LX / (NX - 1);
   DY = LY / (NY - 1);
@@ -447,8 +449,8 @@ void set_env(char infile[])
   DKZ = 2.0 * Pi / LZ;
 
   T_ERR = (double) get_dval(infile, "T_ERR");
-  CLOSURE = (char *)get_sval(infile, "CLOSURE");
-  SOLVER = (char *)get_sval(infile, "SOLVER");
+  CLOSURE = (char *) get_sval(infile, "CLOSURE");
+  SOLVER = (char *) get_sval(infile, "SOLVER");
   PIC_MP = (double) get_dval(infile, "PIC_MP");
   if (strncmp("mdiis", SOLVER, 5) == 0) {
     DIIS_SIZE = (int) get_dval(infile,  "DIIS_SIZE");
@@ -667,9 +669,10 @@ void set_sys(void)
     for (i = 0; i <= NRSITES - 1; i++)
       EWALD_BGC[i] = 0.00;
   }
-   #ifdef MPI
+
+#ifdef MPI
   if (MY_RANK == 0)
-   #endif
+#endif
   if (strncmp("yes", EWALD_SUMS, 3) == 0) {
     for (i = 0; i <= NRSITES - 1; i++)
       printf("\nEWALD_BGC_%s = %lf",NAMES[i], EWALD_BGC[i]); fflush(stdout);
@@ -1505,9 +1508,9 @@ int calc_rbc(void)
 
   for (m = 0; m <= NRSITES - 1; m++)
     unshift_origin_inplace(*(EXP_BR + m), SYS);                       /*in, out, in*/
-   #ifdef MPI
+#ifdef MPI
   if (MY_RANK == 0)
-   #endif
+#endif
   for (m = 0; m <= NRSITES - 1; m++) {
     sprintf(s1, "br_%s", NAMES[m]);
     print_3d(s1, *(EXP_BR + m));
@@ -2101,7 +2104,7 @@ void closure_cr(fftw_complex **cr_s, fftw_complex **tr)
     exit(1);
   }
 
-  /*wall*/ 
+  /*wall*/
   if ((strncmp("wall1", CONFIG_TYPE, 5) == 0) && (strlen(CONFIG_TYPE) == 5))
     for (m = 0; m <= NRSITES - 1; m++)
       for (i = 0; i <= NNN - 1; i++) {

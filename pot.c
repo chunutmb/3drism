@@ -30,6 +30,7 @@
 #include "jh_linalg.h"
 #include "jh_util.h"
 #include "jh_print.h"
+#include "binio.h"
 
 /*#define MPI*/
 #ifdef MPI
@@ -1642,8 +1643,10 @@ void print_3d(char name[], double *v, int nx, int ny, int nz, double pnd)
 
   if (strncmp("sit", FILE_TYPE, 3) == 0)
     print_sit(name, v, SYS);
-  else if (strncmp("jh3d", FILE_TYPE, 8) == 0)
+  else if (strncmp("jh3d", FILE_TYPE, 4) == 0)
     print_jh3d(name, v, SYS, TEMP, pnd);
+  else if (strncmp("bin3d", FILE_TYPE, 5) == 0)
+    writebin3dreal(v, name, &SYS, TEMP, pnd);
   else
     printf("\nFile name not specified correctly\n"); fflush(stdout);
 }
@@ -1656,8 +1659,10 @@ void print_cmplx_3d(char name[], fftw_complex *v, int nx, int ny, int nz, double
 
   if (strncmp("sit", FILE_TYPE, 3) == 0)
     print_cmplx_sit(name, v, SYS);
-  else if (strncmp("jh3d", FILE_TYPE, 8) == 0)
+  else if (strncmp("jh3d", FILE_TYPE, 4) == 0)
     print_cmplx_jh3d(name, v, SYS, TEMP, pnd);
+  else if (strncmp("bin3d", FILE_TYPE, 5) == 0)
+    writebin3dcomplex(v, name, &SYS, TEMP, pnd);
   else
     printf("\nFile name not specified correctly\n"); fflush(stdout);
 }

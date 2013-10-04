@@ -37,7 +37,7 @@ $(targets_thr) : %_thr : %.c $(sources)
 	$(TICC) $(TICFLAGS) -o $@ $^ $(TILM)
 
 bincvt : bincvt.c binio.h
-	$(CC) $(CFLAGS) -o $@ $<
+	$(CC) -Wextra $(CFLAGS) -o $@ $<
 
 pack:
 	tar -cvf code_pac.tar *.c *.h Makefile test

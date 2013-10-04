@@ -14,7 +14,7 @@
 
 typedef double dblpair[2];
 
-/* convenience wrappers */
+/* convenient wrappers */
 #define writebin3dcomplex(arr, fn, sys, temp, den) \
   writebin3d((const double *) arr, fn, sys, 1, temp, den)
 #define writebin3dreal(arr, fn, sys, temp, den) \
@@ -49,6 +49,7 @@ __inline static int writebin3d(const double *arr, const char *fn,
   cnt = sys->nx * sys->ny * sys->nz;
   if (cpx) cnt *= 2;
   fwrite(arr, sizeof(double), cnt, fp);
+  fclose(fp);
   return 0;
 }
 
@@ -76,7 +77,7 @@ __inline static double *readbin3d(const char *fn, ENV_PAR *sys, int cpx,
   }
   if (fread(ival, sizeof(int), 4, fp) != 4
       || (!loadsys && ival[0] != cpx + 1)
-      || (!loadsys && 
+      || (!loadsys &&
          (ival[1] != sys->nx
        || ival[2] != sys->ny
        || ival[3] != sys->nz) ) ) {
@@ -88,8 +89,8 @@ __inline static double *readbin3d(const char *fn, ENV_PAR *sys, int cpx,
   if (loadsys) cpx = ival[0] - 1;
   if (iscpx != NULL) *iscpx = cpx;
 
-  if (fread(dval, sizeof(double), 5, fp) != 5 
-      || (!loadsys && 
+  if (fread(dval, sizeof(double), 5, fp) != 5
+      || (!loadsys &&
          (fabs(dval[0] - sys->lx) > 0.001
        || fabs(dval[1] - sys->ly) > 0.001
        || fabs(dval[2] - sys->lz) > 0.001) ) ) {
@@ -97,7 +98,7 @@ __inline static double *readbin3d(const char *fn, ENV_PAR *sys, int cpx,
         fn, dval[0], dval[1], dval[2], sys->lx, sys->ly, sys->lz);
     return NULL;
   }
-  
+
   if (loadsys) {
     sys->nx = ival[1];
     sys->ny = ival[2];
@@ -119,6 +120,7 @@ __inline static double *readbin3d(const char *fn, ENV_PAR *sys, int cpx,
     fprintf(stderr, "%s: cannot read array", fn);
     return NULL;
   }
+  fclose(fp);
   return arr;
 }
 
@@ -153,7 +155,6 @@ __inline int writejh3d(const double *arr, const char *fn, ENV_PAR *sys,
       fprintf(fp, "\n");
     }
   }
-
   fclose(fp);
   return 0;
 }
@@ -210,6 +211,7 @@ __inline double *readjh3d(const char *fn, ENV_PAR *sys,
     }
     if (id == 0) *cpx = cc - 4;
   }
+  fclose(fp);
   return arr;
 }
 

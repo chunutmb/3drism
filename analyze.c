@@ -21,6 +21,7 @@
 #include "jh_struct.h"
 #include "jh_linalg.h"
 #include "jh_print.h"
+#include "binio.h"
 
 /*#define TEST*/
 
@@ -151,10 +152,7 @@ int main(int argc, char *argv[])
   case 8: calc_regional_chem_potential( );        break;
   case 9: calc_electrostatic_field( );            break;
   }
-
-  printf("...DONE!!!\n\n");
-
-
+  printf("...DONE!!!\n");
   return 0;
 }
 
@@ -1814,6 +1812,8 @@ double * get_3d(char fname[])
     v3d = get_sit(fname, SYS);
   } else if (strncmp("jh3d", FILE_TYPE, 4) == 0) {
     v3d = get_jh3d(fname, TEMP, 0.0, SYS);
+  } else if (strncmp("bin3d", FILE_TYPE, 5) == 0) {
+    v3d = readbin3dreal(fname, &SYS);
   } else {
     fprintf(stdout, "\nError in get_3d with file type\n");
   }

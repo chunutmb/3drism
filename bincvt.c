@@ -1,11 +1,10 @@
+/* conversion between .jh3d and .bin3d files */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <time.h>
 #include "binio.h"
-#include "jh_get.c"
-#include "jh_print.c"
 
 
 
@@ -15,10 +14,12 @@ int endswith(const char *fn, const char *ext)
   const char *p;
 
   if ((p = strchr(fn, '.')) == NULL) return 0;
-  return (strcmp(p + 1, ext) == 0);
+  return (strncmp(p + 1, ext, strlen(ext)) == 0);
 }
 
 
+
+/* convert fnin to fnout, both files can be either text or binary */
 static void bincvt(const char *fnin, const char *fnout)
 {
   /* static variables are used to retain values from previous calls */
@@ -65,8 +66,17 @@ static char *mkdefout(const char *fnin)
   if ((fnout = malloc(strlen(fnin) + 8)) == NULL) return NULL;
   strcpy(fnout, fnin);
   p = strchr(fnout, '.');
-  strcpy(p, ".bin3d");
-  printf("deducing the default output for %s is %s...\n", fnin, fnout);
+  if (p != NULL) {
+    p++; /* move behind the dot */
+  } else {
+    p = fnout + strlen(fnout);  /* move to the end end of the string */
+  }
+  if (strncmp(p, "bin", 3) == 0) { /* binary to text */
+    strcpy(p, "jh3d");
+  } else { /* text to binary */
+    strcpy(p, "bin3d");
+  }
+  printf("deducing the default output for %s is %s\n", fnin, fnout);
   return fnout;
 }
 
@@ -99,20 +109,25 @@ static void dolist(const char *fnls)
 int main(int argc, char **argv)
 {
   if (argc < 2) {
-    fprintf(stderr, "%s from_file [to_file]\n", argv[0]);
+    fprintf(stderr, "%s from_file [to_file]\nor\n", argv[0]);
+    fprintf(stderr, "%s -[l|L] [list_file]\n", argv[0]);
+    fprintf(stderr, "-l: text to binary, -L: binary to text\n");
     return -1;
   }
 
-  if (strcmp(argv[1], "-l") == 0) { /* handle a list */
+  if (argv[1][0] == '-') { /* handle a list */
     char *fnls = argv[1] + 2;
     if (*fnls == '\0') {
       if (argc >= 3) {
         fnls = argv[2];
-      } else {
+      } else if (argv[1][1] == 'l') { /* -l means text to binary */
 #define TMPFN "tmp.ls"
         fnls = TMPFN;
         /* using the ls command to list all files */
-        system("ls --color=no u*.jh3d > " TMPFN);
+        system("ls --color=no *.jh3d > " TMPFN);
+      } else if (argv[1][1] == 'L') {
+        fnls = TMPFN;
+        system("ls --color=no *.bin* > " TMPFN);
       }
     }
     dolist(fnls);

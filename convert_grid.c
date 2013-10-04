@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
   printf("\nEnter new NZ: "); fscanf(stdin, "%d", &NZ2);
   printf("\n");
 
-  Vec2 = (double *)malloc(NNN2 * sizeof(double));
+  Vec2 = (double *) malloc(NNN2 * sizeof(double));
 
   convert_grid();
 

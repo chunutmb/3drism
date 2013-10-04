@@ -17,7 +17,11 @@ QUICK TIPS
     uncrustify -c uncrustify.cfg jh_get.c
    A copy of the program uncrustify is saved on /Bossman/cz1/app/bin/
 
-
+4. Conversion between the old .jh3d format and the new .bin3d format
+   is done by the program `bincvt'.  The lazy usage is as follows
+    bincvt -l    # convert *.jh3d to .bin3d
+   and
+    bincvt -L    # convert *.bin3d to .jh3d
 
 
 

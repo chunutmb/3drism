@@ -172,8 +172,8 @@ int main(int argc, char *argv[])
   char s1[100];
   int j, i;
 
-  if (argc < 3) {
-    fprintf(stderr, "need three parameters\n");
+  if (argc < 4) {
+    fprintf(stderr, "need three arguments\n");
     exit(1);
   }
 
@@ -2633,7 +2633,7 @@ void print_3d(char name[], double *v)
   else if (strncmp("bin3d", FILE_TYPE, 5) == 0)
     writebin3dreal(v, name, &SYS, TEMP, PND[0]);
   else
-    printf("File name not specified correctly\n");
+    fprintf(stderr, "Bad FILE_TYPE %s\n", FILE_TYPE);
 }
 
 

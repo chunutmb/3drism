@@ -1,7 +1,7 @@
 CC = gcc
 INC =
 LIB =
-CFLAGS = -O3 -march=native -Wall $(INC) $(LIB)
+CFLAGS = -O3 -march=native -Wall -Wextra $(INC) $(LIB)
 LM = -lm -lfftw3
 
 MPICC = mpicc
@@ -37,13 +37,13 @@ $(targets_thr) : %_thr : %.c $(sources)
 	$(TICC) $(TICFLAGS) -o $@ $^ $(TILM)
 
 bincvt : bincvt.c binio.h
-	$(CC) $(CFLAGS) -Wextra -o $@ $<
+	$(CC) $(CFLAGS) -o $@ $<
 
 pack:
 	tar -cvf code_pac.tar *.c *.h Makefile test
 
 clean:
-	$(RM) *.o a.out *~ $(targets) $(targets_thr) $(targets_mpi)
+	$(RM) *.o a.out *~ $(targets) $(targets_thr) $(targets_mpi) $(indeps)
 
 chmod:
 	chmod a-x *.[ch] Makefile *_3drism *.env README

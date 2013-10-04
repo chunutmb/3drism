@@ -73,6 +73,11 @@ int main(int argc, char *argv[])
   int choice;
   char *ext1;
 
+  if (argc < 2) {
+    fprintf(stderr, "need 1 argument\n");
+    return -1;
+  }
+
   /*****************************GET SOLUTE PARAMETERS*****************************************/
   printf("\nReading from files...\n");
   if (*(argv + 1) == NULL)

@@ -80,8 +80,8 @@ void check_dis(void);
 void check_par(void);
 void check_env(void);
 
-void print_3d(char [], double *, int, int, int, double);
-void print_cmplx_3d(char [], fftw_complex *, int, int, int, double);  /*file_name, array, nx, ny, nz, pnd*/
+void print_3d(char [], double *, double);
+void print_cmplx_3d(char [], fftw_complex *, double);  /*file_name, array, nx, ny, nz, pnd*/
 
 /*_____________U(r) and U(k) subroutines_______________*/
 void calc_and_print_ur_lj(U_PAR2 *, int, double, double, double, char [], int);          /*solute parameters, n_u_sites, ep, sig*/
@@ -119,6 +119,11 @@ double DKX2, DKY2, DKZ2;
 
 int main(int argc, char *argv[])
 {
+  if (argc < 4) {
+    fprintf(stderr, "need 4 arguments\n");
+    return -1;
+  }
+
   set_env(*(argv + 2));
   set_dis(*(argv + 1));
   set_sys();
@@ -588,11 +593,11 @@ void  calc_and_print_ur_lj(U_PAR2 * u, int nu_sites, double ep12, double ep6, do
   for (i = 0; i <= nx_red - 1; i++)
     MPI_Gather((ur + ix(i)), NYZ, MPI_DOUBLE, (ur_ux + ix(i * np)), NYZ, MPI_DOUBLE, root, MPI_COMM_WORLD);
 
-  if (my_rank == 0) print_3d(fname, ur_ux, nx, ny, nz, PND[ns]);
+  if (my_rank == 0) print_3d(fname, ur_ux, PND[ns]);
 
   MPI_Barrier(MPI_COMM_WORLD);
 #else
-  print_3d(fname, ur, nx, ny, nz, PND[ns]);
+  print_3d(fname, ur, PND[ns]);
 #endif
 }
 
@@ -611,6 +616,8 @@ void  calc_and_print_ur_lj12(U_PAR2 * u, int nu_sites, double ep12, double ep6, 
   double r, t = TEMP;
 
   double ep12_ux[nu_sites + 1], sig_ux[nu_sites + 1];
+
+  (void) ep6;
   for (i = 1; i <= nu_sites; i++) ep12_ux[i] = sqrt(u[i].ep12 * ep12);
   for (i = 1; i <= nu_sites; i++) sig_ux[i] = (u[i].sig + sig) / 2;
 
@@ -652,11 +659,11 @@ void  calc_and_print_ur_lj12(U_PAR2 * u, int nu_sites, double ep12, double ep6, 
   for (i = 0; i <= nx_red - 1; i++)
     MPI_Gather((ur + ix(i)), NYZ, MPI_DOUBLE, (ur_ux + ix(i * np)), NYZ, MPI_DOUBLE, root, MPI_COMM_WORLD);
 
-  if (my_rank == 0) print_3d(fname, ur_ux, nx, ny, nz, PND[ns]);
+  if (my_rank == 0) print_3d(fname, ur_ux, PND[ns]);
 
   MPI_Barrier(MPI_COMM_WORLD);
 #else
-  print_3d(fname, ur, nx, ny, nz, PND[ns]);
+  print_3d(fname, ur, PND[ns]);
 #endif
 }
 
@@ -725,11 +732,11 @@ void  calc_and_print_ur_wca(U_PAR2 * u, int nu_sites, double ep12, double ep6, d
   for (i = 0; i <= nx_red - 1; i++)
     MPI_Gather((ur + ix(i)), NYZ, MPI_DOUBLE, (ur_ux + ix(i * np)), NYZ, MPI_DOUBLE, root, MPI_COMM_WORLD);
 
-  if (my_rank == 0) print_3d(fname, ur_ux, nx, ny, nz, PND[ns]);
+  if (my_rank == 0) print_3d(fname, ur_ux, PND[ns]);
 
   MPI_Barrier(MPI_COMM_WORLD);
 #else
-  print_3d(fname, ur, nx, ny, nz, PND[ns]);
+  print_3d(fname, ur, PND[ns]);
 #endif
 }
 #endif
@@ -785,11 +792,11 @@ void calc_and_print_ur_clmb(U_PAR2 *u, int nu_sites, double z_x, char fname[], i
   for (i = 0; i <= nx_red - 1; i++)
     MPI_Gather((ur + ix(i)), NYZ, MPI_DOUBLE, (urx + ix(i * np)), NYZ, MPI_DOUBLE, root, MPI_COMM_WORLD);
 
-  if (my_rank == root) print_3d(fname, urx, nx, ny, nz, PND[ns]);
+  if (my_rank == root) print_3d(fname, urx, PND[ns]);
 
   MPI_Barrier(MPI_COMM_WORLD);
 #else
-  print_3d(fname, ur, nx, ny, nz, PND[ns]);
+  print_3d(fname, ur, PND[ns]);
 #endif
 }
 
@@ -847,10 +854,10 @@ void calc_and_print_ur_erf(U_PAR2 *u, int nu_sites, double z_x, char fname[], in
     MPI_Gather((ur + ix(i)), NYZ, MPI_DOUBLE, (ur_erf + ix(i * np)), NYZ, MPI_DOUBLE, root, MPI_COMM_WORLD);
   /*	ur_erf[ii(u_x,u_y,u_z)] = 0.00;*/
 
-  if (my_rank == root) print_3d(fname, ur_erf, nx, ny, nz, PND[ns]);
+  if (my_rank == root) print_3d(fname, ur_erf, PND[ns]);
   MPI_Barrier(MPI_COMM_WORLD);
 #else
-  print_3d(fname, ur, nx, ny, nz, PND[ns]);
+  print_3d(fname, ur, PND[ns]);
 #endif
 }
 
@@ -950,7 +957,7 @@ void calc_and_print_uk_erf(U_PAR2 *u, int nu_sites, double z_x, char fname[], in
   }
 
   if (my_rank == root)
-    print_cmplx_3d(fname, uk_erf, nx, ny, nz, PND[ns]);
+    print_cmplx_3d(fname, uk_erf, PND[ns]);
 }
 
 
@@ -1102,7 +1109,7 @@ void calc_and_print_ur_clmb_ewald(U_PAR2 *u, int nu_sites, double z_x, char fnam
 
   /* Print to disk file*/
   if (my_rank == root)
-    print_3d(fname, ur1, nx, ny, nz, PND[ns]);
+    print_3d(fname, ur1, PND[ns]);
 
   //fftw routines, maybe put these into a subroutine file
 
@@ -1258,7 +1265,7 @@ void calc_and_print_ur_clmb_ewald_rad(U_PAR2 *u, int nu_sites, double z_x, char 
 
   /* Print to disk file*/
   if (my_rank == root)
-    print_3d(fname, ur1, nx, ny, nz, PND[ns]);
+    print_3d(fname, ur1, PND[ns]);
 
   //fftw routines, maybe put these into a subroutine file
 
@@ -1637,7 +1644,7 @@ double k2(int x, int y, int z)
 
 
 
-void print_3d(char name[], double *v, int nx, int ny, int nz, double pnd)
+void print_3d(char name[], double *v, double pnd)
 {
   sprintf(name, "%s.%s", name, FILE_TYPE);
 
@@ -1648,12 +1655,12 @@ void print_3d(char name[], double *v, int nx, int ny, int nz, double pnd)
   else if (strncmp("bin3d", FILE_TYPE, 5) == 0)
     writebin3dreal(v, name, &SYS, TEMP, pnd);
   else
-    printf("\nFile name not specified correctly\n");
+    fprintf(stderr, "Bad file type [%s]\n", FILE_TYPE);
 }
 
 
 
-void print_cmplx_3d(char name[], fftw_complex *v, int nx, int ny, int nz, double pnd)
+void print_cmplx_3d(char name[], fftw_complex *v, double pnd)
 {
   sprintf(name, "%s.%s", name, FILE_TYPE);
 

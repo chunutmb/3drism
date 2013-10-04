@@ -106,6 +106,11 @@ int main(int argc, char *argv[])
 {
   int choice;
 
+  if (argc < 4) {
+    fprintf(stderr, "need three arguments\n");
+    return -1;
+  }
+
   ARGV1 = *(argv + 1);
   ARGV2 = *(argv + 2);
   ARGV3 = *(argv + 3);

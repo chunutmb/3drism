@@ -1,6 +1,5 @@
-
 #ifndef JH_PRINT
-  #define JH_PRINT
+#define JH_PRINT
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -152,9 +152,9 @@ int main(int argc, char *argv[])
 
   for (i = 0; i <= n_procs - 1; i++) {
     if (my_rank == i) {
-      printf("Processor-%d reading in solute parameters from: \"%s\" of type ", my_rank, ARGV3); fflush(stdout);
+      printf("Processor-%d reading in solute parameters from: \"%s\" of type ", my_rank, ARGV3);
       set_par(*(argv + 3));
-      printf("Node %d, ...Done!\n", my_rank); fflush(stdout);
+      printf("Node %d, ...Done!\n", my_rank);
     }
 
 #ifdef MPI
@@ -165,12 +165,12 @@ int main(int argc, char *argv[])
   int nu_sites = NU_SITES;
 
   if (my_rank == 0)
-    printf("\n"); fflush(stdout);
+    printf("\n");
 
   /*checking solute.par*/
   for (i = 0; i <= n_procs - 1; i++) {
     if (my_rank == i) {
-      printf("%d:# solute sites - %d ...", my_rank, NU_SITES); fflush(stdout);
+      printf("%d:# solute sites - %d ...", my_rank, NU_SITES);
       check_par( );
     }
 #ifdef MPI
@@ -180,11 +180,11 @@ int main(int argc, char *argv[])
 
   /***********Calculating Energy Fields****************************************/
   if (my_rank == 0)
-    printf("\nCalculating potential fields with %d processors...\n", n_procs); fflush(stdout);
+    printf("\nCalculating potential fields with %d processors...\n", n_procs);
 
   /********LENNARD-JONES term*****************/
   if (my_rank == 0)
-    printf("...u(r)_lj..."); fflush(stdout);
+    printf("...u(r)_lj...");
 
   for (i = 0; i <= NRSITES - 1; i++) {
     sprintf(s1, "ur_%s_lj", NAMES[i]);
@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
   /***** UR_lj-12 ******/
   if ((strncmp("yes0", BRIDGE_FUNC0,4) == 0) || (strncmp("yes", RBC_FUNC, 3) == 0)) {
     if (my_rank == 0)
-      printf("\n...u(r)_lj-12..."); fflush(stdout);
+      printf("\n...u(r)_lj-12...");
 
     for (i = 0; i <= NRSITES - 1; i++) {
       sprintf(s1, "ur_%s_lj12", NAMES[i]);
@@ -220,7 +220,7 @@ int main(int argc, char *argv[])
   if (strncmp("no", EWALD_SUMS, 2) == 0) {
     /*****COULOMB term*****/
     if (my_rank == 0)
-      printf("\n...u(r)_clmb..."); fflush(stdout);
+      printf("\n...u(r)_clmb...");
     for (i = 0; i <= NRSITES - 1; i++) {
       sprintf(s1, "ur_%s_clmb", NAMES[i]);
       calc_and_print_ur_clmb(U,  nu_sites, CHARGE[i], s1, i);
@@ -228,7 +228,7 @@ int main(int argc, char *argv[])
 
     /*****long range (r) term*****/
     if (my_rank == 0)
-      printf("\n...u(r)_l..."); fflush(stdout);
+      printf("\n...u(r)_l...");
     for (i = 0; i <= NRSITES - 1; i++) {
       sprintf(s1, "ur_%s_l", NAMES[i]);
       calc_and_print_ur_erf(U, nu_sites, CHARGE[i], s1, i);
@@ -236,7 +236,7 @@ int main(int argc, char *argv[])
 
     /*****long range (k) term*****/
     if (my_rank == 0)
-      printf("\n...u(k)_l..."); fflush(stdout);
+      printf("\n...u(k)_l...");
     for (i = 0; i <= NRSITES - 1; i++) {
       sprintf(s1, "uk_%s_l", NAMES[i]);
       calc_and_print_uk_erf(U, nu_sites, CHARGE[i], s1, i);
@@ -246,14 +246,14 @@ int main(int argc, char *argv[])
   if (strncmp("yes", EWALD_SUMS, 3) == 0) {
     /*Coulomb-Ewald term*/
     if (my_rank == 0)
-      printf("\n...u(r)_clmb_ewald..."); fflush(stdout);
+      printf("\n...u(r)_clmb_ewald...");
     for (i = 0; i <= NRSITES - 1; i++) {
       sprintf(s1, "ur_%s_clmb", NAMES[i]);
       calc_and_print_ur_clmb_ewald(U,  nu_sites, CHARGE[i], s1, i);
     }
 
     if (my_rank == 0)
-      printf("\n...u(r)_ewald_corrections..."); fflush(stdout);
+      printf("\n...u(r)_ewald_corrections...");
     if (my_rank == 0)
       calc_and_print_ewald_corrections();
 
@@ -261,14 +261,14 @@ int main(int argc, char *argv[])
   } else if (strncmp("rad", EWALD_SUMS, 3) == 0) {
     /*Coulomb-Ewald term*/
     if (my_rank == 0)
-      printf("\n...u(r)_clmb_ewald..."); fflush(stdout);
+      printf("\n...u(r)_clmb_ewald...");
     for (i = 0; i <= NRSITES - 1; i++) {
       sprintf(s1, "ur_%s_clmb", NAMES[i]);
       calc_and_print_ur_clmb_ewald_rad(U,  nu_sites, CHARGE[i], s1, i);
     }
 
     if (my_rank == 0)
-      printf("\n...u(r)_ewald_corrections..."); fflush(stdout);
+      printf("\n...u(r)_ewald_corrections...");
     if (my_rank == 0)
       calc_and_print_ewald_corrections();
   } else {
@@ -281,7 +281,7 @@ int main(int argc, char *argv[])
 
 
   if (my_rank == 0)
-    printf("\n.....DONE!\n\n"); fflush(stdout);
+    printf("\n.....DONE!\n\n");
 
 #ifdef MPI
   MPI_Finalize();
@@ -324,27 +324,27 @@ void check_dis(void)
   printf("\n****************************************\n");
   printf("*		DIS		       *\n");
   printf("****************************************\n");
-  printf("\nTEMP = %lf", TEMP); fflush(stdout);
-  printf("\nTYPE = %d", TYPE); fflush(stdout);
-  printf("\nNSITES = %d", NSITES); fflush(stdout);
-  printf("\nNRSITES = %d", NRSITES); fflush(stdout);
-  printf("\nDIS_NUM = %d", DIS_NUM); fflush(stdout);
+  printf("\nTEMP = %lf", TEMP);
+  printf("\nTYPE = %d", TYPE);
+  printf("\nNSITES = %d", NSITES);
+  printf("\nNRSITES = %d", NRSITES);
+  printf("\nDIS_NUM = %d", DIS_NUM);
   for (i = 0; i <= NRSITES - 1; i++)
-    printf("\nREDUN_%s = %lf", NAMES[i], REDUN[i]); fflush(stdout);
+    printf("\nREDUN_%s = %lf", NAMES[i], REDUN[i]);
   for (i = 0; i <= NRSITES - 1; i++)
-    printf("\nPND_%s = %lf", NAMES[i], PND[i]); fflush(stdout);
+    printf("\nPND_%s = %lf", NAMES[i], PND[i]);
   for (i = 0; i <= NRSITES - 1; i++)
-    printf("\nEP12_%s = %lf",NAMES[i], EP12[i]); fflush(stdout);
+    printf("\nEP12_%s = %lf",NAMES[i], EP12[i]);
   for (i = 0; i <= NRSITES - 1; i++)
-    printf("\nEP6_%s = %lf",NAMES[i], EP6[i]); fflush(stdout);
+    printf("\nEP6_%s = %lf",NAMES[i], EP6[i]);
   for (i = 0; i <= NRSITES - 1; i++)
-    printf("\nSIG_%s = %lf", NAMES[i], SIG[i]); fflush(stdout);
+    printf("\nSIG_%s = %lf", NAMES[i], SIG[i]);
   for (i = 0; i <= NRSITES - 1; i++)
-    printf("\nCHARGE_%s = %lf",NAMES[i], CHARGE[i]); fflush(stdout);
+    printf("\nCHARGE_%s = %lf",NAMES[i], CHARGE[i]);
   for (i = 0; i <= NRSITES - 1; i++)
-    printf("\nNAMES_%d = %s", i, NAMES[i]); fflush(stdout);
-  printf("\n"); fflush(stdout);
-  printf("****************************************\n\n"); fflush(stdout);
+    printf("\nNAMES_%d = %s", i, NAMES[i]);
+  printf("\n");
+  printf("****************************************\n\n");
 }
 
 
@@ -407,19 +407,19 @@ void check_env(void)
   printf("\n****************************************\n");
   printf("*		ENV		       *\n");
   printf("****************************************\n");
-  printf("\nNX = %d\nNY = %d\nNZ = %d\n", NX, NY, NZ);    fflush(stdout);
-  printf("\nLX = %f\nLY = %f\nLZ = %f\n", LX, LY, LZ);    fflush(stdout);
-  printf("\nCX = %d\nCY = %d\nCZ = %d\n\n", CX, CY, CZ);  fflush(stdout);
+  printf("\nNX = %d\nNY = %d\nNZ = %d\n", NX, NY, NZ);
+  printf("\nLX = %f\nLY = %f\nLZ = %f\n", LX, LY, LZ);
+  printf("\nCX = %d\nCY = %d\nCZ = %d\n\n", CX, CY, CZ);
 
-  printf("A_ERF = %f \n", A_ERF);                        fflush(stdout);
-  printf("EWALD_SUMS = %s \n", EWALD_SUMS);             fflush(stdout);
-  printf("CLOSURE = %s \n", CLOSURE);                   fflush(stdout);
-  printf("GAUSS_SMEAR = %f \n", GAUSS_SMEAR);            fflush(stdout);
-  printf("CONFIG_TYPE = %s \n", CONFIG_TYPE);            fflush(stdout);
-  printf("BRIDGE_FUNC0 = %s \n", BRIDGE_FUNC0);          fflush(stdout);
-  printf("FILE_TYPE = %s \n", FILE_TYPE);                fflush(stdout);
-  printf("RBC_FUNC = %s \n", RBC_FUNC);                  fflush(stdout);
-  printf("****************************************\n\n"); fflush(stdout);
+  printf("A_ERF = %f \n", A_ERF);
+  printf("EWALD_SUMS = %s \n", EWALD_SUMS);
+  printf("CLOSURE = %s \n", CLOSURE);
+  printf("GAUSS_SMEAR = %f \n", GAUSS_SMEAR);
+  printf("CONFIG_TYPE = %s \n", CONFIG_TYPE);
+  printf("BRIDGE_FUNC0 = %s \n", BRIDGE_FUNC0);
+  printf("FILE_TYPE = %s \n", FILE_TYPE);
+  printf("RBC_FUNC = %s \n", RBC_FUNC);
+  printf("****************************************\n\n");
 }
 
 
@@ -492,13 +492,13 @@ void check_par(void)
     z = U[i].z - iz * dz;
 
     if (x == 0.00 && y == 0.00 && z == 0.00) {
-      printf("\n::ERROR - Element %d is on a grid point\n", i); fflush(stdout);
+      printf("\n::ERROR - Element %d is on a grid point\n", i);
       /*exit(1);*/ stat = 1;
     }
   }
 
   if (stat != 1)
-    printf("...checked out OK!!!\n"); fflush(stdout);
+    printf("...checked out OK!!!\n");
 }
 
 
@@ -1371,9 +1371,9 @@ void calc_and_print_ewald_corrections(void)
           e_sum[i][k - 1] += CHARGE[j] * PND[j] * hk_mat[j][i][k - 1] * REDUN[j] / (k * k * dk * dk);
       }
   } else if (TYPE == 3) {
-    printf("\nHasn't been done yet.\n");    fflush(stdout);
+    printf("\nHasn't been done yet.\n");
   } else {
-    printf("\nNO type specified - bye!\n");         fflush(stdout);
+    printf("\nNO type specified - bye!\n");
     exit(1);
   }
 #ifndef MPI
@@ -1648,7 +1648,7 @@ void print_3d(char name[], double *v, int nx, int ny, int nz, double pnd)
   else if (strncmp("bin3d", FILE_TYPE, 5) == 0)
     writebin3dreal(v, name, &SYS, TEMP, pnd);
   else
-    printf("\nFile name not specified correctly\n"); fflush(stdout);
+    printf("\nFile name not specified correctly\n");
 }
 
 
@@ -1664,7 +1664,7 @@ void print_cmplx_3d(char name[], fftw_complex *v, int nx, int ny, int nz, double
   else if (strncmp("bin3d", FILE_TYPE, 5) == 0)
     writebin3dcomplex(v, name, &SYS, TEMP, pnd);
   else
-    printf("\nFile name not specified correctly\n"); fflush(stdout);
+    printf("\nFile name not specified correctly\n");
 }
 
 

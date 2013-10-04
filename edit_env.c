@@ -67,9 +67,9 @@ void print_env(char outfile[])
   if ((out = fopen(outfile, "w")) == NULL)
     printf("Can't open %s to write\n", outfile);
 
-  printf("\nEnter variable to change: "); fflush(stdout);
+  printf("\nEnter variable to change: ");
   scanf("%s", s1);
-  printf("\nNew value: "); fflush(stdout);
+  printf("\nNew value: ");
 
   if (strncmp("NX", s1, 2) == 0) {
     scanf("%d", &d);
@@ -184,30 +184,30 @@ int select_var(void)
   int i = 0;
   int sel;
 
-  printf("\n%s-%d", "NX", ++i); fflush(stdout);
-  printf("\n%s-%d", "NY", ++i); fflush(stdout);
-  printf("\n%s-%d", "NZ", ++i); fflush(stdout);
-  printf("\n%s-%d", "LX", ++i); fflush(stdout);
-  printf("\n%s-%d", "LY", ++i); fflush(stdout);               /*5*/
-  printf("\n%s-%d", "LZ", ++i); fflush(stdout);
-  printf("\n%s-%d", "CX", ++i); fflush(stdout);
-  printf("\n%s-%d", "CY", ++i); fflush(stdout);
-  printf("\n%s-%d", "CZ", ++i); fflush(stdout);                /*9*/
-  printf("\n%s-%d", "A_ERF", ++i); fflush(stdout);               /*10*/
-  printf("\n%s-%d", "CHRG_PCT", ++i); fflush(stdout);
-  printf("\n%s-%d", "CLOSURE", ++i); fflush(stdout);
-  printf("\n%s-%d", "CONFIG_TYPE", ++i); fflush(stdout);
-  printf("\n%s-%d", "CONTINUE", ++i); fflush(stdout);
-  printf("\n%s-%d", "DIIS_SIZE", ++i); fflush(stdout);               /*15*/
-  printf("\n%s-%d", "DIIS_MP", ++i); fflush(stdout);
-  printf("\n%s-%d", "EWALD_SUMS", ++i); fflush(stdout);
-  printf("\n%s-%d", "GAUSS_SMEAR", ++i); fflush(stdout);
-  printf("\n%s-%d", "INIT_PIC_ITER", ++i); fflush(stdout);
-  printf("\n%s-%d", "MAX_ITER", ++i); fflush(stdout);               /*20*/
-  printf("\n%s-%d", "N_DUMP", ++i); fflush(stdout);
-  printf("\n%s-%d", "PIC_MP", ++i); fflush(stdout);
-  printf("\n%s-%d", "SOLVER", ++i); fflush(stdout);
-  printf("\n%s-%d", "T_ERR", ++i); fflush(stdout);               /*24*/
+  printf("\n%s-%d", "NX", ++i);
+  printf("\n%s-%d", "NY", ++i);
+  printf("\n%s-%d", "NZ", ++i);
+  printf("\n%s-%d", "LX", ++i);
+  printf("\n%s-%d", "LY", ++i);               /*5*/
+  printf("\n%s-%d", "LZ", ++i);
+  printf("\n%s-%d", "CX", ++i);
+  printf("\n%s-%d", "CY", ++i);
+  printf("\n%s-%d", "CZ", ++i);                /*9*/
+  printf("\n%s-%d", "A_ERF", ++i);               /*10*/
+  printf("\n%s-%d", "CHRG_PCT", ++i);
+  printf("\n%s-%d", "CLOSURE", ++i);
+  printf("\n%s-%d", "CONFIG_TYPE", ++i);
+  printf("\n%s-%d", "CONTINUE", ++i);
+  printf("\n%s-%d", "DIIS_SIZE", ++i);               /*15*/
+  printf("\n%s-%d", "DIIS_MP", ++i);
+  printf("\n%s-%d", "EWALD_SUMS", ++i);
+  printf("\n%s-%d", "GAUSS_SMEAR", ++i);
+  printf("\n%s-%d", "INIT_PIC_ITER", ++i);
+  printf("\n%s-%d", "MAX_ITER", ++i);               /*20*/
+  printf("\n%s-%d", "N_DUMP", ++i);
+  printf("\n%s-%d", "PIC_MP", ++i);
+  printf("\n%s-%d", "SOLVER", ++i);
+  printf("\n%s-%d", "T_ERR", ++i);               /*24*/
 
   printf("\nEnter choice: ");
   scanf("%d", &sel);

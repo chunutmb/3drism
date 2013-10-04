@@ -111,11 +111,11 @@ int main(int argc, char *argv[])
 
 
   /*****************************GET SOLUTE PARAMETERS*****************************************/
-  printf("\nReading in solute parameters...\n"); fflush(stdout);
+  printf("\nReading in solute parameters...\n");
 
   set_par(*(argv + 3));
   check_parameters();
-  printf("...done!!!\n\n"); fflush(stdout);
+  printf("...done!!!\n\n");
   set_dis(*(argv + 1));
   set_env(*(argv + 2));
   set_sys();
@@ -135,9 +135,9 @@ int main(int argc, char *argv[])
   printf("7: Calculate solute energy\n");
   printf("8: Calculate regional chemical potential\n");
   printf("9: Calculate electrostatic field (solute+solvent)\n");
-  printf("\nENTER CHOICE:"); fflush(stdout);
+  printf("\nENTER CHOICE:");
   scanf("%d", &choice);
-  printf("\nPerforming operation...\n"); fflush(stdout);
+  printf("\nPerforming operation...\n");
 
   switch (choice) {
   case 0: break;
@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
   case 9: calc_electrostatic_field( );            break;
   }
 
-  printf("...DONE!!!\n\n"); fflush(stdout);
+  printf("...DONE!!!\n\n");
 
 
   return 0;
@@ -273,12 +273,12 @@ void set_par(char infile[])
     printf("reading from a par2 file...");
     PAR_TYPE = 2;
     U2 = (U_PAR2 *) get_par2(nu_s, infile);
-    printf("done \n"); fflush(stdout);
+    printf("done \n");
   } else {
     printf("reading from a par file...");
     PAR_TYPE = 1;
     U1 = (U_PAR *) get_par(nu_s, infile);
-    printf("done \n"); fflush(stdout);
+    printf("done \n");
   }
 
   NU_SITES = *nu_s;
@@ -423,16 +423,16 @@ void calc_internal_energy(void)
 
   FILE *out;
   if ((out = fopen("internal_energy.dat", "w")) == NULL)
-    printf("\nUnable to open internal energy file\n"); fflush(stdout);
+    printf("\nUnable to open internal energy file\n");
 
 
-  printf("\nReading gr files"); fflush(stdout);
+  printf("\nReading gr files");
   for (i = 0; i <= NRSITES - 1; i++)
     *(gr + i) = (double *) get_3d(*(gr_fnames + i));
-  printf("\nReading ur_lj files"); fflush(stdout);
+  printf("\nReading ur_lj files");
   for (i = 0; i <= NRSITES - 1; i++)
     *(ur_lj + i) = (double *) get_3d(*(ur_lj_fnames + i));
-  printf("\nReading ur_clmb files\n"); fflush(stdout);
+  printf("\nReading ur_clmb files\n");
   for (i = 0; i <= NRSITES - 1; i++)
     *(ur_clmb + i) = (double *) get_3d(*(ur_clmb_fnames + i));
 
@@ -441,7 +441,7 @@ void calc_internal_energy(void)
     scanf("%d", &def);
     printf("\nEnter directory to retrieve non-ewald potential: ");
     scanf("%s", sdir);
-    printf("Reading new ur_clmb files"); fflush(stdout);
+    printf("Reading new ur_clmb files");
     for (i = 0; i <= NRSITES - 1; i++) {
       sprintf(s1,"%s/%s", sdir, *(ur_clmb_fnames + i));
       *(ur_clmb2 + i) = (double *) get_3d(s1);
@@ -501,7 +501,7 @@ void calc_internal_energy(void)
   tot_energy = lj_energy + clmb_energy;
 
 
-  printf("\nPrinting to internal_energy.dat\n"); fflush(stdout);
+  printf("\nPrinting to internal_energy.dat\n");
   fprintf(out, "*************************************************\n");
   fprintf(out, "*                                              *\n");
   fprintf(out, "*             Internal Energy                  *\n");
@@ -583,30 +583,30 @@ void calc_chem_potential(void)
   double **ur_clmb2 = (double **) malloc(NRSITES * sizeof(double));
 
 
-  printf("\nReading gr files"); fflush(stdout);
+  printf("\nReading gr files");
   for (i = 0; i <= NRSITES - 1; i++)
     *(gr + i) = (double *) get_3d(*(gr_fnames + i));
-  printf("\nReading cr_s  files"); fflush(stdout);
+  printf("\nReading cr_s  files");
   for (i = 0; i <= NRSITES - 1; i++)
     *(cr_s + i) = (double *) get_3d(*(cr_s_fnames + i));
-  printf("\nReading ur_l files"); fflush(stdout);
+  printf("\nReading ur_l files");
   if (strncmp("no", EWALD_SUMS, 2) == 0)
     for (i = 0; i <= NRSITES - 1; i++)
       *(ur_l + i) = (double *) get_3d(*(ur_l_fnames + i));
 
   if (strncmp("yes", RBC_FUNC, 3) == 0) {
-    printf("\nReading rbc files");  fflush(stdout);
+    printf("\nReading rbc files");
     for (i = 0; i <= NRSITES - 1; i++)
       *(br + i) = (double *) get_3d(*(br_fnames + i));
   }
 
   if ((strncmp("yes", BRIDGE_FUNC1, 3) == 0) || (strncmp("yes", BRIDGE_FUNC0, 3) == 0)) {
-    printf("\nReading br1 files");  fflush(stdout);
+    printf("\nReading br1 files");
     for (i = 0; i <= NRSITES - 1; i++)
       *(b1r + i) = (double *) get_3d(*(b1r_fnames + i));
   }
 
-  printf("\n...Done!!!\n");       fflush(stdout);
+  printf("\n...Done!!!\n");
 
   if (strncmp("no", EWALD_SUMS, 2) == 0)
     for (j = 0; j <= NRSITES - 1; j++)
@@ -620,7 +620,7 @@ void calc_chem_potential(void)
 
     printf("\nEnter directory to retrieve non-ewald (real) potentials: ");
     scanf("%s", sdir);
-    printf("Reading new ur_clmb files"); fflush(stdout);
+    printf("Reading new ur_clmb files");
     for (i = 0; i <= NRSITES - 1; i++) {
       sprintf(s1,"%s/%s", sdir, *(ur_clmb_fnames + i));
       *(ur_clmb2 + i) = (double *) get_3d(s1);
@@ -680,7 +680,7 @@ void calc_chem_potential(void)
         ux_int[j][i] *= (-1.0) * log(gr[j][i] - (cr_s[j][i]));                                  /* -ln( 1+h(r)-c(r) )  */
       }
     } else
-      printf("\nNO closure specified\n"); fflush(stdout);
+      printf("\nNO closure specified\n");
   }
   /*calc integrals */
 
@@ -712,8 +712,8 @@ void calc_chem_potential(void)
 
   FILE *out;
   if ((out = fopen("chemical_potential.dat", "w")) == NULL) {
-    printf("\nFile chemical_potential.dat could not be opened"); fflush(stdout);
-  } else printf("\nWriting to chemical_potential.dat\n\n"); fflush(stdout);
+    printf("\nFile chemical_potential.dat could not be opened");
+  } else printf("\nWriting to chemical_potential.dat\n\n");
 
   fprintf(out, "*************************************************\n");
   fprintf(out, "*                                              *\n");
@@ -778,13 +778,13 @@ void calc_coordination_number(void)
   printf("\nENTER CHOICE: ");
   scanf("%d", &sid); printf("\n");
   sid--;
-  printf("Reading file \"%s\" ...", *(gr_fnames + sid));         fflush(stdout);
+  printf("Reading file \"%s\" ...", *(gr_fnames + sid));
   double *gr = (double *) get_3d(*(gr_fnames + sid));         printf("...Done!!!\n");
 
   printf("\nWhat type of Integral, (1: Cartesian)  (2: Spherical)\nEnter number #: ");    scanf("%d", &int_meth);
 
   if (int_meth == 1) {
-    printf("\nUse \"%s\" for integral limits (1: yes) or (2: no) : ", ARGV2); fflush(stdout);
+    printf("\nUse \"%s\" for integral limits (1: yes) or (2: no) : ", ARGV2);
     scanf("%d", &il);
     printf("\n");
 
@@ -847,7 +847,7 @@ void calc_coordination_number(void)
           }
         }
   } else {
-    printf("No integration method specified, exiting\n"); fflush(stdout);
+    printf("No integration method specified, exiting\n");
   }
 
   coor_num *= (REDUN[sid] * PND[sid] * dr3d);
@@ -870,9 +870,9 @@ void calc_coordination_number(void)
   fprintf(out, "Integral limits (Angstroms) : \n\n");
   if (int_meth == 1) {
     fprintf(out, "\tBox with the following limits:\n");
-    fprintf(out, "\t\tx-min -> %f \t x-max -> %f \n", xmin, xmax);                        fflush(stdout);
-    fprintf(out, "\t\ty-min -> %f \t y-max -> %f \n", ymin, ymax);                        fflush(stdout);
-    fprintf(out, "\t\tz-min -> %f \t z-max -> %f \n\n", zmin, zmax);              fflush(stdout);
+    fprintf(out, "\t\tx-min -> %f \t x-max -> %f \n", xmin, xmax);
+    fprintf(out, "\t\ty-min -> %f \t y-max -> %f \n", ymin, ymax);
+    fprintf(out, "\t\tz-min -> %f \t z-max -> %f \n\n", zmin, zmax);
   } else if (int_meth == 2) {
     fprintf(out,"\tSphere center at:\n");
     fprintf(out,"\t\tx-origin -> %f\n", xorg);
@@ -881,11 +881,11 @@ void calc_coordination_number(void)
     fprintf(out,"\t\twith radius -> %f\n\n", rad);
   }
   fprintf(out, "Number of points -> %d \n", tmp_num);
-  fprintf(out, "Number density -> %f\n\n", PND[sid]);                                   fflush(stdout);
-  fprintf(out, "Coordinated Number of \"%s\" sites -> %f\n", *(NAMES + sid), coor_num);        fflush(stdout);
+  fprintf(out, "Number density -> %f\n\n", PND[sid]);
+  fprintf(out, "Coordinated Number of \"%s\" sites -> %f\n", *(NAMES + sid), coor_num);
   fprintf(out, "\n*************************************************\n\n");
 
-  printf("\n\nCoordinated Number of \"%s\" sites -> %f\n\n", *(NAMES + sid), coor_num);        fflush(stdout);
+  printf("\n\nCoordinated Number of \"%s\" sites -> %f\n\n", *(NAMES + sid), coor_num);
 }
 
 
@@ -924,13 +924,13 @@ void calc_regional_internal_energy(void)
   for (i = 0; i <= NNN - 1; i++)
     yorn[i] = 0.0;
 
-  printf("\nReading gr files"); fflush(stdout);
+  printf("\nReading gr files");
   for (i = 0; i <= NRSITES - 1; i++)
     *(gr + i) = (double *) get_3d(*(gr_fnames + i));
-  printf("\nReading ur_lj files"); fflush(stdout);
+  printf("\nReading ur_lj files");
   for (i = 0; i <= NRSITES - 1; i++)
     *(ur_lj + i) = (double *) get_3d(*(ur_lj_fnames + i));
-  printf("\nReading ur_clmb files\n"); fflush(stdout);
+  printf("\nReading ur_clmb files\n");
   for (i = 0; i <= NRSITES - 1; i++)
     *(ur_clmb + i) = (double *) get_3d(*(ur_clmb_fnames + i));
 
@@ -939,7 +939,7 @@ void calc_regional_internal_energy(void)
     scanf("%d", &def);
     printf("\nEnter directory to retrieve non-ewald potential: ");
     scanf("%s", sdir);
-    printf("Reading new ur_clmb files"); fflush(stdout);
+    printf("Reading new ur_clmb files");
     for (i = 0; i <= NRSITES - 1; i++) {
       sprintf(s1,"%s/%s", sdir, *(ur_clmb_fnames + i));
       *(ur_clmb2 + i) = (double *) get_3d(s1);
@@ -955,7 +955,7 @@ void calc_regional_internal_energy(void)
 
 
   if (int_meth == 1) {
-    printf("\nUse \"%s\" for integral limits (1: yes) or (2: no) : ", ARGV2); fflush(stdout);
+    printf("\nUse \"%s\" for integral limits (1: yes) or (2: no) : ", ARGV2);
     scanf("%d", &il);
     printf("\n");
 
@@ -1016,7 +1016,7 @@ void calc_regional_internal_energy(void)
           }
         }
   } else {
-    printf("No integration method specified, exiting\n"); fflush(stdout);
+    printf("No integration method specified, exiting\n");
   }
 
 
@@ -1075,7 +1075,7 @@ void calc_regional_internal_energy(void)
 
 
   printf("\nNumber of points -> %d \n", tmp_num);
-  printf("\nPrinting to regional_internal_energy.dat\n"); fflush(stdout);
+  printf("\nPrinting to regional_internal_energy.dat\n");
   fprintf(out, "*************************************************\n");
   fprintf(out, "*                                              *\n");
   fprintf(out, "*            Regional Internal Energy	       *\n");
@@ -1087,9 +1087,9 @@ void calc_regional_internal_energy(void)
   fprintf(out, "Integral limits (Angstroms) : \n\n");
   if (int_meth == 1) {
     fprintf(out, "\tBox with the following limits:\n");
-    fprintf(out, "\t\tx-min -> %f \t x-max -> %f \n", xmin, xmax);                        fflush(stdout);
-    fprintf(out, "\t\ty-min -> %f \t y-max -> %f \n", ymin, ymax);                        fflush(stdout);
-    fprintf(out, "\t\tz-min -> %f \t z-max -> %f \n\n", zmin, zmax);              fflush(stdout);
+    fprintf(out, "\t\tx-min -> %f \t x-max -> %f \n", xmin, xmax);
+    fprintf(out, "\t\ty-min -> %f \t y-max -> %f \n", ymin, ymax);
+    fprintf(out, "\t\tz-min -> %f \t z-max -> %f \n\n", zmin, zmax);
   } else if (int_meth == 2) {
     fprintf(out,"\tSphere center at:\n");
     fprintf(out,"\t\tx-origin -> %f\n", xorg);
@@ -1161,9 +1161,9 @@ void calc_excluded_volume(void)
 
   FILE *out;
   if ((out = fopen("excluded_volume.dat", "w")) == NULL)
-    printf("\nUnable to open excluded volume file\n"); fflush(stdout);
+    printf("\nUnable to open excluded volume file\n");
 
-  printf("\nReading gr files..."); fflush(stdout);
+  printf("\nReading gr files...");
   for (i = 0; i <= NRSITES - 1; i++)
     *(gr + i) = (double *) get_3d(*(gr_fnames + i));
   printf("DONE!\n");
@@ -1195,12 +1195,12 @@ void calc_excluded_volume(void)
   fprintf(out, "\n");
 
   for (i = 0; i <= NRSITES - 1; i++)
-    fprintf(out, "Excluded volume of %s sites (A^3) -> %lf\n", NAMES[i], ex_vol[i]); fflush(stdout);
+    fprintf(out, "Excluded volume of %s sites (A^3) -> %lf\n", NAMES[i], ex_vol[i]);
   fprintf(out, "\n");
 
   printf("\ncritical g(r) value: %e\n\n", crit);
   for (i = 0; i <= NRSITES - 1; i++)
-    printf("Excluded volume of %s sites (A^3) -> %lf\n", NAMES[i], ex_vol[i]); fflush(stdout);
+    printf("Excluded volume of %s sites (A^3) -> %lf\n", NAMES[i], ex_vol[i]);
   printf("\n");
 }
 
@@ -1220,12 +1220,12 @@ void calc_molar_volume(void)
 
   FILE *out;
   if ((out = fopen("molar_volume.dat", "w")) == NULL)
-    printf("\nUnable to open molar volume file\n"); fflush(stdout);
+    printf("\nUnable to open molar volume file\n");
 
   printf("\nEnter gr.jh3d file name: ");  scanf("%s", gr_3d_name); printf("\n");
 
   printf("\n\nReading in %s", gr_3d_name);
-  gr_3d = (double *) get_3d(gr_3d_name);       printf("...DONE!!!\n");                fflush(stdout);
+  gr_3d = (double *) get_3d(gr_3d_name);       printf("...DONE!!!\n");
 
   double pnd = 1;       /* TODO: determine the pnd, missing from the original code */
   double lx = LX, ly = LY, lz = LZ;
@@ -1245,16 +1245,16 @@ void calc_molar_volume(void)
   fprintf(out, "*********************************\n");
   fprintf(out, "*	molar volume (L/mol)   *\n");
   fprintf(out, "*********************************\n");
-  fprintf(out, "\nparameters -> (%lf, %lf, %lf, %lf)\n", pnd, lx, ly, lz); fflush(stdout);
-  fprintf(out, "\nbox volume (A^3)           -> %lf\n", vol); fflush(stdout);
-  fprintf(out, "\n# bulk water in volume     -> %lf", nt); fflush(stdout);
-  fprintf(out, "\n# hydrated water in volume -> %lf\n", nv); fflush(stdout);
-  fprintf(out, "\nchange in Volume (A^3)         -> %lf\n", m_v); fflush(stdout);
+  fprintf(out, "\nparameters -> (%lf, %lf, %lf, %lf)\n", pnd, lx, ly, lz);
+  fprintf(out, "\nbox volume (A^3)           -> %lf\n", vol);
+  fprintf(out, "\n# bulk water in volume     -> %lf", nt);
+  fprintf(out, "\n# hydrated water in volume -> %lf\n", nv);
+  fprintf(out, "\nchange in Volume (A^3)         -> %lf\n", m_v);
 
   m_v = m_v * 1e-30 * 6.02e23 * 1000;
 
-  fprintf(out,    "\nPartial molar Volume (L/mol) -> %lf\n", m_v); fflush(out);
-  fprintf(stdout, "\nPartial molar Volume (L/mol) -> %lf\n", m_v); fflush(stdout);
+  fprintf(out,    "\nPartial molar Volume (L/mol) -> %lf\n", m_v);
+  fprintf(stdout, "\nPartial molar Volume (L/mol) -> %lf\n", m_v);
 }
 
 
@@ -1278,7 +1278,7 @@ void calc_solute_energy(void)
   FILE *out;
 
   if ((out = fopen("solute_energy.dat", "w")) == NULL)
-    printf("\nError opening solute_energy.dat\n"); fflush(stdout);
+    printf("\nError opening solute_energy.dat\n");
 
   printf("\nEnter screening constant: ");         scanf("%lf", &diel); printf("\n");
 
@@ -1384,7 +1384,7 @@ void calc_regional_chem_potential(void)
 
 
   if (int_meth == 1) {
-    printf("\nUse \"%s\" for integral limits (1: yes) or (2: no) : ", ARGV2); fflush(stdout);
+    printf("\nUse \"%s\" for integral limits (1: yes) or (2: no) : ", ARGV2);
     scanf("%d", &il);
     printf("\n");
 
@@ -1445,34 +1445,34 @@ void calc_regional_chem_potential(void)
           }
         }
   } else {
-    printf("No integration method specified, exiting\n"); fflush(stdout);
+    printf("No integration method specified, exiting\n");
   }
 
 
-  printf("\nReading gr files"); fflush(stdout);
+  printf("\nReading gr files");
   for (i = 0; i <= NRSITES - 1; i++)
     *(gr + i) = (double *) get_3d(*(gr_fnames + i));
-  printf("\nReading cr_s  files"); fflush(stdout);
+  printf("\nReading cr_s  files");
   for (i = 0; i <= NRSITES - 1; i++)
     *(cr_s + i) = (double *) get_3d(*(cr_s_fnames + i));
-  printf("\nReading ur_l files"); fflush(stdout);
+  printf("\nReading ur_l files");
   if (strncmp("no", EWALD_SUMS, 2) == 0)
     for (i = 0; i <= NRSITES - 1; i++)
       *(ur_l + i) = (double *) get_3d(*(ur_l_fnames + i));
 
   if (strncmp("yes", RBC_FUNC, 3) == 0) {
-    printf("\nReading rbc files");  fflush(stdout);
+    printf("\nReading rbc files");
     for (i = 0; i <= NRSITES - 1; i++)
       *(br + i) = (double *) get_3d(*(br_fnames + i));
   }
 
   if ((strncmp("yes", BRIDGE_FUNC1, 3) == 0) || (strncmp("yes", BRIDGE_FUNC0, 3) == 0)) {
-    printf("\nReading br1 files");  fflush(stdout);
+    printf("\nReading br1 files");
     for (i = 0; i <= NRSITES - 1; i++)
       *(b1r + i) = (double *) get_3d(*(b1r_fnames + i));
   }
 
-  printf("\n...Done!!!\n");       fflush(stdout);
+  printf("\n...Done!!!\n");
 
   if (strncmp("no", EWALD_SUMS, 2) == 0)
     for (j = 0; j <= NRSITES - 1; j++)
@@ -1486,7 +1486,7 @@ void calc_regional_chem_potential(void)
 
     printf("\nEnter directory to retrieve non-ewald (real) potentials: ");
     scanf("%s", sdir);
-    printf("Reading new ur_clmb files"); fflush(stdout);
+    printf("Reading new ur_clmb files");
     for (i = 0; i <= NRSITES - 1; i++) {
       sprintf(s1,"%s/%s", sdir, *(ur_clmb_fnames + i));
       *(ur_clmb2 + i) = (double *) get_3d(s1);
@@ -1546,7 +1546,7 @@ void calc_regional_chem_potential(void)
         ux_int[j][i] *= (-1.0) * log(gr[j][i] - (cr_s[j][i]));                                  /* -ln( 1+h(r)-c(r) )  */
       }
     } else
-      printf("\nNO closure specified\n"); fflush(stdout);
+      printf("\nNO closure specified\n");
   }
   /*calc integrals */
 
@@ -1578,8 +1578,8 @@ void calc_regional_chem_potential(void)
 
   FILE *out;
   if ((out = fopen("regional_chemical_potential.dat", "w")) == NULL) {
-    printf("\nFile regional_chemical_potential.dat could not be opened"); fflush(stdout);
-  } else printf("\nWriting to regional_chemical_potential.dat\n\n"); fflush(stdout);
+    printf("\nFile regional_chemical_potential.dat could not be opened");
+  } else printf("\nWriting to regional_chemical_potential.dat\n\n");
 
   fprintf(out, "*************************************************\n");
   fprintf(out, "*                                              *\n");
@@ -1593,9 +1593,9 @@ void calc_regional_chem_potential(void)
   fprintf(out, "Integral limits (Angstroms) : \n\n");
   if (int_meth == 1) {
     fprintf(out, "\tBox with the following limits:\n");
-    fprintf(out, "\t\tx-min -> %f \t x-max -> %f \n", xmin, xmax);                        fflush(stdout);
-    fprintf(out, "\t\ty-min -> %f \t y-max -> %f \n", ymin, ymax);                        fflush(stdout);
-    fprintf(out, "\t\tz-min -> %f \t z-max -> %f \n\n", zmin, zmax);              fflush(stdout);
+    fprintf(out, "\t\tx-min -> %f \t x-max -> %f \n", xmin, xmax);
+    fprintf(out, "\t\ty-min -> %f \t y-max -> %f \n", ymin, ymax);
+    fprintf(out, "\t\tz-min -> %f \t z-max -> %f \n\n", zmin, zmax);
   } else if (int_meth == 2) {
     fprintf(out,"\tSphere center at:\n");
     fprintf(out,"\t\tx-origin -> %f\n", xorg);
@@ -1665,9 +1665,9 @@ void calc_electrostatic_field(void)
   printf("Enter units of ouput: (1) KT");
   printf("\nYou have chosen option-1 since it is the only choice\n");
 
-  /* only need one */ printf("\nReading ur_clmb files\n"); fflush(stdout);
+  /* only need one */ printf("\nReading ur_clmb files\n");
   ur_clmb_u = (double *) get_3d(*(ur_clmb_fnames + 0));
-  printf("\nReading gr files"); fflush(stdout);
+  printf("\nReading gr files");
   for (i = 0; i <= NRSITES - 1; i++)
     *(gr + i) = (double *) get_3d(*(gr_fnames + i));
 
@@ -1676,7 +1676,7 @@ void calc_electrostatic_field(void)
     scanf("%d", &def);
     printf("\nEnter directory to retrieve non-ewald potential: ");
     scanf("%s", sdir);
-    printf("Reading new ur_clmb files"); fflush(stdout);
+    printf("Reading new ur_clmb files");
     sprintf(s1,"%s/%s", sdir, *(ur_clmb_fnames + 0));
     ur_clmb2_u = (double *) get_3d(s1);
 
@@ -1688,9 +1688,9 @@ void calc_electrostatic_field(void)
   for (i = 0; i <= NNN - 1; i++)
     ur_clmb_u[i] /= (die * CHARGE[0] * TEMP_FACTOR);
 
-  printf("\nCalculating electric field"); fflush(stdout);
+  printf("\nCalculating electric field");
   for (x = 0; x <= NX - 1; x++) {
-    printf("."); fflush(stdout);
+    printf(".");
     for (y = 0; y <= NY - 1; y++)
       for (z = 0; z <= NZ - 1; z++) {
         idx = ii(x, y, z);
@@ -1707,7 +1707,7 @@ void calc_electrostatic_field(void)
             }
       }
   }
-  printf("Done!\n"); fflush(stdout);
+  printf("Done!\n");
 
   for (i = 0; i <= NNN - 1; i++)
     ur_clmb_v[i] *= CONST_CLMB / (die * TEMP * TEMP_FACTOR);                            /*This make it units of KT */
@@ -1715,11 +1715,11 @@ void calc_electrostatic_field(void)
 
   FILE *ufile, *vfile, *uvfile;
   if ((ufile = fopen("solute_electric_field.sit", "w")) == NULL)
-    printf("\nUnable to open internal energy file\n"); fflush(stdout);
+    printf("\nUnable to open internal energy file\n");
   if ((vfile = fopen("solvent_electric_field.sit", "w")) == NULL)
-    printf("\nUnable to open internal energy file\n"); fflush(stdout);
+    printf("\nUnable to open internal energy file\n");
   if ((uvfile = fopen("total_electric_field.sit", "w")) == NULL)
-    printf("\nUnable to open internal energy file\n"); fflush(stdout);
+    printf("\nUnable to open internal energy file\n");
 
   printf("\nPrinting solute electric field (KT) to \"solute_electric_field.sit\"\n");
   fprintf(ufile,"%f\n", DX);
@@ -1790,16 +1790,16 @@ void check_parameters(void)
   int i;
   FILE *out;
   if ((out = fopen("solute.analyze.check", "w")) == NULL)
-    fprintf(stdout, "Problem opening out file for lj parameters"); fflush(stdout);
+    fprintf(stdout, "Problem opening out file for lj parameters");
   U_PAR2 *u = U;
   int nu_sites = NU_SITES;
 
   for (i = 1; i <= nu_sites; i++) {
-    fprintf(out, "\n%d:%s\n", u[i].num, u[i].element); fflush(out);
-    fprintf(out, "ep12:%f\tep6:%f\tsig:%f\n", u[i].ep12, u[i].ep6, u[i].sig); fflush(out);
-    fprintf(out, "Coulomb Charge:%f\n", u[i].charge); fflush(out);
-    fprintf(out, "Cartesian Coordinates:\n"); fflush(out);
-    fprintf(out, "%f\t%f\t%f\n\n", u[i].x, u[i].y, u[i].z); fflush(out);
+    fprintf(out, "\n%d:%s\n", u[i].num, u[i].element);
+    fprintf(out, "ep12:%f\tep6:%f\tsig:%f\n", u[i].ep12, u[i].ep6, u[i].sig);
+    fprintf(out, "Coulomb Charge:%f\n", u[i].charge);
+    fprintf(out, "Cartesian Coordinates:\n");
+    fprintf(out, "%f\t%f\t%f\n\n", u[i].x, u[i].y, u[i].z);
   }
   fclose(out);
 }
@@ -1815,7 +1815,7 @@ double * get_3d(char fname[])
   } else if (strncmp("jh3d", FILE_TYPE, 4) == 0) {
     v3d = get_jh3d(fname, TEMP, 0.0, SYS);
   } else {
-    fprintf(stdout, "\nError in get_3d with file type\n"); fflush(stdout);
+    fprintf(stdout, "\nError in get_3d with file type\n");
   }
 
   return v3d;

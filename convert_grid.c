@@ -131,10 +131,10 @@ void convert_grid(void)
   if ((out = fopen(name, "w")) == NULL)
     printf("\nFile could not be opened\n");
 
-  fprintf(out, "%d\n%d\n%d\n", NX2, NY2, NZ2); fflush(out);
-  fprintf(out, "%.10f\n%.10f\n%.10f\n", LX, LY, LZ); fflush(out);
-  fprintf(out, "%.10f\n", TEMP); fflush(out);
-  fprintf(out, "%.10f\n", PND); fflush(out);
+  fprintf(out, "%d\n%d\n%d\n", NX2, NY2, NZ2);
+  fprintf(out, "%.10f\n%.10f\n%.10f\n", LX, LY, LZ);
+  fprintf(out, "%.10f\n", TEMP);
+  fprintf(out, "%.10f\n", PND);
 
   for (x = 0; x <= NX2 - 1; x++) {
     for (y = 0; y <= NY2 - 1; y++) {
@@ -142,7 +142,6 @@ void convert_grid(void)
         fprintf(out, "%d\t%d\t%d\t%.15e\n", x, y, z, Vec2[NZ2 * NY2 * x + NZ2 * y + z]);
       fprintf(out, "\n");
     }
-    fflush(out);
   }
   fclose(out);
 }

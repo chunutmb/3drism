@@ -189,25 +189,25 @@ int main(int argc, char *argv[])
   set_dis(*(argv + 1));
   check_dis();
   set_sys();
-  printf("\n%d:Reading in solute parameters from: \"%s\"... ", MY_RANK, *(argv + 3)); fflush(stdout);
+  printf("\n%d:Reading in solute parameters from: \"%s\"... ", MY_RANK, *(argv + 3));
   set_par(*(argv + 3));
-  check_par(U, NU_SITES);            printf("%d:...done!!!\n", MY_RANK); fflush(stdout);
+  check_par(U, NU_SITES);            printf("%d:...done!!!\n", MY_RANK);
 
   /*U(r), U(k), W(k), H(k)_vv, exp(b(r))  **********************************************************/
 
-  printf("\nCalculating Hk_vv, reading from \"%s\" ...", *(argv + 1)); fflush(stdout);
-  calc_hk_vv_correlations(*(argv + 1));    printf("\n.......H(k)_vv...done!!!\n\n"); fflush(stdout);
-  printf("Calculating Intramolecular function W(k)..."); fflush(stdout);
+  printf("\nCalculating Hk_vv, reading from \"%s\" ...", *(argv + 1));
+  calc_hk_vv_correlations(*(argv + 1));    printf("\n.......H(k)_vv...done!!!\n\n");
+  printf("Calculating Intramolecular function W(k)...");
   if (TYPE == 1 || TYPE == 2)
-    calc_intramolecular_functions(); printf("...done!!!\n\n"); fflush(stdout);
+    calc_intramolecular_functions(); printf("...done!!!\n\n");
 
-  printf("Calculating All Potential Energies U(r)..."); fflush(stdout);
-  set_potential_fields();                 printf("...Done!!!\n\n"); fflush(stdout);
+  printf("Calculating All Potential Energies U(r)...");
+  set_potential_fields();                 printf("...Done!!!\n\n");
 
   if (TYPE == 1 || TYPE == 2)
     if (strncmp("yes", RBC_FUNC, 3) == 0) {
-      printf("Calculating RBC function exp( b(r) )..."); fflush(stdout);
-      calc_rbc();                 printf("...done!!!\n\n"); fflush(stdout);
+      printf("Calculating RBC function exp( b(r) )...");
+      calc_rbc();                 printf("...done!!!\n\n");
     }
 
 #ifdef MPI
@@ -215,22 +215,22 @@ int main(int argc, char *argv[])
 #endif
 
   /*Global Arrays - cr, cr2, tr************************************************/
-  printf("%d:Allocating and setting arrays...", MY_RANK); fflush(stdout);
-  set_arrays();                           printf("...done!!!\n\n"); fflush(stdout);
-  printf("Initial picard iterations(%d)...\n", INIT_PIC_ITER); fflush(stdout);
+  printf("%d:Allocating and setting arrays...", MY_RANK);
+  set_arrays();                           printf("...done!!!\n\n");
+  printf("Initial picard iterations(%d)...\n", INIT_PIC_ITER);
   if (strncmp("no", CONTINUE, 2) == 0)
     full_picard_iter(INIT_PIC_ITER);
-  printf("...done!!!\n"); fflush(stdout);
+  printf("...done!!!\n");
 
   /****************************************************************************************/
   /*                             Numerical routine                                        */
   /****************************************************************************************/
 
   if (strncmp("picard", SOLVER, 6) == 0) {
-    printf("%d:starting picard iteration\n", MY_RANK); fflush(stdout);
+    printf("%d:starting picard iteration\n", MY_RANK);
     full_picard_iter(MAX_ITER);
   } else if (strncmp("mdiis", SOLVER, 5) == 0) {
-    printf("%d:starting mdiis iteration\n", MY_RANK); fflush(stdout);
+    printf("%d:starting mdiis iteration\n", MY_RANK);
     mdiis_iter(MAX_ITER);
   } else if (strncmp("newton", SOLVER, 6) == 0) {
     printf("This part of code has been unkept: see ver.1.5");
@@ -250,7 +250,7 @@ int main(int argc, char *argv[])
 
 
   if (STAT > 0 && FERR < 10.0) {
-    printf("\n\n\nDone with iterations: Printing data..."); fflush(stdout);
+    printf("\n\n\nDone with iterations: Printing data...");
 
     if (UR_S_STAT != 0) {
       for (j = 0; j <= NRSITES - 1; j++)
@@ -301,7 +301,7 @@ int main(int argc, char *argv[])
             gr[j][i] = exp(-UR_S[j][i] + TR_S[j][i]);
         }
     } else {
-      printf("\n\nNo closure specified\n"); fflush(stdout);
+      printf("\n\nNo closure specified\n");
       exit(1);
     }
 
@@ -365,7 +365,7 @@ int main(int argc, char *argv[])
         print_3d(s1, *(B1R + j));
       }
     }
-    printf("...done!"); fflush(stdout);
+    printf("...done!");
   }
 
 
@@ -573,12 +573,12 @@ void set_par(char infile[])
     printf("reading from a par2 file...");
     PAR_TYPE = 2;
     U2 = (U_PAR2 *) get_par2(nu_s, infile);
-    printf("done \n"); fflush(stdout);
+    printf("done \n");
   } else {
     printf("reading from a par file...");
     PAR_TYPE = 1;
     U1 = (U_PAR *) get_par(nu_s, infile);
-    printf("done \n"); fflush(stdout);
+    printf("done \n");
   }
 
   NU_SITES = *nu_s;
@@ -676,7 +676,7 @@ void set_sys(void)
 #endif
   if (strncmp("yes", EWALD_SUMS, 3) == 0) {
     for (i = 0; i <= NRSITES - 1; i++)
-      printf("\nEWALD_BGC_%s = %lf",NAMES[i], EWALD_BGC[i]); fflush(stdout);
+      printf("\nEWALD_BGC_%s = %lf",NAMES[i], EWALD_BGC[i]);
     printf("\n");
   }
 
@@ -702,7 +702,7 @@ int calc_upb1(void)
         num++;
     }
 
-  printf("\nUpdate br1 after %d iterations\n", val); fflush(stdout);
+  printf("\nUpdate br1 after %d iterations\n", val);
 
   return val;
 }
@@ -723,7 +723,7 @@ void set_arrays(void)
   TR_S = (double **) malloc(NRSITES * sizeof(double));
   for (j = 0; j <= NRSITES - 1; j++)
     *(TR_S + j) = (double *) malloc(NNN * sizeof(double));
-  printf("...done!!!\n"); fflush(stdout);
+  printf("...done!!!\n");
 
   for (j = 0; j <= NRSITES - 1; j++)
     for (i = 0; i <= NNN - 1; i++) TR_S[j][i] = 0.00;
@@ -765,7 +765,7 @@ void set_arrays(void)
     CR_S_STAT = 1;
   }
 
-  printf("\n"); fflush(stdout);
+  printf("\n");
 }
 
 
@@ -805,10 +805,10 @@ void check_env(void)
   if (RT_CHANGES > 0) {
     printf("RT_ERR = %.5e \n", RT_ERR);
     for (i = 0; i <= RT_CHANGES - 1; i++)
-      printf("\nRT_TEMP_FACTOR_%d = %lf", i, RT_TEMP_FACTOR[i]); fflush(stdout);
+      printf("\nRT_TEMP_FACTOR_%d = %lf", i, RT_TEMP_FACTOR[i]);
   }
 
-  printf("\n****************************************\n"); fflush(stdout);
+  printf("\n****************************************\n");
 }
 
 
@@ -816,27 +816,27 @@ void check_env(void)
 void check_dis(void)
 {
   int i;
-  printf("\n****************************************\n"); fflush(stdout);
-  printf("		DIS			\n"); fflush(stdout);
-  printf("****************************************\n"); fflush(stdout);
-  printf("\nTEMP = %lf", TEMP); fflush(stdout);
-  printf("\nTYPE = %d", TYPE); fflush(stdout);
-  printf("\nNSITES = %d", NSITES); fflush(stdout);
-  printf("\nNRSITES = %d", NRSITES); fflush(stdout);
-  printf("\nDIS_NUM = %d", DIS_NUM); fflush(stdout);
-  for (i = 0; i <= NRSITES - 1; i++) printf("\nNAMES_%d = %s", i, NAMES[i]); fflush(stdout);
-  for (i = 0; i <= NRSITES - 1; i++) printf("\nREDUN_%s = %lf", NAMES[i], REDUN[i]); fflush(stdout);
-  for (i = 0; i <= NRSITES - 1; i++) printf("\nPND_%s = %lf", NAMES[i], PND[i]); fflush(stdout);
-  for (i = 0; i <= NRSITES - 1; i++) printf("\nEP12_%s = %lf",NAMES[i], EP12[i]); fflush(stdout);
-  for (i = 0; i <= NRSITES - 1; i++) printf("\nEP6_%s = %lf",NAMES[i], EP6[i]); fflush(stdout);
-  for (i = 0; i <= NRSITES - 1; i++) printf("\nSIG_%s = %lf", NAMES[i], SIG[i]); fflush(stdout);
-  for (i = 0; i <= NRSITES - 1; i++) printf("\nCHARGE_%s = %lf",NAMES[i], CHARGE[i]); fflush(stdout);
-  for (i = 0; i <= DIS_NUM - 1; i++) printf("\nDIS_NAMES_%d = %s", i, DIS_NAMES[i]); fflush(stdout);
+  printf("\n****************************************\n");
+  printf("		DIS			\n");
+  printf("****************************************\n");
+  printf("\nTEMP = %lf", TEMP);
+  printf("\nTYPE = %d", TYPE);
+  printf("\nNSITES = %d", NSITES);
+  printf("\nNRSITES = %d", NRSITES);
+  printf("\nDIS_NUM = %d", DIS_NUM);
+  for (i = 0; i <= NRSITES - 1; i++) printf("\nNAMES_%d = %s", i, NAMES[i]);
+  for (i = 0; i <= NRSITES - 1; i++) printf("\nREDUN_%s = %lf", NAMES[i], REDUN[i]);
+  for (i = 0; i <= NRSITES - 1; i++) printf("\nPND_%s = %lf", NAMES[i], PND[i]);
+  for (i = 0; i <= NRSITES - 1; i++) printf("\nEP12_%s = %lf",NAMES[i], EP12[i]);
+  for (i = 0; i <= NRSITES - 1; i++) printf("\nEP6_%s = %lf",NAMES[i], EP6[i]);
+  for (i = 0; i <= NRSITES - 1; i++) printf("\nSIG_%s = %lf", NAMES[i], SIG[i]);
+  for (i = 0; i <= NRSITES - 1; i++) printf("\nCHARGE_%s = %lf",NAMES[i], CHARGE[i]);
+  for (i = 0; i <= DIS_NUM - 1; i++) printf("\nDIS_NAMES_%d = %s", i, DIS_NAMES[i]);
   if (TYPE == 1)
     printf("\nBOND_MAT -> %lf \t %lf", BOND_MAT[0], BOND_MAT[1]);
 
-  printf("\n****************************************\n"); fflush(stdout);
-  printf("\n\n"); fflush(stdout);
+  printf("\n****************************************\n");
+  printf("\n\n");
 }
 
 
@@ -858,12 +858,12 @@ void check_par(U_PAR2 *u, int n_sites)
   }
 
   for (i = 1; i <= n_sites; i++) {
-    fprintf(out, "%d:%s(%d)\n", u[i].num, u[i].element, u[i].mol); fflush(out);
-    fprintf(out, "ep12:%f  ep6:%f\n", u[i].ep12, u[i].ep6); fflush(out);
-    fprintf(out, "sig:%f\n", u[i].sig); fflush(out);
-    fprintf(out, "Coulomb Charge:%f\n", u[i].charge); fflush(out);
-    fprintf(out, "Cartesian Coordinates:\n"); fflush(out);
-    fprintf(out, "%f\t%f\t%f\n\n", u[i].x, u[i].y, u[i].z); fflush(out);
+    fprintf(out, "%d:%s(%d)\n", u[i].num, u[i].element, u[i].mol);
+    fprintf(out, "ep12:%f  ep6:%f\n", u[i].ep12, u[i].ep6);
+    fprintf(out, "sig:%f\n", u[i].sig);
+    fprintf(out, "Coulomb Charge:%f\n", u[i].charge);
+    fprintf(out, "Cartesian Coordinates:\n");
+    fprintf(out, "%f\t%f\t%f\n\n", u[i].x, u[i].y, u[i].z);
   }
   for (i = 1; i <= n_sites; i++) {
     x = u[i].x / dx;
@@ -871,7 +871,7 @@ void check_par(U_PAR2 *u, int n_sites)
     z = u[i].z / dz;
 
     if (x == 0.00 && y == 0.00 && z == 0.00) {
-      printf("\n::ERROR - Element %d is on a grid point\n", i); fflush(stdout);
+      printf("\n::ERROR - Element %d is on a grid point\n", i);
       /* exit(1);*/
     }
   }
@@ -1110,14 +1110,14 @@ void set_b1r(void)
           *(B1R + j) = (double *) get_3d(s1, TEMP, PND[j], SYS);
           shift_origin_inplace(*(B1R + j), SYS);
         } else {
-          printf("\nFile %s.%s doesn't exist:no bridge function\n", s1, FILE_TYPE); fflush(stdout);
+          printf("\nFile %s.%s doesn't exist:no bridge function\n", s1, FILE_TYPE);
           *(B1R + j) = (double *) malloc(NNN * sizeof(double));
           for (i = 0; i <= NNN - 1; i++) B1R[j][i] = 0.00;
           stat++;
         }
       }
       if (stat == 0) {
-        printf("\nCalculating BR1 from gr files\n"); fflush(stdout);
+        printf("\nCalculating BR1 from gr files\n");
         calc_bridge_func1(0);
       }
     } else if (strncmp("yes", BRIDGE_FUNC1, 3) == 0) {
@@ -1127,7 +1127,7 @@ void set_b1r(void)
           *(B1R + j) = (double *) get_3d(s1, TEMP, PND[j], SYS);
           shift_origin_inplace(*(B1R + j), SYS);
         } else {
-          printf("\nFile %s.%s doesn't exist\n", s1, FILE_TYPE); fflush(stdout);
+          printf("\nFile %s.%s doesn't exist\n", s1, FILE_TYPE);
           *(B1R + j) = (double *) malloc(NNN * sizeof(double));
           for (i = 0; i <= NNN - 1; i++) B1R[j][i] = 0.00;
         }
@@ -1159,7 +1159,7 @@ void set_b0r(double ** ur_lj)
   }
 
   if ((strncmp("yes0", BRIDGE_FUNC0, 4)) == 0) {
-    printf("\nCalculating BR(ur_lj12) function\n"); fflush(stdout);
+    printf("\nCalculating BR(ur_lj12) function\n");
     ur_lj12 = (double **) malloc(NRSITES * sizeof(double));
     for (i = 0; i <= NRSITES - 1; i++) {
       sprintf(s1, "ur_%s_lj12", NAMES[i]);
@@ -1170,13 +1170,13 @@ void set_b0r(double ** ur_lj)
       shift_origin_inplace(*(ur_lj12 + i), SYS);
     calc_bridge_func1_fbond(ur_lj12);
   } else if ((strncmp("yes1", BRIDGE_FUNC0, 4)) == 0) {
-    printf("\nCalculating BR(ur_lj) function\n"); fflush(stdout);
+    printf("\nCalculating BR(ur_lj) function\n");
 
     for (i = 0; i <= NRSITES - 1; i++)
       shift_origin_inplace(*(ur_lj + i), SYS);
     calc_bridge_func1_fbond(ur_lj);
   } else if ((strncmp("yes2", BRIDGE_FUNC0, 4)) == 0) {
-    printf("\nCalculating BR(ur_s) function\n"); fflush(stdout);
+    printf("\nCalculating BR(ur_s) function\n");
     calc_bridge_func1_fbond(UR_S);
   } else {
     printf("\n<<< Error choosing bridge_func0 >>>\n");
@@ -1196,7 +1196,7 @@ void calc_bridge_func1(int stat)
 {
   int i, k, m, m1, m2, n;
 
-  printf("\n\n<<< updating b1r >>>\n\n"); fflush(stdout);
+  printf("\n\n<<< updating b1r >>>\n\n");
 
   fftw_complex **hr = (fftw_complex **) fftw_malloc(NRSITES * sizeof(fftw_complex));                    /*  tk [site][idx][r,c] */
   for (m = 0; m <= NRSITES - 1; m++)
@@ -1637,7 +1637,7 @@ int calc_hk_vv_correlations(char hr_fname[])
   for (j = 0; j <= DIS_NUM - 1; j++)
     *(hr1vv + j) = get_dis(hr_fname, j + 1);
 
-  printf("\n...done reading in solvent...\n"); fflush(stdout);
+  printf("\n...done reading in solvent...\n");
 
   if (MY_RANK == 0)
     for (j = 0; j <= DIS_NUM - 1; j++) {
@@ -1674,7 +1674,7 @@ int calc_hk_vv_correlations(char hr_fname[])
         if ((strncmp(s1, DIS_NAMES[k], slen) == 0) || (strncmp(s2, DIS_NAMES[k], slen) == 0)) {
           h3[i][j] = *(hk3 + k);
           h3[j][i] = h3[i][j];
-          printf("\n%d:Calculating h(k) for %s", MY_RANK, DIS_NAMES[k]); fflush(stdout);
+          printf("\n%d:Calculating h(k) for %s", MY_RANK, DIS_NAMES[k]);
           break;
         } else if (k == (DIS_NUM - 1))
           printf("\nh(r) distribution %s or %s not found\n", s1, s2);
@@ -2104,7 +2104,7 @@ void closure_cr(fftw_complex **cr_s, fftw_complex **tr)
         }
     }
   } else {
-    printf("\n\nNo closure specified\n"); fflush(stdout);
+    printf("\n\nNo closure specified\n");
     exit(1);
   }
 
@@ -2199,7 +2199,7 @@ void mdiis_iter(int max_iter)
     if (i_rmax == io_rmax) {
       i_rmax = n_diis;
       io_rmax = n_diis;
-      printf("\nInitial population or refill of cr and r vector \n"); fflush(stdout);
+      printf("\nInitial population or refill of cr and r vector \n");
       /*initial population of cr and r*/
       for (j = 0; j <= n_diis - 1; j++) {
         for (m = 0; m <= NRSITES - 1; m++)
@@ -2219,11 +2219,11 @@ void mdiis_iter(int max_iter)
       }
       if (MY_RANK == 0)
         for (i = 0; i <= n_diis - 1; i++)
-          printf("\nr_mag[%d] = %lf ", i, r_mag[i]); fflush(stdout);
+          printf("\nr_mag[%d] = %lf ", i, r_mag[i]);
 
 
       if (MY_RANK == 0)
-        printf("\nCalculating initial s_mat \n"); fflush(stdout);
+        printf("\nCalculating initial s_mat \n");
       /*s_mat***/
       for (j = 0; j <= n_diis - 1; j++)
         for (k = 0; k <= n_diis - 1; k++) {
@@ -2233,7 +2233,7 @@ void mdiis_iter(int max_iter)
             s_mat[j][k] += mul_vv(res[m][j], res[m][k], NNN);
         }
       if (MY_RANK == 0)
-        printf("\n%d:Starting iterations\n", MY_RANK); fflush(stdout);
+        printf("\n%d:Starting iterations\n", MY_RANK);
     }
 
     cnt = 0;
@@ -2245,12 +2245,12 @@ void mdiis_iter(int max_iter)
     Newton_Solver(c_vec, s_mat, b_vec, n_diis + 1);
 
     if (MY_RANK == 0) {
-      printf("\n\nc_vec -> "); fflush(stdout); any = 0;
+      printf("\n\nc_vec -> "); any = 0;
       for (i = 0; i <= n_diis - 1; i++) {
         printf(" [%d]->%lf\t", i, c_vec[i]); any += c_vec[i];
       }
       ;
-      printf("\ncoef total -> %lf\n\n", any); fflush(stdout);
+      printf("\ncoef total -> %lf\n\n", any);
     }
 
     for (m = 0; m <= NRSITES - 1; m++)
@@ -2555,7 +2555,7 @@ void check_kr(U_PAR *u)
       kr = fx * kx * u[1].x + fy * ky * u[1].y + 0.00;
 
       printf("(kx,ky)-> %f\t%f\n", fx * kx, fy * ky);
-      printf("\tkr->%f\n\n", kr); fflush(stdout);
+      printf("\tkr->%f\n\n", kr);
     }
   }
 }
@@ -2584,7 +2584,7 @@ double * get_3d(char fin[], double temp, double pnd, ENV_PAR sys)
   } else if (strncmp("bin3d", FILE_TYPE, 5) == 0) {
     v3d = readbin3dreal(fin, &sys);
   } else {
-    fprintf(stderr, "\nError in get_3d with file type\n"); fflush(stdout);
+    fprintf(stderr, "\nError in get_3d with file type\n");
   }
 
   return v3d;
@@ -2604,7 +2604,7 @@ fftw_complex * get_complex_3d(char fin[], double temp, double pnd, ENV_PAR sys)
   } else if (strncmp("bin3d", FILE_TYPE, 5) == 0) {
     v3d = readbin3dcomplex(fin, &sys);
   } else {
-    fprintf(stdout, "\nError in get_3d with file type\n"); fflush(stdout);
+    fprintf(stdout, "\nError in get_3d with file type\n");
   }
 
   return v3d;

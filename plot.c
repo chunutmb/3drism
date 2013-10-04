@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
   char *ext1;
 
   /*****************************GET SOLUTE PARAMETERS*****************************************/
-  printf("\nReading from files...\n"); fflush(stdout);
+  printf("\nReading from files...\n");
   if (*(argv + 1) == NULL)
     print_input_error();
 
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
     get_3d(*(argv + 1));
   }
 
-  printf("...done!!!\n\n"); fflush(stdout);
+  printf("...done!!!\n\n");
 
 
   /*****************************KERNEL*********************************************/
@@ -120,9 +120,9 @@ int main(int argc, char *argv[])
     printf("7: Print list of peaks in function \n");
     printf("8: Print an altered data set \n");
     printf("9: Print an averaged 2d sit file \n");
-    printf("\nENTER CHOICE:"); fflush(stdout);
+    printf("\nENTER CHOICE:");
     scanf("%d", &choice);
-    printf("\nPerforming operation...\n"); fflush(stdout);
+    printf("\nPerforming operation...\n");
 
     switch (choice) {
     case 0: break;
@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
     case 9: print_2d_avg_sit();                     break;
     }
 
-    printf("...DONE!!!\n"); fflush(stdout);
+    printf("...DONE!!!\n");
   } while (choice != 0);
 
   return 0;
@@ -166,14 +166,14 @@ void print_2d_file(void)
 
   printf("\nEnter name of output file:");
   scanf("%s", fname);
-  printf("\nEnter invariant axis:\n1: X-axis\n2: Y-axis\n3: Z-axis\nSelection:"); fflush(stdout);
+  printf("\nEnter invariant axis:\n1: X-axis\n2: Y-axis\n3: Z-axis\nSelection:");
   scanf("%d", &axis);
-  printf("\nEnter invariant axis value (%d->%d, Center->%d):", 0, n[axis - 1], n[axis - 1] / 2); fflush(stdout);
+  printf("\nEnter invariant axis value (%d->%d, Center->%d):", 0, n[axis - 1], n[axis - 1] / 2);
   scanf("%d", &axval);
 
-  printf("\nPrinting 2D file..."); fflush(stdout);
+  printf("\nPrinting 2D file...");
 
-  printf("\n%d\t%d\t%d\n", NX,NY,NZ); fflush(stdout);
+  printf("\n%d\t%d\t%d\n", NX,NY,NZ);
 
   FILE *out;
   if ((out = fopen(fname, "w")) == NULL) printf("\nFile could not be opened\n");
@@ -201,10 +201,10 @@ void print_2d_file(void)
     }
     break;
   }
-  fflush(out);
+
   fclose(out);
 
-  printf("...done!!!\n"); fflush(stdout);
+  printf("...done!!!\n");
 }
 
 
@@ -236,7 +236,7 @@ void print_3d_to_1d_radial_average(void)
   printf("\nEnter X(0) coordinate:");             scanf("%lf", &x0);
   printf("\nEnter Y(0) coordinate:");             scanf("%lf", &y0);
   printf("\nEnter Z(0) coordinate:");             scanf("%lf", &z0);
-  printf("\nPrinting 1d radial average..."); fflush(stdout);
+  printf("\nPrinting 1d radial average...");
 
   int    *grnum = (int *) malloc(n_1d * sizeof(int));
   double *gr_1d = (double *) malloc(n_1d * sizeof(double));
@@ -268,9 +268,9 @@ void print_3d_to_1d_radial_average(void)
   for (i = 0; i <= n_1d - 1; i++)
     fprintf(out, "%f\t%f\n", dr1d * i, gr_1d[i]);
 
-  fflush(out);
 
-  printf("...done!!!\n"); fflush(stdout);
+
+  printf("...done!!!\n");
 }
 
 
@@ -332,7 +332,7 @@ void print_3d_to_1d_cartesian_average(void)
     printf("\nError reading user input.\n\n");
 
 
-  printf("\nCalculating 1d distribution...");     fflush(stdout);
+  printf("\nCalculating 1d distribution...");
 
   if (axis == 0) {
     for (x = 0; x <= NX - 1; x++) {
@@ -365,13 +365,13 @@ void print_3d_to_1d_cartesian_average(void)
         }
     }
   } else {
-    printf("\nError reading axis input\n\n"); fflush(stdout);
+    printf("\nError reading axis input\n\n");
   }
 
   for (i = imin[axis]; i <= imax[axis]; i++)
     gr_1d[i] = gr_1d[i] / gr_num[i];
 
-  printf("...Done!\n\n"); fflush(stdout);
+  printf("...Done!\n\n");
 
 
   printf("Printing to gr1d_%c-avg.dat...", ax[axis]);
@@ -385,9 +385,9 @@ void print_3d_to_1d_cartesian_average(void)
   for (i = imin[axis]; i <= imax[axis]; i++)
     fprintf(out, "%e\t%e\n", (i - c[axis]) * d[axis], gr_1d[i]);
 
-  printf("...Done!!!\n\n");       fflush(stdout);
+  printf("...Done!!!\n\n");
 
-  fflush(out);
+
   fclose(out);
 }
 
@@ -406,47 +406,47 @@ void print_1d_unaveraged(void)
   char fname[50];
   FILE *fout = NULL;
 
-  printf(" What axis is to be plotted (1->x, 2->y, 3->z): "); fflush(stdout);
+  printf(" What axis is to be plotted (1->x, 2->y, 3->z): ");
   scanf("%d", &axis);
 
   if (axis == 1) {
-    printf("\nEnter y value (0->%d): ", NY - 1); fflush(stdout);
+    printf("\nEnter y value (0->%d): ", NY - 1);
     scanf("%d", &y);
-    printf("\nEnter z value (0->%d): ", NZ - 1); fflush(stdout);
+    printf("\nEnter z value (0->%d): ", NZ - 1);
     scanf("%d", &z);
 
     sprintf(fname, "gr-_x-%dy-%dz.1d.dat", y, z);
     if ((fout = fopen(fname, "w")) == NULL)
-      printf("\nProblem opening file\n"); fflush(stdout);
+      printf("\nProblem opening file\n");
 
     for (i = 0; i <= NX - 1; i++)
       fprintf(fout, "%d\t%lf\n", i, gr_3d[ii(i,y,z)]);
   } else if (axis == 2) {
-    printf("\nEnter x value (0->%d): ", NX - 1); fflush(stdout);
+    printf("\nEnter x value (0->%d): ", NX - 1);
     scanf("%d", &x);
-    printf("\nEnter z value (0->%d): ", NZ - 1); fflush(stdout);
+    printf("\nEnter z value (0->%d): ", NZ - 1);
     scanf("%d", &z);
 
     sprintf(fname, "gr-%dx-_y-%dz.1d.dat", x, z);
     if ((fout = fopen(fname, "w")) == NULL)
-      printf("\nProblem opening file\n"); fflush(stdout);
+      printf("\nProblem opening file\n");
 
     for (i = 0; i <= NY - 1; i++)
       fprintf(fout, "%d\t%lf\n", i, gr_3d[ii(x,i,z)]);
   } else if (axis == 3) {
-    printf("\nEnter x value (0->%d): ", NX - 1); fflush(stdout);
+    printf("\nEnter x value (0->%d): ", NX - 1);
     scanf("%d", &x);
-    printf("\nEnter y value (0->%d): ", NY - 1); fflush(stdout);
+    printf("\nEnter y value (0->%d): ", NY - 1);
     scanf("%d", &y);
 
     sprintf(fname, "gr1d-%dx-%dy-_z.dat", x, y);
     if ((fout = fopen(fname, "w")) == NULL)
-      printf("\nProblem opening file\n"); fflush(stdout);
+      printf("\nProblem opening file\n");
 
     for (i = 0; i <= NZ - 1; i++)
       fprintf(fout, "%d\t%lf\n", i, gr_3d[ii(x,y,i)]);
   } else {
-    printf("\nERROR choosing axis\n\n"); fflush(stdout);
+    printf("\nERROR choosing axis\n\n");
   }
 
   if (fout != NULL)
@@ -475,10 +475,10 @@ void print_box_jh3d(char fname[])
   if ((out = fopen(s1, "w")) == NULL)
     printf("\nFile could not be opened\n");
 
-  fprintf(out, "%d\n%d\n%d\n", NX, NY, NZ / 2); fflush(out);
-  fprintf(out, "%.10f\n%.10f\n%.10f\n", LX, LY, LZ / 2.0); fflush(out);
-  fprintf(out, "%.10f\n", TEMP); fflush(out);
-  fprintf(out, "%.10f\n", P_D); fflush(out);
+  fprintf(out, "%d\n%d\n%d\n", NX, NY, NZ / 2);
+  fprintf(out, "%.10f\n%.10f\n%.10f\n", LX, LY, LZ / 2.0);
+  fprintf(out, "%.10f\n", TEMP);
+  fprintf(out, "%.10f\n", P_D);
 
   if (stat == 1) {
     for (x = 0; x <= NX - 1; x++) {
@@ -487,7 +487,7 @@ void print_box_jh3d(char fname[])
           fprintf(out, "%d\t%d\t%d\t%.15e\n", x, y, z - CZ, gr_3d[NZ * NY * x + NZ * y + z]);
         fprintf(out, "\n");
       }
-      fflush(out);
+
     }
   } else if (stat == 2) {
     for (x = 0; x <= NX - 1; x++) {
@@ -496,7 +496,7 @@ void print_box_jh3d(char fname[])
           fprintf(out, "%d\t%d\t%d\t%.15e\n", x, y, z - CZ, gr_3d[NZ * NY * x + NZ * y + z]);
         fprintf(out, "\n");
       }
-      fflush(out);
+
     }
   }
 
@@ -567,7 +567,7 @@ void print_sit_file(void)
     printf("\nError reading user input\n\n");
   }
 
-  fflush(fout);
+
   fclose(fout);
 }
 
@@ -632,9 +632,9 @@ void print_peak_list(void)
                   }
       }
 
-  fflush(out);
 
-  printf("...done!!!\n"); fflush(stdout);
+
+  printf("...done!!!\n");
 }
 
 
@@ -744,7 +744,7 @@ void print_altered_data_set(void)
         }
   }
 
-  printf("\n\nPrinting to altered_data_set.sit\n\n"); fflush(stdout);
+  printf("\n\nPrinting to altered_data_set.sit\n\n");
 
   fprintf(fout, "%.10f\n", DX);
   fprintf(fout, "%.10f\t%.10f\t%.10f\n", FX, FY, FZ);
@@ -756,7 +756,7 @@ void print_altered_data_set(void)
       }
 
 
-  fflush(fout);
+
   fclose(fout);
 }
 
@@ -778,16 +778,16 @@ void print_2d_avg_sit(void)
 
   printf("\nEnter name of output sit file:");
   scanf("%s", fname);
-  printf("\nEnter invariant axis:\n1: X-axis\n2: Y-axis\n3: Z-axis\nSelection:"); fflush(stdout);
+  printf("\nEnter invariant axis:\n1: X-axis\n2: Y-axis\n3: Z-axis\nSelection:");
   scanf("%d", &axis);
-  printf("\nEnter invariant axis value (%d->%d, Center->%d):", 0, n[axis - 1], n[axis - 1] / 2); fflush(stdout);
+  printf("\nEnter invariant axis value (%d->%d, Center->%d):", 0, n[axis - 1], n[axis - 1] / 2);
   scanf("%d", &axval);
   printf("\nEnter number of slices +- to use: ");
   scanf("%d", &nslc);
 
-  printf("\nPrinting 2D average file..."); fflush(stdout);
+  printf("\nPrinting 2D average file...");
 
-  printf("\n%d\t%d\t%d\n", NX,NY,NZ); fflush(stdout);
+  printf("\n%d\t%d\t%d\n", NX,NY,NZ);
 
   FILE *out;
   if ((out = fopen(fname, "w")) == NULL) printf("\nFile could not be opened\n");
@@ -843,10 +843,9 @@ void print_2d_avg_sit(void)
     }
     break;
   }
-  fflush(out);
-  fclose(out);
 
-  printf("...done!!!\n"); fflush(stdout);
+  fclose(out);
+  printf("...done!!!\n");
 }
 
 
@@ -939,7 +938,7 @@ void get_3d(char fname[])
     CY = (NY / 2);
     CZ = (NZ / 2);
   } else
-    fprintf(stdout, "\n::File extension did not match compatible types\n"); fflush(stdout);
+    fprintf(stdout, "\n::File extension did not match compatible types\n");
 
   NNN = NX * NY * NZ;
 }
@@ -1061,7 +1060,6 @@ void print_1d(char nameq[], double * xq, int nq, double dq)
   FILE *out;
   if ((out = fopen(nameq, "w")) == NULL) printf("\nFile could not be opened\n");
   for (x = 0; x <= nq - 1; x++) fprintf(out, "%f\t%f\n", (double) x * dq, xq[x]);
-  fflush(out);
   fclose(out);
 }
 
@@ -1075,7 +1073,7 @@ void print_2d(char nameq[], double *xq, int u_zq)
   for (x = 0; x <= Nx - 1; x++) {
     for (y = 0; y <= Ny - 1; y++) fprintf(out, "%d\t%d\t%f\n", x, y, xq[ii(x,y,u_zq)]);
     fprintf(out, "\n");
-    fflush(out);
+
   }
   fclose(out);
 }
@@ -1095,7 +1093,6 @@ void print_3d(char nameq[], double *xq)
         fprintf(out, "%d\t%d\t%d\t%f\n", x, y, z, xq[ii(x,y,z)]);
       fprintf(out, "\n");
     }
-    fflush(out);
   }
   fclose(out);
 }

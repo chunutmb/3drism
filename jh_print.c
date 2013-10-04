@@ -48,9 +48,9 @@ void print_sit(char name[], double *v, ENV_PAR sys)
   double fy = (-1.0 * sys.cy) * dy;
   double fz = (-1.0 * sys.cz) * dz;
 
-  fprintf(out, "%.15f\n", dx); fflush(out);
-  fprintf(out, "%.10f\t%.10f\t%.10f\n", fx, fy, fz); fflush(out);
-  fprintf(out, "%d\t%d\t%d\n", nx, ny, nz); fflush(out);
+  fprintf(out, "%.15f\n", dx);
+  fprintf(out, "%.10f\t%.10f\t%.10f\n", fx, fy, fz);
+  fprintf(out, "%d\t%d\t%d\n", nx, ny, nz);
 
   for (z = 0; z <= nz - 1; z++)
     for (y = 0; y <= ny - 1; y++)
@@ -73,10 +73,10 @@ void print_cmplx_jh3d(char name[], fftw_complex *v, ENV_PAR sys, double temp, do
   if ((out = fopen(name, "w")) == NULL)
     printf("\nFile could not be opened\n");
 
-  fprintf(out, "%d\n%d\n%d\n", nx, ny, nz); fflush(out);
-  fprintf(out, "%.10f\n%.10f\n%.10f\n", sys.lx, sys.ly, sys.lz); fflush(out);
-  fprintf(out, "%.10f\n", temp); fflush(out);
-  fprintf(out, "%.10f\n", pnd); fflush(out);
+  fprintf(out, "%d\n%d\n%d\n", nx, ny, nz);
+  fprintf(out, "%.10f\n%.10f\n%.10f\n", sys.lx, sys.ly, sys.lz);
+  fprintf(out, "%.10f\n", temp);
+  fprintf(out, "%.10f\n", pnd);
 
   for (x = 0; x <= nx - 1; x++) {
     for (y = 0; y <= ny - 1; y++) {

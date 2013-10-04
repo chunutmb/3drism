@@ -108,7 +108,7 @@ static void dolist(const char *fnls)
 
 int main(int argc, char **argv)
 {
-  if (argc < 2) {
+  if (argc < 2 || strcmp(argv[1], "-h") == 0) {
     fprintf(stderr, "%s from_file [to_file]\nor\n", argv[0]);
     fprintf(stderr, "%s -[l|L] [list_file]\n", argv[0]);
     fprintf(stderr, "-l: text to binary, -L: binary to text\n");

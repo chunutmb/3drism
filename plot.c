@@ -14,6 +14,7 @@
 #include <math.h>
 #include "jh_struct.h"
 #include "jh_get.h"
+#include "binio.h"
 
 #define A_ERF 1.08
 
@@ -268,7 +269,10 @@ void print_3d_to_1d_radial_average(void)
     else gr_1d[i] = gr_1d[i] / ((double) grnum[i]);
 
   FILE *out;
-  if ((out = fopen(fname, "w")) == NULL) printf("\nFile could not be opened\n");
+  if ((out = fopen(fname, "w")) == NULL) {
+    printf("\nFile could not be opened\n");
+    return;
+  }
 
   for (i = 0; i <= n_1d - 1; i++)
     fprintf(out, "%f\t%f\n", dr1d * i, gr_1d[i]);
@@ -385,7 +389,10 @@ void print_3d_to_1d_cartesian_average(void)
   sprintf(fname, "gr1d_%d-avg.dat", ax[axis]);
 
   FILE *out;
-  if ((out = fopen(fname, "w")) == NULL) printf("\nFile could not be opened\n");
+  if ((out = fopen(fname, "w")) == NULL) {
+    printf("\nFile could not be opened\n");
+    return;
+  }
 
   for (i = imin[axis]; i <= imax[axis]; i++)
     fprintf(out, "%e\t%e\n", (i - c[axis]) * d[axis], gr_1d[i]);
@@ -421,8 +428,10 @@ void print_1d_unaveraged(void)
     scanf("%d", &z);
 
     sprintf(fname, "gr-_x-%dy-%dz.1d.dat", y, z);
-    if ((fout = fopen(fname, "w")) == NULL)
+    if ((fout = fopen(fname, "w")) == NULL) {
       printf("\nProblem opening file\n");
+      return;
+    }
 
     for (i = 0; i <= NX - 1; i++)
       fprintf(fout, "%d\t%lf\n", i, gr_3d[ii(i,y,z)]);
@@ -433,8 +442,10 @@ void print_1d_unaveraged(void)
     scanf("%d", &z);
 
     sprintf(fname, "gr-%dx-_y-%dz.1d.dat", x, z);
-    if ((fout = fopen(fname, "w")) == NULL)
+    if ((fout = fopen(fname, "w")) == NULL) {
       printf("\nProblem opening file\n");
+      return;
+    }
 
     for (i = 0; i <= NY - 1; i++)
       fprintf(fout, "%d\t%lf\n", i, gr_3d[ii(x,i,z)]);
@@ -445,8 +456,10 @@ void print_1d_unaveraged(void)
     scanf("%d", &y);
 
     sprintf(fname, "gr1d-%dx-%dy-_z.dat", x, y);
-    if ((fout = fopen(fname, "w")) == NULL)
+    if ((fout = fopen(fname, "w")) == NULL) {
       printf("\nProblem opening file\n");
+      return;
+    }
 
     for (i = 0; i <= NZ - 1; i++)
       fprintf(fout, "%d\t%lf\n", i, gr_3d[ii(x,y,i)]);
@@ -477,8 +490,10 @@ void print_box_jh3d(char fname[])
 
   sprintf(s1, "box_%s", fname);
 
-  if ((out = fopen(s1, "w")) == NULL)
+  if ((out = fopen(s1, "w")) == NULL) {
     printf("\nFile could not be opened\n");
+    return;
+  }
 
   fprintf(out, "%d\n%d\n%d\n", NX, NY, NZ / 2);
   fprintf(out, "%.10f\n%.10f\n%.10f\n", LX, LY, LZ / 2.0);
@@ -526,8 +541,10 @@ void print_sit_file(void)
   char s1[] = "out.sit";
 
   FILE *fout;
-  if ((fout = fopen(s1, "w")) == NULL)
-    printf("\nfile could not be opened\n");
+  if ((fout = fopen(s1, "w")) == NULL) {
+    printf("cannot open %s\n", s1);
+    return;
+  }
 
   printf("\nPrint (1) full data set or (2) subset of data set w/ new dimensions\n");
   printf("Enter choice: ");
@@ -593,7 +610,10 @@ void print_peak_list(void)
 
   printf("\nEnter name of output file: ");                                        scanf("%s", fname);
   FILE *out;
-  if ((out = fopen(fname, "w")) == NULL) printf("\nFile could not be opened\n");
+  if ((out = fopen(fname, "w")) == NULL) {
+    printf("\nFile could not be opened\n");
+    return;
+  }
 
   printf("\nDefine a reference point other than box center (0-no, 1-yes): ");     scanf("%d", &chc);
 
@@ -659,8 +679,10 @@ void print_altered_data_set(void)
   char s1[] = "altered_data_set.sit";
 
   FILE *fout;
-  if ((fout = fopen(s1, "w")) == NULL)
+  if ((fout = fopen(s1, "w")) == NULL) {
     printf("\nfile could not be opened\n");
+    return;
+  }
 
   printf("\nEnter shape of region to change (0-box, 1-circle, 2-cylinder(z) ) : ");
   scanf("%d", &stat);
@@ -795,7 +817,10 @@ void print_2d_avg_sit(void)
   printf("\n%d\t%d\t%d\n", NX,NY,NZ);
 
   FILE *out;
-  if ((out = fopen(fname, "w")) == NULL) printf("\nFile could not be opened\n");
+  if ((out = fopen(fname, "w")) == NULL) {
+    printf("\nFile could not be opened\n");
+    return;
+  }
 
   div = 2 * nslc + 1;
 
@@ -865,8 +890,10 @@ void print_2d_avg_sit(void)
 void get_3d(char fname[])
 {
   FILE *fin;
-  if ((fin = fopen(fname, "r")) == NULL)
+  if ((fin = fopen(fname, "r")) == NULL) {
     fprintf(stdout, "::Problem opening file containing solute parameters:%s\n", fname);
+    return;
+  }
 
   int x, y, z;
   int idx;
@@ -942,8 +969,27 @@ void get_3d(char fname[])
     CX = (NX / 2);
     CY = (NY / 2);
     CZ = (NZ / 2);
+  } else if (strncmp("bin3d", ext, 5) == 0) { /* to be tested! */
+    ENV_PAR sys = {0, 0, 0, 0, 0, 0, 0., 0., 0.};
+
+    gr_3d = readbin3d(fname, &sys, 0, 1, NULL, NULL, NULL);
+    NX = sys.nx;
+    NY = sys.ny;
+    NZ = sys.nz;
+    LX = sys.lx;
+    LY = sys.ly;
+    LZ = sys.lz;
+    DX = LX / (NX - 1);
+    DY = LY / (NY - 1);
+    DZ = LZ / (NZ - 1);
+    CX = NX / 2;
+    CY = NY / 2;
+    CZ = NZ / 2;
+    FX = -1.0 * CX * DX;
+    FY = -1.0 * CY * DY;
+    FZ = -1.0 * CZ * DZ;
   } else
-    fprintf(stdout, "\n::File extension did not match compatible types\n");
+    fprintf(stdout, "unknown file extension .%s\n", ext);
 
   NNN = NX * NY * NZ;
 }
@@ -1063,7 +1109,10 @@ void print_1d(char nameq[], double * xq, int nq, double dq)
 {
   int x;
   FILE *out;
-  if ((out = fopen(nameq, "w")) == NULL) printf("\nFile could not be opened\n");
+  if ((out = fopen(nameq, "w")) == NULL) {
+    printf("\nFile could not be opened\n");
+    return;
+  }
   for (x = 0; x <= nq - 1; x++) fprintf(out, "%f\t%f\n", (double) x * dq, xq[x]);
   fclose(out);
 }
@@ -1074,7 +1123,10 @@ void print_2d(char nameq[], double *xq, int u_zq)
 {
   int x, y, Nx = NX, Ny = NY;
   FILE *out;
-  if ((out = fopen(nameq, "w")) == NULL) printf("\nFile could not be opened\n");
+  if ((out = fopen(nameq, "w")) == NULL) {
+    printf("\nFile could not be opened\n");
+    return;
+  }
   for (x = 0; x <= Nx - 1; x++) {
     for (y = 0; y <= Ny - 1; y++) fprintf(out, "%d\t%d\t%f\n", x, y, xq[ii(x,y,u_zq)]);
     fprintf(out, "\n");
@@ -1090,8 +1142,10 @@ void print_3d(char nameq[], double *xq)
   int x, y, z;
   int Nx = NX, Ny = NY, Nz = NZ;
   FILE *out;
-  if ((out = fopen(nameq, "w")) == NULL)
+  if ((out = fopen(nameq, "w")) == NULL) {
     printf("\nFile could not be opened\n");
+    return;
+  }
   for (x = 0; x <= Nx - 1; x++) {
     for (y = 0; y <= Ny - 1; y++) {
       for (z = 0; z <= Nz - 1; z++)

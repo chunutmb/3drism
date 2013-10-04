@@ -35,8 +35,8 @@ double get_dval(char in_file[], char val[])
     }
     if (test1 == 1) break;
   }
-  return tmp;
   fclose(in);
+  return tmp;
 }
 
 
@@ -73,8 +73,8 @@ char * get_sval(char in_file[], char val[])
     if (test1 == 1) break;
   }
 
-  return s2;
   fclose(in);
+  return s2;
 }
 
 
@@ -110,9 +110,7 @@ double * get_array_dval(char in_file[], char val[], int n)
     }
     if (test1 == 1) break;
   }
-
   fclose(in);
-
   return tmp;
 }
 
@@ -151,9 +149,8 @@ char ** get_array_sval(char in_file[], char val[], int n)
     }
     if (test1 == 1) break;
   }
-
-  return s2;
   fclose(in);
+  return s2;
 }
 
 
@@ -448,6 +445,7 @@ double * get_jh3d(char in_name[], double temp, double pnd, ENV_PAR sys)
     fscanf(in, "%d%d%d%lf", &x, &y, &z, &val);
     vec_3d[nz * ny * x + nz * y + z] = val;
   }
+  fclose(in);
   return vec_3d;
 }
 
@@ -492,6 +490,7 @@ fftw_complex * get_complex_jh3d(char in_name[], double temp, double pnd, ENV_PAR
     jh_3d[id][0] = val1;
     jh_3d[id][1] = val2;
   }
+  fclose(in);
   return jh_3d;
 }
 
@@ -527,6 +526,7 @@ double * get_sit(char in_name[], ENV_PAR sys)
     if (fscanf(in, "%lf", &vec_3d[idx]) == 1)
       idx++;
   }
+  fclose(in);
 
   if (idx != (nx * ny * nz)) {
     fprintf(stdout, "\n:: %s, number of specified points and number of grid points don't match\n", in_name);
@@ -539,7 +539,6 @@ double * get_sit(char in_name[], ENV_PAR sys)
         vec2_3d[nz * ny * x + nz * y + z] = vec_3d[nx * ny * z + nx * y + x];
 
   free(vec_3d);
-
   return vec2_3d;
 }
 
@@ -577,6 +576,7 @@ fftw_complex * get_complex_sit(char in_name[], ENV_PAR sys)
     if (fscanf(in, "%lf%lf", &jh_3d[idx][0], &jh_3d[idx][1]) == 2)
       idx++;
   }
+  fclose(in);
 
   if (idx != (nx * ny * nz)) {
     fprintf(stdout, "\n:: %s, number of specified points and number of grid points don't match\n", in_name);
@@ -591,7 +591,6 @@ fftw_complex * get_complex_sit(char in_name[], ENV_PAR sys)
       }
 
   free(jh_3d);
-
   return jh2_3d;
 }
 

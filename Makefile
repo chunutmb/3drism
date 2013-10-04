@@ -47,3 +47,6 @@ clean:
 
 chmod:
 	chmod a-x *.[ch] Makefile *_3drism *.env README
+
+copy:
+	cp 3drism analyze pot plot pot_mpi bincvt 3drism_thr test

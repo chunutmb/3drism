@@ -738,7 +738,7 @@ void set_arrays(void)
       if (get_file_stat(s1) == 1)
         *(CR_S + j) = (double *) get_3d(s1, TEMP, PND[j], SYS);
       else {
-        printf("\nFile %s.%s doesn't exist\n", s1, FILE_TYPE); fflush(stdout);
+        printf("File %s.%s doesn't exist\n", s1, FILE_TYPE);
         *(CR_S + j) = (double *) malloc(NNN * sizeof(double));
         for (i = 0; i <= NNN - 1; i++) CR_S[j][i] = 0.00;
       }
@@ -774,29 +774,29 @@ void check_env(void)
 {
   int i;
 
-  printf("\n****************************************\n"); fflush(stdout);
-  printf("		ENV			\n");   fflush(stdout);
-  printf("****************************************\n");   fflush(stdout);
-  printf("\nNX = %d\nNY = %d\nNZ = %d\n", NX, NY, NZ);    fflush(stdout);
-  printf("\nCX = %d\nCY = %d\nCZ = %d\n", CX, CY, CZ);    fflush(stdout);
-  printf("\nLX = %f\nLY = %f\nLZ = %f\n", LX, LY, LZ);    fflush(stdout);
-  printf("\nSOLVER = %s \n", SOLVER);                    fflush(stdout);
+  printf("\n****************************************\n");
+  printf("		ENV			\n");
+  printf("****************************************\n");
+  printf("\nNX = %d\nNY = %d\nNZ = %d\n", NX, NY, NZ);
+  printf("\nCX = %d\nCY = %d\nCZ = %d\n", CX, CY, CZ);
+  printf("\nLX = %f\nLY = %f\nLZ = %f\n", LX, LY, LZ);
+  printf("\nSOLVER = %s \n", SOLVER);
   printf("T_ERR = %.5e \n", T_ERR);
-  printf("PIC_MP = %f \n", PIC_MP);                      fflush(stdout);
-  printf("CHRG_PCT = %f \n", CHRG_PCT);                  fflush(stdout);
-  printf("TEMP_FACTOR = %f \n", TEMP_FACTOR);            fflush(stdout);
-  printf("A_ERF = %f \n", A_ERF);                        fflush(stdout);
-  printf("MAX_ITER = %d \n", MAX_ITER);                  fflush(stdout);
+  printf("PIC_MP = %f \n", PIC_MP);
+  printf("CHRG_PCT = %f \n", CHRG_PCT);
+  printf("TEMP_FACTOR = %f \n", TEMP_FACTOR);
+  printf("A_ERF = %f \n", A_ERF);
+  printf("MAX_ITER = %d \n", MAX_ITER);
   printf("N_DUMP = %d \n", N_DUMP);
   printf("INIT_PIC_ITER = %d \n", INIT_PIC_ITER);
-  printf("CONTINUE = %s \n", CONTINUE);                 fflush(stdout);
-  printf("FILE_TYPE = %s \n", FILE_TYPE);                fflush(stdout);
-  printf("CLOSURE = %s \n", CLOSURE);                   fflush(stdout);
-  printf("EWALD_SUMS = %s \n", EWALD_SUMS);             fflush(stdout);
-  printf("CONFIG_TYPE = %s \n", CONFIG_TYPE);           fflush(stdout);
-  printf("BRIDGE_FUNC0 = %s \n", BRIDGE_FUNC0);         fflush(stdout);
-  printf("BRIDGE_FUNC1 = %s \n", BRIDGE_FUNC1);         fflush(stdout);
-  printf("RBC_FUNC = %s \n", RBC_FUNC);                 fflush(stdout);
+  printf("CONTINUE = %s \n", CONTINUE);
+  printf("FILE_TYPE = %s \n", FILE_TYPE);
+  printf("CLOSURE = %s \n", CLOSURE);
+  printf("EWALD_SUMS = %s \n", EWALD_SUMS);
+  printf("CONFIG_TYPE = %s \n", CONFIG_TYPE);
+  printf("BRIDGE_FUNC0 = %s \n", BRIDGE_FUNC0);
+  printf("BRIDGE_FUNC1 = %s \n", BRIDGE_FUNC1);
+  printf("RBC_FUNC = %s \n", RBC_FUNC);
   if (strncmp("mdiis", SOLVER, 5) == 0) {
     printf("DIIS_SIZE = %d \n", DIIS_SIZE);
     printf("DIIS_MP = %lf \n", DIIS_MP);
@@ -851,8 +851,11 @@ void check_par(U_PAR2 *u, int n_sites)
   double x, y, z;
 
   FILE *out;
-  if ((out = fopen("solute_check.dat", "w")) == NULL)
-    fprintf(stdout, "Problem opening out file for lj parameters"); fflush(stdout);
+
+  if ((out = fopen("solute_check.dat", "w")) == NULL) {
+    fprintf(stdout, "Problem opening out file for lj parameters");
+    return;
+  }
 
   for (i = 1; i <= n_sites; i++) {
     fprintf(out, "%d:%s(%d)\n", u[i].num, u[i].element, u[i].mol); fflush(out);
@@ -2627,10 +2630,10 @@ void print_3d(char name[], double *v)
     print_sit(name, v, SYS);
   else if (strncmp("jh3d", FILE_TYPE, 4) == 0)
     print_jh3d(name, v, SYS, TEMP, PND[0]);
-  else if (strcmp("bin3d", FILE_TYPE) == 5)
+  else if (strncmp("bin3d", FILE_TYPE, 5) == 0)
     writebin3dreal(v, name, &SYS, TEMP, PND[0]);
   else
-    printf("\nFile name not specified correctly\n"); fflush(stdout);
+    printf("File name not specified correctly\n");
 }
 
 
@@ -2641,14 +2644,16 @@ void print_jh3d_box(char name[], double *v, int nx, int ny, int nz)
   double l[3] = {LX, LY, LZ};
   double PD = PND[0];
   FILE *out;
-  if ((out = fopen(name, "w")) == NULL)
-    printf("\nFile could not be opened\n");
 
+  if ((out = fopen(name, "w")) == NULL) {
+    printf("cannot open file %s\n", name);
+    return;
+  }
 
-  fprintf(out, "%d\n%d\n%d\n", NX, NY, NZ / 2); fflush(out);
-  fprintf(out, "%.10f\n%.10f\n%.10f\n", l[0], l[1], l[2] / 2.0); fflush(out);
-  fprintf(out, "%.10f\n", TEMP); fflush(out);
-  fprintf(out, "%.10f\n", PD); fflush(out);
+  fprintf(out, "%d\n%d\n%d\n", NX, NY, NZ / 2);
+  fprintf(out, "%.10f\n%.10f\n%.10f\n", l[0], l[1], l[2] / 2.0);
+  fprintf(out, "%.10f\n", TEMP);
+  fprintf(out, "%.10f\n", PD);
 
   for (x = 0; x <= nx - 1; x++) {
     for (y = 0; y <= ny - 1; y++) {
@@ -2656,7 +2661,6 @@ void print_jh3d_box(char name[], double *v, int nx, int ny, int nz)
         fprintf(out, "%d\t%d\t%d\t%.15e\n", x, y, z - CZ, v[nz * ny * x + nz * y + z]);
       fprintf(out, "\n");
     }
-    fflush(out);
   }
   fclose(out);
 }
@@ -2669,14 +2673,16 @@ void print_jh3d_box3(char name[], double *v, int nx, int ny, int nz)
   double l[3] = {LX, LY, LZ};
   double PD = PND[0];
   FILE *out;
-  if ((out = fopen(name, "w")) == NULL)
-    printf("\nFile could not be opened\n");
 
+  if ((out = fopen(name, "w")) == NULL) {
+    printf("cannot open %s\n", name);
+    return;
+  }
 
-  fprintf(out, "%d\n%d\n%d\n", NX, NY, NZ / 3); fflush(out);
-  fprintf(out, "%.10f\n%.10f\n%.10f\n", l[0], l[1], l[2] / 3.0); fflush(out);
-  fprintf(out, "%.10f\n", TEMP); fflush(out);
-  fprintf(out, "%.10f\n", PD); fflush(out);
+  fprintf(out, "%d\n%d\n%d\n", NX, NY, NZ / 3);
+  fprintf(out, "%.10f\n%.10f\n%.10f\n", l[0], l[1], l[2] / 3.0);
+  fprintf(out, "%.10f\n", TEMP);
+  fprintf(out, "%.10f\n", PD);
 
   for (x = 0; x <= nx - 1; x++) {
     for (y = 0; y <= ny - 1; y++) {
@@ -2684,7 +2690,6 @@ void print_jh3d_box3(char name[], double *v, int nx, int ny, int nz)
         fprintf(out, "%d\t%d\t%d\t%.15e\n", x, y, z - CZ, v[nz * ny * x + nz * y + z]);
       fprintf(out, "\n");
     }
-    fflush(out);
   }
   fclose(out);
 }

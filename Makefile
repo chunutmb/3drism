@@ -35,7 +35,8 @@ targets_icc = 3drism_icc
 targets_icc_prof = 3drism_icc_prof
 targets_gcc_prof = 3drism_gcc_prof
 
-all: $(targets) $(targets_mpi) $(targets_thr) $(targets_icc) $(targets_icc_prof) $(targets_gcc_prof)
+all: $(targets_omp 
+#$(targets) $(targets_mpi) $(targets_thr) $(targets_icc) $(targets_icc_prof) $(targets_gcc_prof)
 
 $(targets) : % : %.c $(sources)
 	$(CC) $(CFLAGS) -o $@ $^ $(LM)

@@ -47,7 +47,7 @@
 /*#define FFTW_THREADS*/
 #ifdef FFTW_THREADS
         #include <pthread.h>
-        int NUM_THREADS = 16;
+        int NUM_THREADS = 8;
 #endif
 
 #ifdef MPI

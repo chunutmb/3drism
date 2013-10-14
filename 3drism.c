@@ -44,6 +44,13 @@
 #include "jh_print.h"
 #include "binio.h"
 
+
+#ifdef OMP
+  #include <omp.h>
+/*#include <pthread.h>*/
+  int NUM_THREADS = 8;
+#endif
+
 /*#define FFTW_THREADS*/
 #ifdef FFTW_THREADS
         #include <pthread.h>
@@ -176,6 +183,13 @@ int main(int argc, char *argv[])
     fprintf(stderr, "need three arguments\n");
     exit(1);
   }
+
+#ifdef OMP
+  if (argc >= 5) {
+    NUM_THREADS = atoi (argv[4]);
+    printf("Using %d threads\n", NUM_THREADS);
+    }
+#endif
 
 #ifdef FFTW_THREADS
   if (argc >= 5) { /* set up the number of threads */
@@ -2400,6 +2414,12 @@ void fftw_3d(fftw_complex *in_r, fftw_complex *out_k)
   int i;
   double con = DX * DY * DZ;
 
+#ifdef OMP
+  fftw_init_threads();
+  /*NUM_THREADS = omp_get_max_threads();*/
+  fftw_plan_with_nthreads(NUM_THREADS);
+#endif
+
 #ifdef FFTW_THREADS
   fftw_init_threads();
   fftw_plan_with_nthreads(NUM_THREADS);
@@ -2419,6 +2439,12 @@ void invfftw_3d(fftw_complex *in_k, fftw_complex *out_r)
 {
   int i;
   double con = DX * DY * DZ * NNN;
+
+#ifdef OMP
+  fftw_init_threads();
+  /*NUM_THREADS = omp_get_max_threads();*/
+  fftw_plan_with_nthreads(NUM_THREADS);
+#endif
 
 #ifdef FFTW_THREADS
   fftw_init_threads();

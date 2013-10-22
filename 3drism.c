@@ -2442,7 +2442,7 @@ void invfftw_3d(fftw_complex *in_k, fftw_complex *out_r)
 
 #ifdef OMP
   fftw_init_threads();
-  /*NUM_THREADS = omp_get_max_threads();*/
+  NUM_THREADS = omp_get_max_threads();
   fftw_plan_with_nthreads(NUM_THREADS);
 #endif
 

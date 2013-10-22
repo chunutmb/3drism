@@ -27,14 +27,13 @@ OMPLM = -lfftw3 -lfftw3_omp -lpthread -lm
 OMPICC = icc
 INC =
 LIB =
-OMPCFLAGS = -DOMP -O3 -fopenmp -Wall -Wextra $(INC) $(LIB)
-OMPLM = -lfftw3 -lfftw3_omp -lpthread -lm
+OMPCFLAGS = -DOMP -xhost -O3 -openmp -Wall -Wextra $(INC) $(LIB)
+OMPLM = -lfftw3 -lfftw3_omp
 
 # common code
 sources = jh_get.c jh_grid.c jh_linalg.c jh_util.c jh_print.c nrutil.c
 
 targets_omp_icc = 3drism_omp_icc 
-targets_omp_gcc = 3drism_omp_gcc
 targets = 3drism analyze pot plot
 targets_mpi = pot_mpi
 targets_thr = 3drism_thr
@@ -42,14 +41,11 @@ targets_icc = 3drism_icc
 targets_icc_prof = 3drism_icc_prof
 targets_gcc_prof = 3drism_gcc_prof
 
-all: $(targets_omp_icc) $(targets_omp_gcc)
+all: $(targets_omp_icc)
 ##$(targets) $(targets_mpi) $(targets_thr) $(targets_icc) $(targets_icc_prof) $(targets_gcc_prof)
 
 $(targets_omp_icc) : %_omp_icc : %.c $(sources)
 	$(OMPICC) $(OMPCFLAGS) -o $@ $^ $(OMPLM)
-
-$(targets_omp_gcc) : %_omp_gcc : %.c $(sources)
-	$(OMPGCC) $(OMPCFLAGS) -o $@ $^ $(OMPLM)
 
 $(targets) : % : %.c $(sources)
 	$(CC) $(CFLAGS) -o $@ $^ $(LM)

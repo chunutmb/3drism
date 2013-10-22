@@ -47,8 +47,7 @@
 
 #ifdef OMP
   #include <omp.h>
-/*#include <pthread.h>*/
-  int NUM_THREADS = 8;
+  int NUM_THREADS = 1;
 #endif
 
 /*#define FFTW_THREADS*/
@@ -2416,7 +2415,8 @@ void fftw_3d(fftw_complex *in_r, fftw_complex *out_k)
 
 #ifdef OMP
   fftw_init_threads();
-  /*NUM_THREADS = omp_get_max_threads();*/
+  NUM_THREADS = omp_get_max_threads();
+//printf("Using %u OpenMP threads.\n", NUM_THREADS );
   fftw_plan_with_nthreads(NUM_THREADS);
 #endif
 

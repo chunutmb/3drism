@@ -1832,6 +1832,9 @@ void full_picard_iter(int max_iter)
   /*  Initialize u(r)  */
 
   for (m = 0; m <= NRSITES - 1; m++) {
+#ifdef OMP
+#pragma omp parallel for
+#endif
     for (i = 0; i <= NNN - 1; i++) {
       cr_s[m][i][0] = CR_S[m][i];
       cr_s[m][i][1] = 0.00;
@@ -1899,26 +1902,49 @@ void full_picard_iter(int max_iter)
       /* k=0-real, k=1-imag */
       for (k = 0; k <= 1; k++) {
         /* H20 part */
+#ifdef OMP
+#pragma omp parallel for
+#endif
         for (i = 0; i <= NNN - 1; i++) {
           tk[0][i][k] = ck[0][i][k] * (PND[0] * hk3_oo[i]);                                                             /* O-O */
           tk[0][i][k] += 2 * ck[1][i][k] * (WK_OH[i] + PND[1] * hk3_oh[i]);                                     /* H-O, H2-O */
         }
+#ifdef OMP
+#pragma omp parallel for
+#endif
         for (i = 0; i <= NNN - 1; i++) {
           tk[1][i][k] = ck[0][i][k] * (WK_OH[i] + PND[0] * hk3_oh[i]);                                                  /* O-H */
           tk[1][i][k] += ck[1][i][k] * (WK_HH[i] + 2 * PND[1] * hk3_hh[i]);                                             /* H-H, H2-H */
         }
 
         /* other contributors to O and H part*/
-        for (n = 2; n <= NRSITES - 1; n++)
+        for (n = 2; n <= NRSITES - 1; n++){
+         const double redunpnd2 = REDUN[n] * PND[n];
+
+#ifdef OMP
+#pragma omp parallel for
+#endif
           for (i = 0; i <= NNN - 1; i++) {
-            tk[0][i][k] += REDUN[n] * ck[n][i][k] * PND[n] * HK3[n][0][i];
-            tk[1][i][k] += REDUN[n] * ck[n][i][k] * PND[n] * HK3[n][1][i];
+            tk[0][i][k] += redunpnd2 * ck[n][i][k] * HK3[n][0][i];
+            tk[1][i][k] += redunpnd2 * ck[n][i][k] * HK3[n][1][i];
+            //tk[0][i][k] += REDUN[n] * ck[n][i][k] * PND[n] * HK3[n][0][i];
+            //tk[1][i][k] += REDUN[n] * ck[n][i][k] * PND[n] * HK3[n][1][i];
+          }
           }
 
         for (m = 2; m <= NRSITES - 1; m++)
-          for (n = 0; n <= NRSITES - 1; n++)
-            for (i = 0; i <= NNN - 1; i++)
-              tk[m][i][k] += REDUN[n] * ck[n][i][k] * PND[n] * HK3[n][m][i];
+        for (n = 0; n <= NRSITES - 1; n++){
+
+const double redunpnd = REDUN[n] * PND[n];
+
+#ifdef OMP
+#pragma omp parallel for
+#endif
+            for (i = 0; i <= NNN - 1; i++){
+             // tk[m][i][k] += REDUN[n] * ck[n][i][k] * PND[n] * HK3[n][m][i];
+		tk[m][i][k] += redunpnd * ck[n][i][k] * HK3[n][m][i];
+	}
+        }
       }
     }
 
@@ -2018,6 +2044,10 @@ void full_picard_iter(int max_iter)
   if (Test <= T_ERR && counter <= max_iter) STAT = 2;
 
   for (m = 0; m <= NRSITES - 1; m++)
+
+#ifdef OMP
+#pragma omp parallel for
+#endif
     for (i = 0; i <= NNN - 1; i++) {
       CR_S[m][i] = cr_s[m][i][0];
       CR2_S[m][i] = cr_s[m][i][1];
@@ -2058,8 +2088,12 @@ void closure_cr(fftw_complex **cr_s, fftw_complex **tr)
     if (strncmp("no", RBC_FUNC, 2) == 0) {
       if (B1R2 == 0) {
         for (m = 0; m <= NRSITES - 1; m++)
-          for (i = 0; i <= NNN - 1; i++)
+#ifdef OMP
+#pragma omp parallel for
+#endif
+          for (i = 0; i <= NNN - 1; i++){
             cr_s[m][i][1] = exp(-UR_S[m][i] + tr[m][i][0]) - tr[m][i][0] - 1;
+  }
       } else if (B1R2 == 1) {
         for (m = 0; m <= NRSITES - 1; m++)
           for (i = 0; i <= NNN - 1; i++)

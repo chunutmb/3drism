@@ -9,7 +9,6 @@ ICC = icc
 IINC =
 ILIB =
 ICFLAGS = -O3 -march=native -ipo $(INC) $(LIB)
-IPROF = -profile-functions -profile-loops=all -profile-loops-report=2
 ILM = -lfftw3
 
 TICC = icc
@@ -18,40 +17,33 @@ TILIB =
 TICFLAGS = -DFFTW_THREADS -xhost -O3 -Wall -Wextra $(TIINC) $(TILIB)
 TILM = -lm -lfftw3 -lfftw3_threads -lpthread
 
-OMPGCC = gcc
-INC =
-LIB =
-OMPCFLAGS = -DOMP -O3 -fopenmp -Wall -Wextra $(INC) $(LIB)
-OMPLM = -lfftw3 -lfftw3_omp -lpthread -lm
-
 OMPICC = icc
 INC =
 LIB =
 OMPCFLAGS = -DOMP -xhost -O3 -openmp -Wall -Wextra $(INC) $(LIB)
 OMPLM = -lfftw3 -lfftw3_omp
 
+IPROF = -profile-functions -profile-loops=all -profile-loops-report=2
+
 # common code
 sources = jh_get.c jh_grid.c jh_linalg.c jh_util.c jh_print.c nrutil.c
 
-targets_omp_icc = 3drism_omp_icc 
+targets_omp_prof = 3drism_omp_prof
+targets_omp = 3drism_omp 
 targets = 3drism analyze pot plot
-targets_mpi = pot_mpi
 targets_thr = 3drism_thr
 targets_icc = 3drism_icc
 targets_icc_prof = 3drism_icc_prof
 targets_gcc_prof = 3drism_gcc_prof
 
-all: $(targets_omp_icc) $(targets_thr)
+all: $(targets_omp) $(targets_thr)
 ##$(targets) $(targets_mpi) $(targets_thr) $(targets_icc) $(targets_icc_prof) $(targets_gcc_prof)
 
-$(targets_omp_icc) : %_omp_icc : %.c $(sources)
+$(targets_omp) : %_omp : %.c $(sources)
 	$(OMPICC) $(OMPCFLAGS) -o $@ $^ $(OMPLM)
 
 $(targets) : % : %.c $(sources)
 	$(CC) $(CFLAGS) -o $@ $^ $(LM)
-
-$(targets_mpi) : %_mpi : %.c $(sources)
-	$(MPICC) $(MPICFLAGS) -o $@ $^ $(MPILM)
 
 $(targets_thr) : %_thr : %.c $(sources)
 	$(TICC) $(TICFLAGS) -o $@ $^ $(TILM)
@@ -69,11 +61,11 @@ pack:
 	tar -cvf code_pac.tar *.c *.h Makefile test
 
 clean:
-	$(RM) *.o a.out *~ $(targets) $(targets_thr) $(targets_mpi) $(targets_openmp) $(targets_omp_icc) $(targets_omp_gcc)
+	$(RM) *.o a.out *~ $(targets) $(targets_thr) $(targets_omp)
 
 chmod:
 	chmod a-x *.[ch] Makefile *_3drism *.env README
 
 copy:
-	cp 3drism_omp_icc 3drism_thr test 	
+	cp 3drism_omp 3drism_thr test 	
 ##cp 3drism analyze pot plot pot_mpi 3drism_thr 3drism_icc 3drism_icc_prof 3drism_gcc_prof test

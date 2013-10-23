@@ -1854,14 +1854,20 @@ void full_picard_iter(int max_iter)
     /* set Im[ c(r) ] = 0 */
     for (m = 0; m <= NRSITES - 1; m++) {
       {
-        for (i = 0; i <= NNN - 1; i++)
+#ifdef OMP
+#pragma omp parallel for
+#endif
+        for (i = 0; i <= NNN - 1; i++){
           cr_s[m][i][1] = 0.00;
-
+}
         /*FFT cr_uo_s and cr_uh_s*/
         fftw_3d(*(cr_s + m), *(ck + m));                                 /*in, out*/
 
         /*Long Range*/
         if (strncmp("no", EWALD_SUMS,2) == 0)
+#ifdef OMP
+#pragma omp parallel for
+#endif
           for (i = 0; i <= NNN - 1; i++) {
             ck[m][i][0] = ck[m][i][0] - uk_l[m][i][0];
             ck[m][i][1] = ck[m][i][1] - uk_l[m][i][1];
@@ -1955,6 +1961,9 @@ const double redunpnd = REDUN[n] * PND[n];
     /*Subtract long range pot. int k space, tk -> tk_s*/
     if (strncmp("no", EWALD_SUMS,2) == 0)
       for (m = 0; m <= NRSITES - 1; m++)
+#ifdef OMP
+#pragma omp parallel for
+#endif
         for (i = 0; i <= NNN - 1; i++) {
           tk[m][i][0] = tk[m][i][0] - uk_l[m][i][0];
           tk[m][i][1] = tk[m][i][1] - uk_l[m][i][1];
@@ -2306,9 +2315,13 @@ void mdiis_iter(int max_iter)
 
     for (m = 0; m <= NRSITES - 1; m++)
       for (j = 0; j <= n_diis - 1; j++)
-        for (i = 0; i <= NNN - 1; i++)
-          res[m][n_diis][i] += (c_vec[j] * res[m][j][i]);
 
+#ifdef OMP
+#pragma omp parallel for
+#endif
+        for (i = 0; i <= NNN - 1; i++){
+          res[m][n_diis][i] += (c_vec[j] * res[m][j][i]);
+}
     r_mag[n_diis] = svector_norm(res[0][n_diis], NNN);
     for (m = 1; m <= NRSITES - 1; m++)
       r_mag[n_diis] += svector_norm(res[m][n_diis], NNN);
@@ -2325,9 +2338,12 @@ void mdiis_iter(int max_iter)
 
     for (m = 0; m <= NRSITES - 1; m++)
       for (j = 0; j <= n_diis - 1; j++)
-        for (i = 0; i <= NNN - 1; i++)
+#ifdef OMP
+#pragma omp parallel for
+#endif 
+       for (i = 0; i <= NNN - 1; i++){
           CR2_S[m][i] += (c_vec[j] * cr[m][j][i]);
-
+}
     for (m = 0; m <= NRSITES - 1; m++)
       for (i = 0; i <= NNN - 1; i++)
         CR_S[m][i] = CR2_S[m][i] + (mp * res[m][n_diis][i]);

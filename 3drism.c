@@ -748,7 +748,11 @@ void set_arrays(void)
   if (strncmp("yes", CONTINUE, 3) == 0) {
     for (j = 0; j <= NRSITES - 1; j++) {
       sprintf(s1, "cr_%s_s", NAMES[j]);
-      if (get_file_stat(s1) == 1)
+
+//Jim modifiy here. One line below, changed from ==1 to ==0
+//now the code is able to restart 3drism calculation
+
+      if (get_file_stat(s1) == 0)
         *(CR_S + j) = (double *) get_3d(s1, TEMP, PND[j], SYS);
       else {
         printf("File %s.%s doesn't exist\n", s1, FILE_TYPE);

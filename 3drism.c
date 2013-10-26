@@ -44,21 +44,8 @@
 #include "jh_print.h"
 #include "binio.h"
 
-
-#ifdef OMP
   #include <omp.h>
   int NUM_THREADS = 1;
-#endif
-
-/*#define FFTW_THREADS*/
-#ifdef FFTW_THREADS
-        #include <pthread.h>
-        int NUM_THREADS = 8;
-#endif
-
-#ifdef MPI
-        #include <mpi.h>
-#endif
 
 #define NNN ((NX) * (NY) * (NZ))
 #define ii(x, y, z) (NZ * NY * (x) + NZ * (y) + (z))
@@ -183,19 +170,10 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-#ifdef OMP
   if (argc >= 5) {
     NUM_THREADS = atoi (argv[4]);
     printf("Using %d threads\n", NUM_THREADS);
     }
-#endif
-
-#ifdef FFTW_THREADS
-  if (argc >= 5) { /* set up the number of threads */
-    NUM_THREADS = atoi(argv[4]);
-    printf("Using %d threads\n", NUM_THREADS);
-  }
-#endif
 
   set_env(*(argv + 2));
   check_env();
@@ -1835,11 +1813,10 @@ void full_picard_iter(int max_iter)
 
   /*  Initialize u(r)  */
 
-  for (m = 0; m <= NRSITES - 1; m++) {
-#ifdef OMP
-#pragma omp parallel for
-#endif
+//for (m = 0; m <= NRSITES - 1; m++) {
+#pragma omp parallel for private(i,m)
     for (i = 0; i <= NNN - 1; i++) {
+for (m = 0; m <= NRSITES - 1; m++) {
       cr_s[m][i][0] = CR_S[m][i];
       cr_s[m][i][1] = 0.00;
     }                                                   /*cr = CR*/
@@ -1858,9 +1835,7 @@ void full_picard_iter(int max_iter)
     /* set Im[ c(r) ] = 0 */
     for (m = 0; m <= NRSITES - 1; m++) {
       {
-#ifdef OMP
-#pragma omp parallel for
-#endif
+#pragma omp parallel for private(i)
         for (i = 0; i <= NNN - 1; i++){
           cr_s[m][i][1] = 0.00;
 }
@@ -1869,9 +1844,7 @@ void full_picard_iter(int max_iter)
 
         /*Long Range*/
         if (strncmp("no", EWALD_SUMS,2) == 0)
-#ifdef OMP
-#pragma omp parallel for
-#endif
+#pragma omp parallel for private(i)
           for (i = 0; i <= NNN - 1; i++) {
             ck[m][i][0] = ck[m][i][0] - uk_l[m][i][0];
             ck[m][i][1] = ck[m][i][1] - uk_l[m][i][1];
@@ -1912,49 +1885,50 @@ void full_picard_iter(int max_iter)
       /* k=0-real, k=1-imag */
       for (k = 0; k <= 1; k++) {
         /* H20 part */
-#ifdef OMP
-#pragma omp parallel for
-#endif
+#pragma omp parallel private(i,m,n)
+{
+#pragma omp for
+//#pragma omp parallel for private(i)
         for (i = 0; i <= NNN - 1; i++) {
           tk[0][i][k] = ck[0][i][k] * (PND[0] * hk3_oo[i]);                                                             /* O-O */
           tk[0][i][k] += 2 * ck[1][i][k] * (WK_OH[i] + PND[1] * hk3_oh[i]);                                     /* H-O, H2-O */
         }
-#ifdef OMP
-#pragma omp parallel for
-#endif
+#pragma omp for
+//#pragma omp parallel for private(i)
         for (i = 0; i <= NNN - 1; i++) {
           tk[1][i][k] = ck[0][i][k] * (WK_OH[i] + PND[0] * hk3_oh[i]);                                                  /* O-H */
           tk[1][i][k] += ck[1][i][k] * (WK_HH[i] + 2 * PND[1] * hk3_hh[i]);                                             /* H-H, H2-H */
         }
 
         /* other contributors to O and H part*/
+#pragma omp for
+//#pragma omp parallel for private(i,n)
+        for (i = 0; i <= NNN - 1; i++) {
         for (n = 2; n <= NRSITES - 1; n++){
-         const double redunpnd2 = REDUN[n] * PND[n];
-
-#ifdef OMP
-#pragma omp parallel for
-#endif
-          for (i = 0; i <= NNN - 1; i++) {
-            tk[0][i][k] += redunpnd2 * ck[n][i][k] * HK3[n][0][i];
-            tk[1][i][k] += redunpnd2 * ck[n][i][k] * HK3[n][1][i];
-            //tk[0][i][k] += REDUN[n] * ck[n][i][k] * PND[n] * HK3[n][0][i];
-            //tk[1][i][k] += REDUN[n] * ck[n][i][k] * PND[n] * HK3[n][1][i];
+  //       const double redunpnd2 = REDUN[n] * PND[n];
+//#pragma omp parallel for
+          //for (i = 0; i <= NNN - 1; i++) {
+            //tk[0][i][k] += redunpnd2 * ck[n][i][k] * HK3[n][0][i];
+            //tk[1][i][k] += redunpnd2 * ck[n][i][k] * HK3[n][1][i];
+            tk[0][i][k] += REDUN[n] * ck[n][i][k] * PND[n] * HK3[n][0][i];
+            tk[1][i][k] += REDUN[n] * ck[n][i][k] * PND[n] * HK3[n][1][i];
           }
           }
-
-        for (m = 2; m <= NRSITES - 1; m++)
+#pragma omp for 
+//#pragma omp parallel for private(i,m,n)
+	for (i = 0; i <= NNN - 1; i++){
+        for (m = 2; m <= NRSITES - 1; m++){
         for (n = 0; n <= NRSITES - 1; n++){
 
-const double redunpnd = REDUN[n] * PND[n];
-
-#ifdef OMP
-#pragma omp parallel for
-#endif
-            for (i = 0; i <= NNN - 1; i++){
-             // tk[m][i][k] += REDUN[n] * ck[n][i][k] * PND[n] * HK3[n][m][i];
-		tk[m][i][k] += redunpnd * ck[n][i][k] * HK3[n][m][i];
-	}
-        }
+//const double redunpnd = REDUN[n] * PND[n];
+//#pragma omp parallel for
+          //for (i = 0; i <= NNN - 1; i++){
+          tk[m][i][k] += REDUN[n] * ck[n][i][k] * PND[n] * HK3[n][m][i];
+	//tk[m][i][k] += redunpnd * ck[n][i][k] * HK3[n][m][i];
+	  }
+          }
+          }
+}
       }
     }
 
@@ -1964,13 +1938,15 @@ const double redunpnd = REDUN[n] * PND[n];
 
     /*Subtract long range pot. int k space, tk -> tk_s*/
     if (strncmp("no", EWALD_SUMS,2) == 0)
-      for (m = 0; m <= NRSITES - 1; m++)
-#ifdef OMP
-#pragma omp parallel for
-#endif
+
+#pragma omp parallel for private(i,m)
         for (i = 0; i <= NNN - 1; i++) {
+      for (m = 0; m <= NRSITES - 1; m++){
+//#pragma omp parallel for
+        //for (i = 0; i <= NNN - 1; i++) {
           tk[m][i][0] = tk[m][i][0] - uk_l[m][i][0];
           tk[m][i][1] = tk[m][i][1] - uk_l[m][i][1];
+	}
         }
 
     /*Inv_FFT */
@@ -2056,16 +2032,20 @@ const double redunpnd = REDUN[n] * PND[n];
   if (Test >= T_ERR && counter >= max_iter) STAT = 1;
   if (Test <= T_ERR && counter <= max_iter) STAT = 2;
 
-  for (m = 0; m <= NRSITES - 1; m++)
-
-#ifdef OMP
-#pragma omp parallel for
-#endif
+ 
+#pragma omp parallel for private(i,m)
     for (i = 0; i <= NNN - 1; i++) {
+ for (m = 0; m <= NRSITES - 1; m++){
+
+//#pragma omp parallel for
+    //for (i = 0; i <= NNN - 1; i++) {
+
       CR_S[m][i] = cr_s[m][i][0];
       CR2_S[m][i] = cr_s[m][i][1];
       TR_S[m][i] = tr[m][i][0];
+}
     }
+
   TR_S_STAT = 1;
   CR_S_STAT = 1;
 
@@ -2100,13 +2080,18 @@ void closure_cr(fftw_complex **cr_s, fftw_complex **tr)
   if ((strncmp("hnc", CLOSURE, 3) == 0) && (strlen(CLOSURE) == 3)) {
     if (strncmp("no", RBC_FUNC, 2) == 0) {
       if (B1R2 == 0) {
-        for (m = 0; m <= NRSITES - 1; m++)
-#ifdef OMP
-#pragma omp parallel for
-#endif
+
+#pragma omp parallel for private(i,m)
           for (i = 0; i <= NNN - 1; i++){
+        for (m = 0; m <= NRSITES - 1; m++){
+//#pragma omp parallel for
+          //for (i = 0; i <= NNN - 1; i++){
             cr_s[m][i][1] = exp(-UR_S[m][i] + tr[m][i][0]) - tr[m][i][0] - 1;
+}
   }
+
+
+
       } else if (B1R2 == 1) {
         for (m = 0; m <= NRSITES - 1; m++)
           for (i = 0; i <= NNN - 1; i++)
@@ -2313,18 +2298,27 @@ void mdiis_iter(int max_iter)
       printf("\ncoef total -> %lf\n\n", any);
     }
 
-    for (m = 0; m <= NRSITES - 1; m++)
-      for (i = 0; i <= NNN - 1; i++)
+#pragma omp parallel private(i,m,j)
+{
+#pragma omp for
+  for (i = 0; i <= NNN - 1; i++){
+  for (m = 0; m <= NRSITES - 1; m++){
+//#pragma omp parallel for
+      //for (i = 0; i <= NNN - 1; i++){
         res[m][n_diis][i] = 0.00;
+  }
+  }
 
-    for (m = 0; m <= NRSITES - 1; m++)
-      for (j = 0; j <= n_diis - 1; j++)
-
-#ifdef OMP
-#pragma omp parallel for
-#endif
-        for (i = 0; i <= NNN - 1; i++){
+#pragma omp for
+  for (i = 0; i <= NNN - 1; i++){
+  for (m = 0; m <= NRSITES - 1; m++){
+  for (j = 0; j <= n_diis - 1; j++){
+  //#pragma omp parallel for
+  //for (i = 0; i <= NNN - 1; i++){
           res[m][n_diis][i] += (c_vec[j] * res[m][j][i]);
+  }
+  }
+  }
 }
     r_mag[n_diis] = svector_norm(res[0][n_diis], NNN);
     for (m = 1; m <= NRSITES - 1; m++)
@@ -2336,21 +2330,39 @@ void mdiis_iter(int max_iter)
     FERR = r_mag[n_diis];
     test = FERR;
 
-    for (m = 0; m <= NRSITES - 1; m++)
-      for (i = 0; i <= NNN - 1; i++)
+///
+#pragma omp parallel private(m,i,j)
+{
+//
+#pragma omp for
+for (i = 0; i <= NNN - 1; i++){
+    for (m = 0; m <= NRSITES - 1; m++){
+      //for (i = 0; i <= NNN - 1; i++)
         CR2_S[m][i] = 0.00;
-
-    for (m = 0; m <= NRSITES - 1; m++)
-      for (j = 0; j <= n_diis - 1; j++)
-#ifdef OMP
-#pragma omp parallel for
-#endif 
+  }
+  }
+//
+#pragma omp for
        for (i = 0; i <= NNN - 1; i++){
+    for (m = 0; m <= NRSITES - 1; m++){
+      for (j = 0; j <= n_diis - 1; j++){
+//#pragma omp parallel for
+       //for (i = 0; i <= NNN - 1; i++){
           CR2_S[m][i] += (c_vec[j] * cr[m][j][i]);
-}
-    for (m = 0; m <= NRSITES - 1; m++)
-      for (i = 0; i <= NNN - 1; i++)
+  }
+  }
+  }  
+
+//
+#pragma omp for
+  for (i = 0; i <= NNN - 1; i++){
+    for (m = 0; m <= NRSITES - 1; m++){
+      //for (i = 0; i <= NNN - 1; i++)
         CR_S[m][i] = CR2_S[m][i] + (mp * res[m][n_diis][i]);
+  }
+  }
+}
+///
 
     if (r_mag[n_diis] < T_ERR && RT_CNT >= RT_CHANGES) break;
 
@@ -2467,17 +2479,10 @@ void fftw_3d(fftw_complex *in_r, fftw_complex *out_k)
   int i;
   double con = DX * DY * DZ;
 
-#ifdef OMP
   fftw_init_threads();
   NUM_THREADS = omp_get_max_threads();
 //printf("Using %u OpenMP threads.\n", NUM_THREADS );
   fftw_plan_with_nthreads(NUM_THREADS);
-#endif
-
-#ifdef FFTW_THREADS
-  fftw_init_threads();
-  fftw_plan_with_nthreads(NUM_THREADS);
-#endif
 
   fftw_plan rtok;
   rtok = fftw_plan_dft_3d(NX, NY, NZ, in_r, out_k, FFTW_FORWARD, FFTW_ESTIMATE);
@@ -2494,16 +2499,9 @@ void invfftw_3d(fftw_complex *in_k, fftw_complex *out_r)
   int i;
   double con = DX * DY * DZ * NNN;
 
-#ifdef OMP
   fftw_init_threads();
   NUM_THREADS = omp_get_max_threads();
   fftw_plan_with_nthreads(NUM_THREADS);
-#endif
-
-#ifdef FFTW_THREADS
-  fftw_init_threads();
-  fftw_plan_with_nthreads(NUM_THREADS);
-#endif
 
   fftw_plan ktor;
   ktor = fftw_plan_dft_3d(NX, NY, NZ, in_k, out_r, FFTW_BACKWARD, FFTW_ESTIMATE);

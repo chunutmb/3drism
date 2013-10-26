@@ -20,7 +20,8 @@ TILM = -lm -lfftw3 -lfftw3_threads -lpthread
 OMPICC = icc
 INC =
 LIB =
-OMPCFLAGS = -DOMP -xhost -O3 -openmp -Wall -Wextra $(INC) $(LIB)
+OMPCFLAGS = -openmp -xhost -O3 -Wall -Wextra $(INC) $(LIB)
+##OMPCFLAGS = -DOMP -xhost -O3 -openmp -Wall -Wextra $(INC) $(LIB)
 OMPLM = -lfftw3 -lfftw3_omp
 
 IPROF = -profile-functions -profile-loops=all -profile-loops-report=2
@@ -36,7 +37,7 @@ targets_icc = 3drism_icc
 targets_icc_prof = 3drism_icc_prof
 targets_gcc_prof = 3drism_gcc_prof
 
-all: $(targets_omp) $(targets_thr)
+all: $(targets_omp)
 ##$(targets) $(targets_mpi) $(targets_thr) $(targets_icc) $(targets_icc_prof) $(targets_gcc_prof)
 
 $(targets_omp) : %_omp : %.c $(sources)
@@ -67,5 +68,5 @@ chmod:
 	chmod a-x *.[ch] Makefile *_3drism *.env README
 
 copy:
-	cp 3drism_omp 3drism_thr test 	
+	cp 3drism_omp test 	
 ##cp 3drism analyze pot plot pot_mpi 3drism_thr 3drism_icc 3drism_icc_prof 3drism_gcc_prof test

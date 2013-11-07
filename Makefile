@@ -59,7 +59,7 @@ $(targets_gcc_prof) : %_gcc_prof : %.c $(sources)
 	$(CC) $(CFLAGS) $(PROF) -o $@ $^ $(LM)
 
 pack:
-	tar -cvf code_pac.tar *.c *.h Makefile test test-normal
+	tar -cvf code_pac.tar *.c *.h Makefile 
 
 clean:
 	$(RM) *.o a.out *~ $(targets) $(targets_thr) $(targets_omp)

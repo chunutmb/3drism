@@ -1118,7 +1118,12 @@ void set_b1r(void)
     } else if (strncmp("yes", BRIDGE_FUNC1, 3) == 0) {
       for (j = 0; j <= NRSITES - 1; j++) {
         sprintf(s1, "b1r_%s", NAMES[j]);
-        if (get_file_stat(s1) == 1) {
+
+//Jim modifiy here. One line below, changed from ==1 to ==0
+//now the code is able to restart 3drism calculation
+//with bridge function "#BRIDGE_FUNC1 on"
+
+        if (get_file_stat(s1) == 0) {
           *(B1R + j) = (double *) get_3d(s1, TEMP, PND[j], SYS);
           shift_origin_inplace(*(B1R + j), SYS);
         } else {

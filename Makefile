@@ -33,11 +33,11 @@ targets_omp_prof = 3drism_omp_prof
 targets_omp = 3drism_omp 
 targets = 3drism analyze pot plot
 targets_thr = 3drism_thr
-targets_icc = 3drism_icc
+targets_icc = pot_icc
 targets_icc_prof = 3drism_icc_prof
 targets_gcc_prof = 3drism_gcc_prof
 
-all: $(targets_omp)
+all: $(targets_icc)
 ##$(targets) $(targets_mpi) $(targets_thr) $(targets_icc) $(targets_icc_prof) $(targets_gcc_prof)
 
 $(targets_omp) : %_omp : %.c $(sources)
@@ -62,7 +62,7 @@ pack:
 	tar -cvf code_pac.tar *.c *.h Makefile 
 
 clean:
-	$(RM) *.o a.out *~ $(targets) $(targets_thr) $(targets_omp)
+	$(RM) *.o a.out *~ $(targets_omp) $(targets_icc)
 
 chmod:
 	chmod a-x *.[ch] Makefile *_3drism *.env README

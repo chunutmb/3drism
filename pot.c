@@ -577,6 +577,9 @@ void  calc_and_print_ur_lj(U_PAR2 * u, int nu_sites, double ep12, double ep6, do
             r = rw(z, u[i].z);
           else
             r = rx(x,y,z, u[i].x, u[i].y, u[i].z);
+//Jim, capping
+if (r < 0.1)
+r = 0.1;
 
           ur[indx] += 4.0 / t * ((ep12_ux[i] * pow((sig_ux[i] / r),12)) - (ep6_ux[i] * pow((sig_ux[i] / r),6)));
         }
@@ -644,6 +647,9 @@ void  calc_and_print_ur_lj12(U_PAR2 * u, int nu_sites, double ep12, double ep6, 
             r = rw(z, u[i].z);
           else
             r = rx(x,y,z, u[i].x, u[i].y, u[i].z);
+//Jim, capping
+if (r < 0.1)
+r = 0.1;
           ur[indx] += 4 / t * ((ep12_ux[i] * pow((sig_ux[i] / r),12)));
         }
       }
@@ -711,6 +717,9 @@ void  calc_and_print_ur_wca(U_PAR2 * u, int nu_sites, double ep12, double ep6, d
             r = rw(z, u[i].z);
           else
             r = rx(x,y,z, u[i].x, u[i].y, u[i].z);
+//Jim, capping
+if (r < 0.1)
+r = 0.1;
           u_lj = 4 / t * ((ep12_ux[i] * pow((sig_ux[i] / r),12)) - (ep6_ux[i] * pow((sig_ux[i] / r),6)));
 
           if (r <= r_wca[i])
@@ -776,6 +785,9 @@ void calc_and_print_ur_clmb(U_PAR2 *u, int nu_sites, double z_x, char fname[], i
         for (i = 1; i <= nu_sites; i++) {
           if (u[i].charge == 0.0) continue;
           r = rx(x, y, z, u[i].x, u[i].y, u[i].z);
+//Jim, capping
+if (r < 0.1)
+r = 0.1;
           ur[indx] += K / t * (u[i].charge * z_x / r);
         }
       }
@@ -838,6 +850,9 @@ void calc_and_print_ur_erf(U_PAR2 *u, int nu_sites, double z_x, char fname[], in
         for (i = 1; i <= nu_sites; i++) {
           if (u[i].charge == 0.0) continue;
           r = rx(x,y,z, u[i].x, u[i].y, u[i].z);
+//Jim, capping
+if (r < 0.1)
+r = 0.1;
           ur[indx] += erf(a * r) * Kc / t * (u[i].charge * z_x / r);
         }
       }
@@ -1035,6 +1050,9 @@ void calc_and_print_ur_clmb_ewald(U_PAR2 *u, int nu_sites, double z_x, char fnam
           uki[indx] += (u[i].charge * z_x) * (-1.0) * sin(kr);
 
           r = rx(x,y,z, u[i].x, u[i].y, u[i].z);
+//Jim, capping
+if (r < 0.1)
+r = 0.1;
           uerfc[indx] += (u[i].charge * z_x) * erfc(r / gs) / r;
         }
 
@@ -1190,6 +1208,9 @@ void calc_and_print_ur_clmb_ewald_rad(U_PAR2 *u, int nu_sites, double z_x, char 
           uki[indx] += (u[i].charge * z_x) * (-1.0) * sin(kr);
 
           r = rx(x,y,z, u[i].x, u[i].y, u[i].z);
+//Jim, capping
+if (r < 0.1)
+r = 0.1;
           uerfc[indx] += (u[i].charge * z_x) * erfc(r / gs) / r;
         }
 

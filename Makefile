@@ -37,7 +37,7 @@ targets_icc = pot_icc
 targets_icc_prof = 3drism_icc_prof
 targets_gcc_prof = 3drism_gcc_prof
 
-all: $(targets_icc)
+all: $(targets_omp)
 ##$(targets) $(targets_mpi) $(targets_thr) $(targets_icc) $(targets_icc_prof) $(targets_gcc_prof)
 
 $(targets_omp) : %_omp : %.c $(sources)
@@ -62,7 +62,7 @@ pack:
 	tar -cvf code_pac.tar *.c *.h Makefile 
 
 clean:
-	$(RM) *.o a.out *~ $(targets_omp) $(targets_icc)
+	$(RM) *.o a.out *~ $(targets_omp)
 
 chmod:
 	chmod a-x *.[ch] Makefile *_3drism *.env README

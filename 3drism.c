@@ -222,6 +222,9 @@ int main(int argc, char *argv[])
     full_picard_iter(MAX_ITER);
   } else if (strncmp("mdiis", SOLVER, 5) == 0) {
     printf("%d:starting mdiis iteration\n", MY_RANK);
+
+/* Jim:number of mdiis iteration is taken */
+
     mdiis_iter(MAX_ITER);
   } else if (strncmp("newton", SOLVER, 6) == 0) {
     printf("This part of code has been unkept: see ver.1.5");
@@ -239,6 +242,12 @@ int main(int argc, char *argv[])
   for (j = 0; j <= NRSITES - 1; j++)
     *(gr + j) = (double *) malloc(NNN * sizeof(double));
 
+//Jim: printing t(r)
+  double **tr = ( double **) malloc(NRSITES * sizeof(double));
+  for (j = 0; j <= NRSITES - 1; j++)
+      *(tr + j) = (double *) malloc(NNN * sizeof(double));
+//
+//
 
   if (STAT > 0 && FERR < 10.0) {
     printf("\n\n\nDone with iterations: Printing data...");
@@ -265,6 +274,11 @@ int main(int argc, char *argv[])
         B1R_STAT = 0;
       }
 
+/*Jim: In this part of the code. All compuatations are completed. 
+ * This is the final print out. 
+ * gr is gr(uv)
+ * TR_S is TR_S(uv)
+ */
 
     /*HNC*/ if ((strncmp("hnc", CLOSURE, 3) == 0) && (strlen(CLOSURE) == 3)) {
       if (B1R2 == 1) {
@@ -328,6 +342,13 @@ int main(int argc, char *argv[])
         }
     }
 
+//Jim: print tr
+    /*___print tr___*/
+    for (j = 0; j <= NRSITES - 1; j++) {
+      sprintf(s1, "tr_%s", NAMES[j]);
+      print_3d(s1, *(TR_S + j));
+    }
+//
 
     /*___print gr___*/
     for (j = 0; j <= NRSITES - 1; j++) {
@@ -1857,6 +1878,12 @@ for (m = 0; m <= NRSITES - 1; m++) {
       }
     }
 
+/////*Jim: solving OZ equation in k-space*/////
+////*Jim: Also see Perkyns 2010 JCP 3DRISM paper. Section 2 (Theory) B (Reduction of OZ equation)
+//In that section, it gives equation for this part of the code*////
+////*Jim: From kdis2 file (vv file, solvent-solvent), Type 0, 1, and 2 are referred to 
+//##TYPES         0-spherical     1-h2o         2-h2o+n spherical                        *////
+
     /*OZ EQUATION***********************************************************************************/
     /*OZ EQUATION***********************************************************************************/
 
@@ -1942,6 +1969,8 @@ for (m = 0; m <= NRSITES - 1; m++) {
 
 
     /*Subtract long range pot. int k space, tk -> tk_s*/
+/////*Jim: Long range part of potential can be problematic when inverting FFT to r-space*/////
+
     if (strncmp("no", EWALD_SUMS,2) == 0)
 
 #pragma omp parallel for private(i,m)
@@ -1957,6 +1986,9 @@ for (m = 0; m <= NRSITES - 1; m++) {
     /*Inv_FFT */
     for (m = 0; m <= NRSITES - 1; m++)
       invfftw_3d(*(tk + m), *(tr + m));                                 /*in, out*/
+
+//////*Jim: Now deal with closure relationship in r-space
+//t(r): input, cr_s: output for closure relationship*//////
 
     /****CLOSURE****/
 
@@ -2255,6 +2287,8 @@ void mdiis_iter(int max_iter)
         for (m = 0; m <= NRSITES - 1; m++)
           for (i = 0; i <= NNN - 1; i++)
             cr[m][j][i] = CR_S[m][i];
+
+/* Jim: run 1 step of picard in the beginning of mdiis procedures */
 
         full_picard_iter(1);
 

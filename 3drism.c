@@ -1853,6 +1853,8 @@ for (m = 0; m <= NRSITES - 1; m++) {
   /*#### picard iter ####*/
   /**********************************************************************************************/
 
+//Jim: after setting up, starting do-while loops
+
   do {
     PIC_CNT++;
     if (MY_RANK == 0)
@@ -1988,7 +1990,7 @@ for (m = 0; m <= NRSITES - 1; m++) {
       invfftw_3d(*(tk + m), *(tr + m));                                 /*in, out*/
 
 //////*Jim: Now deal with closure relationship in r-space
-//t(r): input, cr_s: output for closure relationship*//////
+//short-ranged t(r) is an input. cr_s: output for closure relationship*//////
 
     /****CLOSURE****/
 
@@ -2017,6 +2019,11 @@ for (m = 0; m <= NRSITES - 1; m++) {
         cr_s[m][i][0] = (PIC_MP)*cr_s[m][i][1] + (1.0 - PIC_MP) * cr_s[m][i][0];
 
 
+//Jim: the printing happens here is to produce check-point file. 
+//It generates cr files every # of N_DUMP as requested. 
+//I can ignore this part for this moment. 
+
+
     if ((PIC_CNT % N_DUMP) == 0) {
       printf("\n\n<<< DUMPING cr_s with temp factor of: %f >>>\n", TEMP_FACTOR);
       /*cr are shifted therefore CR must be unshifted*/
@@ -2039,6 +2046,9 @@ for (m = 0; m <= NRSITES - 1; m++) {
     }
 
     ++counter;
+
+//Jim: I mainly use mdiis as my main solver. 
+//I can ignore this part for now.
 
     /** RT_CHANGES and BRIDGE_FUNC*/
     if (strncmp("picard", SOLVER, 6) == 0) {
@@ -2098,6 +2108,9 @@ for (m = 0; m <= NRSITES - 1; m++) {
   free(ck);
   free(tk);
   free(t_vec);
+
+//Jim: end of full_picard_iter subroutine
+
 }
 
 
@@ -2113,6 +2126,8 @@ void closure_cr(fftw_complex **cr_s, fftw_complex **tr)
     UR_S_STAT = 1;
   }
 
+//Jim: This closure option is what I normally use
+//HNC, no bridge function
 
   if ((strncmp("hnc", CLOSURE, 3) == 0) && (strlen(CLOSURE) == 3)) {
     if (strncmp("no", RBC_FUNC, 2) == 0) {
@@ -2126,6 +2141,9 @@ void closure_cr(fftw_complex **cr_s, fftw_complex **tr)
             cr_s[m][i][1] = exp(-UR_S[m][i] + tr[m][i][0]) - tr[m][i][0] - 1;
 }
   }
+
+//Jim: pretty much I can stop here and skip below for now. That says I would get cr_s from 
+//closure calculation. It is short-ranged
 
 
 
@@ -2276,6 +2294,8 @@ void mdiis_iter(int max_iter)
   }
   s_mat[n_diis][n_diis] = 0.00;
 
+
+//Jim: after setting up, starting do-while loop
 
   do {
     if (i_rmax == io_rmax) {
@@ -2458,9 +2478,21 @@ for (i = 0; i <= NNN - 1; i++){
   } while ((test > T_ERR) && (cnt2 < max_iter));
 
 
+//Jim: Here is near the end part of mdiis. 
+//This is a do-while loop. Do the loop at least once. This block structure says:
+//execute this block of code and continue looping it while the condition statement
+//is valid. Here the condition is (test > T_ERR) && (cnt2 < max_iter)
+//Does "while" mean, only do following 
+
+//Jim: when code passes this point, it means it converges or the requested # of iterations
+//are completed. 
+//
+
   for (m = 0; m <= NRSITES - 1; m++)
     for (i = 0; i <= NNN - 1; i++)
       CR_S[m][i] = CR2_S[m][i];
+
+//Jim: before leaving mdiis, need to do full_picard_iter one more time. 
 
   full_picard_iter(1);
 
@@ -2473,6 +2505,9 @@ for (i = 0; i <= NNN - 1; i++){
 
   free(cr);
   free(res);
+
+//Jim: End of mdiis subroutine
+
 }
 
 

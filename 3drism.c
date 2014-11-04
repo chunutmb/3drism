@@ -237,17 +237,37 @@ int main(int argc, char *argv[])
   /****************************************************************************************/
 
 
+//////////////////////////////////////
+//////////////////////////////////////
+//uuPMF: put uuPMF stuff here...  
+
+
+
+
+
+//////////////////////////////////////
+//////////////////////////////////////
+
+
+
   double wr;
   double **gr = ( double **) malloc(NRSITES * sizeof(double));
   for (j = 0; j <= NRSITES - 1; j++)
     *(gr + j) = (double *) malloc(NNN * sizeof(double));
 
-//Jim: printing t(r)
+//Jim: printing t(r), just for test
+//
   double **tr = ( double **) malloc(NRSITES * sizeof(double));
   for (j = 0; j <= NRSITES - 1; j++)
       *(tr + j) = (double *) malloc(NNN * sizeof(double));
+
 //
+//Jim: I think here is showing why we use STAT variable.
+//If calculation is not converged. STAT will be 0. 
+//The code skips this part. And we don't do unshift_origin_inplace.
+//Am I right? not sure actually...
 //
+
 
   if (STAT > 0 && FERR < 10.0) {
     printf("\n\n\nDone with iterations: Printing data...");
@@ -2073,11 +2093,15 @@ for (m = 0; m <= NRSITES - 1; m++) {
     }
   } while (Test >= T_ERR && counter <= max_iter);
 
+
+//Jim: In full_picard_iter, counter starts 1, it is always 2 at this point no matter what. 
+//Then what is the point of this variable. What do we do with STAT vairable?
+//
   CNT = counter;
 
-  if (Test >= T_ERR && counter <= max_iter) STAT = 0;
-  if (Test >= T_ERR && counter >= max_iter) STAT = 1;
-  if (Test <= T_ERR && counter <= max_iter) STAT = 2;
+  if (Test >= T_ERR && counter <= max_iter) STAT = 0;  //not converged, continue iteration
+  if (Test >= T_ERR && counter >= max_iter) STAT = 1;  //not converged, iterations completed
+  if (Test <= T_ERR && counter <= max_iter) STAT = 2;  //converged...
 
  
 #pragma omp parallel for private(i,m)
@@ -2109,6 +2133,7 @@ for (m = 0; m <= NRSITES - 1; m++) {
   free(tk);
   free(t_vec);
 
+//remove all stuff...
 //Jim: end of full_picard_iter subroutine
 
 }
